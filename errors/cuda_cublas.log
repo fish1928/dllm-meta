@@ -1,0 +1,91 @@
+Traceback (most recent call last):
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_benchmark/run_benchmark_main.py", line 161, in <module>
+    cli_evaluate()
+    ~~~~~~~~~~~~^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/__main__.py", line 389, in cli_evaluate
+    results = evaluator.simple_evaluate(
+        model=args.model,
+    ...<23 lines>...
+        **request_caching_args,
+    )
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/utils.py", line 422, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/evaluator.py", line 308, in simple_evaluate
+    results = evaluate(
+        lm=lm,
+    ...<11 lines>...
+        confirm_run_unsafe_code=confirm_run_unsafe_code,
+    )
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/utils.py", line 422, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/evaluator.py", line 528, in evaluate
+    resps = getattr(lm, reqtype)(cloned_reqs)
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_benchmark/run_benchmark_main.py", line 128, in generate_until
+    text_generated, has_done = self.runner_model.run_one(
+                               ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.model, self.tokenizer, self.config, **batch
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_benchmark/run_model_semi_cached_mlp.py", line 185, in run_one
+    sentence_generated, has_done = self.generate(
+                                   ~~~~~~~~~~~~~^
+        model,
+        ^^^^^^
+    ...<3 lines>...
+        **kwargs
+        ^^^^^^^^
+    )
+    ^
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_benchmark/run_model_semi_cached_mlp.py", line 113, in generate
+    logits = model(x[:, idx_current], idx_current=idx_current, shape_target=shape_target).logits
+             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_benchmark/modeling_llada_yukai_06.py", line 1241, in forward
+    outputs = self.model.forward(
+        input_ids=input_ids,
+    ...<4 lines>...
+        shape_target=shape_target,
+    )
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_benchmark/modeling_llada_yukai_06.py", line 1157, in forward
+    x = block(
+        x,attention_bias=attention_bias,
+        idx_current=idx_current,
+        shape_target=shape_target,
+    )
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_benchmark/modeling_llada_yukai_06.py", line 935, in forward
+    x_final, x_final_up = self.ff_proj(x_final), self.up_proj(x_final) # new add
+                          ~~~~~~~~~~~~^^^^^^^^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/nn/modules/linear.py", line 134, in forward
+    return F.linear(input, self.weight, self.bias)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: CUDA error: CUBLAS_STATUS_INTERNAL_ERROR when calling `cublasGemmEx( handle, opa, opb, m, n, k, &falpha, a, CUDA_R_16BF, lda, b, CUDA_R_16BF, ldb, &fbeta, c, std::is_same_v<C_Dtype, float> ? CUDA_R_32F : CUDA_R_16BF, ldc, compute_type, CUBLAS_GEMM_DEFAULT_TENSOR_OP)`
+Traceback (most recent call last):
+  File "/home/exx/miniconda3/bin/accelerate", line 7, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/accelerate/commands/accelerate_cli.py", line 48, in main
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/accelerate/commands/launch.py", line 1174, in launch_command
+    simple_launcher(args)
+    ~~~~~~~~~~~~~~~^^^^^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/accelerate/commands/launch.py", line 769, in simple_launcher
+    raise subprocess.CalledProcessError(returncode=process.returncode, cmd=cmd)
+subprocess.CalledProcessError: Command '['/home/exx/miniconda3/bin/python3.13', 'run_benchmark_main.py', '--tasks', 'ifeval', '--limit', '50', '--model', 'test', '--batch_size', '1', '--num_fewshot', '1', '--model_args', 'id_model=GSAI-ML/LLaDA-8B-Base,size_batch=1,len_target=256,num_blocks=4,num_unmask_per_step=1,id_mask=126336,device=cuda:0,step_refresh_remainder=4,select_only_in_h=True,runner=run_model_semi_cached_mlp']' returned non-zero exit status 1.

@@ -1,0 +1,101 @@
+Traceback (most recent call last):
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_olds/yukai_llada_benchmark/run_benchmark_main.py", line 162, in <module>
+    cli_evaluate()
+    ~~~~~~~~~~~~^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/__main__.py", line 389, in cli_evaluate
+    results = evaluator.simple_evaluate(
+        model=args.model,
+    ...<23 lines>...
+        **request_caching_args,
+    )
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/utils.py", line 422, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/evaluator.py", line 308, in simple_evaluate
+    results = evaluate(
+        lm=lm,
+    ...<11 lines>...
+        confirm_run_unsafe_code=confirm_run_unsafe_code,
+    )
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/utils.py", line 422, in _wrapper
+    return fn(*args, **kwargs)
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/evaluator.py", line 528, in evaluate
+    resps = getattr(lm, reqtype)(cloned_reqs)
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_olds/yukai_llada_benchmark/run_benchmark_main.py", line 129, in generate_until
+    text_generated, has_done = self.runner_model.run_one(
+                               ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.model, self.tokenizer, self.config, **batch
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_olds/yukai_llada_benchmark/run_model_semi_cached_mlp.py", line 189, in run_one
+    sentence_generated, has_done = self.generate(
+                                   ~~~~~~~~~~~~~^
+        model,
+        ^^^^^^
+    ...<3 lines>...
+        **kwargs
+        ^^^^^^^^
+    )
+    ^
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_olds/yukai_llada_benchmark/run_model_semi_cached_mlp.py", line 117, in generate
+    logits = model(x[:, idx_current], idx_current=idx_current, shape_target=shape_target).logits
+             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_olds/yukai_llada_benchmark/modeling_llada_yukai_06.py", line 1241, in forward
+    outputs = self.model.forward(
+        input_ids=input_ids,
+    ...<4 lines>...
+        shape_target=shape_target,
+    )
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_olds/yukai_llada_benchmark/modeling_llada_yukai_06.py", line 1157, in forward
+    x = block(
+        x,attention_bias=attention_bias,
+        idx_current=idx_current,
+        shape_target=shape_target,
+    )
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_olds/yukai_llada_benchmark/modeling_llada_yukai_06.py", line 912, in forward
+    attn_current = self.attention(
+        q_current, k, v,
+    ...<2 lines>...
+        shape_target=shape_target
+    )
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_olds/yukai_llada_benchmark/modeling_llada_yukai_06.py", line 783, in attention
+    self.plugin_cache_attn.save()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_olds/yukai_llada_benchmark/plugins_llada.py", line 410, in save
+    scores_attn_current = self.reset_and_refresh_3d(
+        scores_attn_origin, scores_attn_current,
+        idx_origin, idx_current,
+        len_block, len_base
+    )
+  File "/home/exx/Workspace/yukai_llada_base/yukai_llada_olds/yukai_llada_benchmark/plugins_llada.py", line 388, in reset_and_refresh_3d
+    idx_current_relevant = idx_current - idx_block_current_min
+                           ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+torch.AcceleratorError: CUDA error: the launch timed out and was terminated
+Search for `cudaErrorLaunchTimeout' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+Traceback (most recent call last):
+  File "/home/exx/miniconda3/bin/accelerate", line 7, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/accelerate/commands/accelerate_cli.py", line 48, in main
+    args.func(args)
+    ~~~~~~~~~^^^^^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/accelerate/commands/launch.py", line 1174, in launch_command
+    simple_launcher(args)
+    ~~~~~~~~~~~~~~~^^^^^^
+  File "/home/exx/miniconda3/lib/python3.13/site-packages/accelerate/commands/launch.py", line 769, in simple_launcher
+    raise subprocess.CalledProcessError(returncode=process.returncode, cmd=cmd)
+subprocess.CalledProcessError: Command '['/home/exx/miniconda3/bin/python3.13', 'run_benchmark_main.py', '--tasks', 'ifeval', '--limit', '50', '--model', 'test', '--batch_size', '1', '--num_fewshot', '1', '--model_args', 'id_model=GSAI-ML/LLaDA-8B-Base,size_batch=1,len_target=256,num_blocks=1,num_unmask_per_step=1,id_mask=126336,device=cuda:0,step_refresh_remainder=16,select_only_in_h=True,runner=run_model_semi_cached_mlp,h=5']' returned non-zero exit status 1.
