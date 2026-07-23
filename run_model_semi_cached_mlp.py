@@ -73,8 +73,8 @@ class RunModel:
         idx_denoising = torch.arange(position_start, position_end, dtype=torch.long, device=x.device)
         idx_current = torch.cat([idx_refresh, idx_denoising])
         shape_target = (x.shape[0], position_end, -1)
-        logits = model(x[:, idx_current], idx_current=idx_current, shape_target=shape_target).logits
-        snapshot = SimpleLogitsSnapshot(logits, x[:, idx_current], x[:, idx_current], id_mask)
+        model(x[:, idx_current], idx_current=idx_current, shape_target=shape_target, skip_logits=True)
+        snapshot = SimpleLogitsSnapshot(x[:, idx_current], x[:, idx_current], id_mask)
 
         for id_block in range(num_blocks):
             position_start = len_prompt + id_block * size_block
@@ -104,7 +104,6 @@ class RunModel:
                     logits = model(x[:, idx_current], idx_current=idx_current, shape_target=shape_target).logits
                     logits_denoising = logits[:, -idx_denoising.shape[-1]:]
 
-                    logits_accumulated = torch.cat([snapshot.get_logits()[:, :position_start, :], logits_denoising], dim=1)
                     x_accumulated = x[:, :position_end]
 
                     conf_pad = torch.zeros(
@@ -112,9 +111,16 @@ class RunModel:
                         dtype=snapshot.conf.dtype,
                         device=snapshot.conf.device)
                     conf_accumulated = torch.cat([snapshot.conf, conf_pad], dim=1)
-                    
-                    snapshot = SimpleLogitsSnapshot(logits_accumulated, x_accumulated, x_accumulated, id_mask, conf_accumulated)
-                    conf_snapshot = snapshot.transform_logits(collector, idx_transform=idx_block.unsqueeze(0))
+
+                    x0_pad = torch.zeros(
+                        (snapshot.x0.shape[0], x_accumulated.shape[1] - snapshot.x0.shape[1]),
+                        dtype=snapshot.x0.dtype,
+                        device=snapshot.x0.device)
+                    x0_accumulated = torch.cat([snapshot.x0, x0_pad], dim=1)
+
+                    snapshot = SimpleLogitsSnapshot(x_accumulated, x_accumulated, id_mask, x0_accumulated, conf_accumulated)
+                    snapshot.update_logits_(idx_block.unsqueeze(0), logits_denoising)
+                    conf_snapshot = snapshot.transform_logits(collector, logits_denoising, idx_transform=idx_block.unsqueeze(0))
                 else:
                     score_attn = plugin_cache_attn.collect_attn_from_all_blocks(model)
                     idx_in_attn = torch.where(idx_transform_2d.squeeze(0) == idx_block)[0]    # idx_current is now last round
@@ -129,7 +135,7 @@ class RunModel:
 
                     # different here compared to step == 0
                     snapshot.update_logits_(idx_denoising.unsqueeze(0), logits_transform)
-                    conf_snapshot = snapshot.transform_logits(collector, idx_transform=idx_denoising.unsqueeze(0))
+                    conf_snapshot = snapshot.transform_logits(collector, logits_transform, idx_transform=idx_denoising.unsqueeze(0))
                     # different ends
 
                     if future_idx_selector.select_only_in_h: #TODO: be careful of the use of scatter(shape)

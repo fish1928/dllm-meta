@@ -6,24 +6,23 @@ from tools_debug import jprint
 
 class SimpleLogitsSnapshot:
 
-    def _regularize(self, sample, target):
-        return  sample[:, :target.shape[1]]
-    # end
-
-    def __init__(self, logits, x, y, id_mask, conf=None):
+    def __init__(self, x, y, id_mask, x0=None, conf=None):
         self.id_mask = id_mask
 
-        self.logits = logits
+        self.x = x
+        self.y = y
 
-        self.x = self._regularize(x, logits)
-        self.y = self._regularize(y, logits)
-
-        self.x0 = torch.argmax(self.logits, dim=-1)
-
-        self.p_finalized = torch.zeros(self.x.shape, dtype=torch.float32).to(self.x.device)
-
+        assert x0 is None or x0.shape[1] == self.x.shape[1]
         assert conf is None or conf.shape[1] == self.x.shape[1]
-        
+
+        if x0 is None:
+            self.x0 = torch.zeros(self.x.shape, dtype=torch.long, device=self.x.device)
+        else:
+            self.x0 = x0
+        # end
+
+        self.p_finalized = torch.zeros(self.x.shape, dtype=torch.float32, device=self.x.device)
+
         if conf is None:
             self.conf = torch.zeros(self.x.shape, dtype=torch.float32, device=self.x.device)
         else:
@@ -39,25 +38,8 @@ class SimpleLogitsSnapshot:
         return self.y
     # end
 
-    def get_logits(self):
-        return self.logits
-    # end
-
     def get_p_finalized(self):
         return self.p_finalized
-    # end
-
-    def get_margin_p(self, idx_a=0, idx_b=1):   # returns p[rank a] - p[rank b], rank 0 = top-1
-        logits = self.logits
-        mask_mask = self.x == self.id_mask
-
-        p = F.softmax(logits.to(torch.float64), dim=-1)   # [B, N, D]
-        p_sorted, _ = torch.sort(p, dim=-1, descending=True)    # rank 0 = largest prob
-        margin_p = p_sorted[:, :, idx_a] - p_sorted[:, :, idx_b]          # [B,N,D] -> [B, N]
-
-        neg_inf = torch.tensor(torch.finfo(p.dtype).min, device=p.device, dtype=p.dtype)
-        margin_p = torch.where(mask_mask.squeeze(0), margin_p.squeeze(0), neg_inf)
-        return margin_p
     # end
 
 
@@ -69,29 +51,21 @@ class SimpleLogitsSnapshot:
         self.p_finalized.scatter_(1, idx, conf_target)
     # end
 
+    # logits rows must be aligned with idx_transform positions (same order)
     def update_logits_(self, idx_transform, logits):
-        B, L, H = logits.shape
         assert idx_transform.dim() == 2, "idx_transform.dim(): {} == 2 false".format(idx_transform.dim())
-        
-        idx_logits = idx_transform.view(B,-1,1).expand(B, -1, H)
 
-        self.logits.scatter_(1, idx_logits, logits)
         x0 = torch.argmax(logits, dim=-1)
         self.x0.scatter_(1, idx_transform, x0)
         return idx_transform
     # end
 
 
-    def transform_logits(self, collector, idx_transform=None):
-        if idx_transform is not None:
-            idx_transform_3d = idx_transform.unsqueeze(-1).expand(-1, -1, self.logits.shape[-1])
-            logits_transform = torch.gather(self.logits, dim=1, index=idx_transform_3d)
-        else:
-            logits_transform = self.logits
-        # end
-
+    # logits rows must be aligned with idx_transform positions (same order);
+    # call update_logits_ first so collector reads fresh x0 at those positions
+    def transform_logits(self, collector, logits, idx_transform=None):
         index_p_transform = collector.get_index(self, idx_transform)
-        p_transformed = F.softmax(logits_transform.float(), dim=-1)
+        p_transformed = F.softmax(logits.float(), dim=-1)
 
         x0_p_transformed = torch.gather(p_transformed, dim=-1, index=index_p_transform).squeeze(-1)
 
