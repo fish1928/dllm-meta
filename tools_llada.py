@@ -26,7 +26,9 @@ class BlockDiffusionQuotaHelper(DiffusionQuotaHelper):
         # Add +1 to the first `rem[b]` steps for each batch b — without tensor slicing
         cols = torch.arange(steps_per_block, device=device).unsqueeze(0)               # (1, steps)
         add_mask = cols < rem.unsqueeze(1)                                   # (B, steps)
-        self.num_transfer_tokens = num_transfer_tokens + add_mask.to(dtype)       # (B, steps)
+
+        # keep on CPU: one sync here instead of a hidden device->host sync per step in get_quota
+        self.num_transfer_tokens = (num_transfer_tokens + add_mask.to(dtype)).cpu()       # (B, steps)
     # end
 
     def get_quota(self, step_current):
@@ -36,7 +38,7 @@ class BlockDiffusionQuotaHelper(DiffusionQuotaHelper):
             quota_current = quota_current.squeeze(1)
         # end
 
-        return quota_current
+        return int(quota_current.max())    # python int; batch size 1 in this pipeline
     # end
 # end
 

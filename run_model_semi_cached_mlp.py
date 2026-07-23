@@ -71,6 +71,7 @@ class RunModel:
 
         position_start, position_end = 0, len_prompt
         idx_denoising = torch.arange(position_start, position_end, dtype=torch.long, device=x.device)
+        idx_prompt = idx_denoising    # prompt positions, hoisted for the prompt-refresh forwards
         idx_current = torch.cat([idx_refresh, idx_denoising])
         shape_target = (x.shape[0], position_end, -1)
         model(x[:, idx_current], idx_current=idx_current, shape_target=shape_target, skip_logits=True)
@@ -88,7 +89,6 @@ class RunModel:
             for step in range(step_per_block):
 
                 if step != 0 and step % step_refresh_remainder == 0:
-                    idx_prompt = torch.arange(0, len_prompt, dtype=torch.long).to(x.device)
                     model(x[:, idx_prompt], idx_current=idx_prompt, shape_target=shape_target, skip_logits=True)
                 # end
 
@@ -123,7 +123,7 @@ class RunModel:
                     conf_snapshot = snapshot.transform_logits(collector, logits_denoising, idx_transform=idx_block.unsqueeze(0))
                 else:
                     score_attn = plugin_cache_attn.collect_attn_from_all_blocks(model)
-                    idx_in_attn = torch.where(idx_transform_2d.squeeze(0) == idx_block)[0]    # idx_current is now last round
+                    idx_in_attn = idx_transform_2d.squeeze(0) - position_start    # block is contiguous: global position -> block-local row
                     score_attn = score_attn[-1, idx_in_attn, -idx_block.shape[-1]:].squeeze(1)  # (1,64)
                     mask_mask_current_no = ~(x[:,position_start:position_end] == id_mask).view(1,-1)    # (B, K)
                     score_attn.masked_fill_(mask_mask_current_no, torch.finfo(score_attn.dtype).min)
@@ -139,8 +139,9 @@ class RunModel:
                     # different ends
 
                     if future_idx_selector.select_only_in_h: #TODO: be careful of the use of scatter(shape)
-                        mask_denoising_no = ~torch.isin(torch.arange(conf_snapshot.shape[-1], device=conf_snapshot.device), idx_denoising).unsqueeze(0)    # idx_denoising -> 
-                        conf_snapshot.masked_fill_(mask_denoising_no, torch.finfo(conf_snapshot.dtype).min)
+                        mask_denoising_no = torch.ones(conf_snapshot.shape[-1], dtype=torch.bool, device=conf_snapshot.device)
+                        mask_denoising_no[idx_denoising] = False    # True everywhere except the h selected positions
+                        conf_snapshot.masked_fill_(mask_denoising_no.unsqueeze(0), torch.finfo(conf_snapshot.dtype).min)
                     # end
                 # end
 
