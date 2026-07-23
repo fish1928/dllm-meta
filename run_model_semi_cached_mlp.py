@@ -89,7 +89,7 @@ class RunModel:
 
                 if step != 0 and step % step_refresh_remainder == 0:
                     idx_prompt = torch.arange(0, len_prompt, dtype=torch.long).to(x.device)
-                    model(x[:, idx_prompt], idx_current=idx_prompt, shape_target=shape_target)
+                    model(x[:, idx_prompt], idx_current=idx_prompt, shape_target=shape_target, skip_logits=True)
                 # end
 
                 if step == 0 or step % step_refresh_remainder == 0:

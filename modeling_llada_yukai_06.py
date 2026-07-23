@@ -1129,6 +1129,7 @@ class LLaDAModel(nn.Module):
         idx_current: Optional[torch.Tensor] = None,
         shape_target: Tuple[int, int, int] = None,
         last_logits_only: bool = False,
+        skip_logits: bool = False,
     ) -> LLaDAOutput:
 
         # Add Basic MDM Model config check
@@ -1164,6 +1165,10 @@ class LLaDAModel(nn.Module):
         else:
             raise NotImplemented('block is removed from yukai llada version')
         # end if
+
+        if skip_logits:    # KV/attn caches are already updated inside the blocks; ln_f + lm_head not needed
+            return LLaDAOutput(logits=None)
+        # end
 
         if last_logits_only:
             # shape: (batch_size, 1, d_model)
@@ -1230,6 +1235,7 @@ class LLaDAModelLM(PreTrainedModel):
         shape_target: Tuple[int, int, int] = None,
         output_attentions: Optional[bool] = None,
         return_dict: Optional[bool] = None,
+        skip_logits: bool = False,
     ) -> Union[Tuple, CausalLMOutputWithPast]:
 
         if output_attentions:
@@ -1245,6 +1251,7 @@ class LLaDAModelLM(PreTrainedModel):
             attention_bias=attention_bias,
             idx_current=idx_current,
             shape_target=shape_target,
+            skip_logits=skip_logits,
         )
             
         # import pdb; pdb.set_trace()
