@@ -10,7 +10,7 @@ class SimpleLogitsSnapshot:
         return  sample[:, :target.shape[1]]
     # end
 
-    def __init__(self, logits, x, y, id_mask, conf):
+    def __init__(self, logits, x, y, id_mask, conf=None):
         self.id_mask = id_mask
 
         self.logits = logits
@@ -21,6 +21,9 @@ class SimpleLogitsSnapshot:
         self.x0 = torch.argmax(self.logits, dim=-1)
 
         self.p_finalized = torch.zeros(self.x.shape, dtype=torch.float32).to(self.x.device)
+
+        assert conf is None or conf.shape[1] == self.x.shape[1]
+        
         if conf is None:
             self.conf = torch.zeros(self.x.shape, dtype=torch.float32, device=self.x.device)
         else:
@@ -56,8 +59,6 @@ class SimpleLogitsSnapshot:
         margin_p = torch.where(mask_mask.squeeze(0), margin_p.squeeze(0), neg_inf)
         return margin_p
     # end
-
-
 
 
     def materialize_by_idx_(self, idx, conf):

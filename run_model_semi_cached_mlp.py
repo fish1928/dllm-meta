@@ -106,8 +106,15 @@ class RunModel:
 
                     logits_accumulated = torch.cat([snapshot.get_logits()[:, :position_start, :], logits_denoising], dim=1)
                     x_accumulated = x[:, :position_end]
-                    snapshot = SimpleLogitsSnapshot(logits_accumulated, x_accumulated, x_accumulated, id_mask, snapshot.conf)
-                    conf_snapshot = snapshot.transform_logits(collector, idx=idx_block.unsqueeze(0))
+
+                    conf_pad = torch.zeros(
+                        (snapshot.conf.shape[0], x_accumulated.shape[1] - snapshot.conf.shape[1]),
+                        dtype=snapshot.conf.dtype,
+                        device=snapshot.conf.device)
+                    conf_accumulated = torch.cat([snapshot.conf, conf_pad], dim=1)
+                    
+                    snapshot = SimpleLogitsSnapshot(logits_accumulated, x_accumulated, x_accumulated, id_mask, conf_accumulated)
+                    conf_snapshot = snapshot.transform_logits(collector, idx_transform=idx_block.unsqueeze(0))
                 else:
                     score_attn = plugin_cache_attn.collect_attn_from_all_blocks(model)
                     idx_in_attn = torch.where(idx_transform_2d.squeeze(0) == idx_block)[0]    # idx_current is now last round
@@ -122,7 +129,7 @@ class RunModel:
 
                     # different here compared to step == 0
                     snapshot.update_logits_(idx_denoising.unsqueeze(0), logits_transform)
-                    conf_snapshot = snapshot.transform_logits(collector, idx=idx_denoising.unsqueeze(0))
+                    conf_snapshot = snapshot.transform_logits(collector, idx_transform=idx_denoising.unsqueeze(0))
                     # different ends
 
                     if future_idx_selector.select_only_in_h: #TODO: be careful of the use of scatter(shape)
