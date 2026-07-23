@@ -106,8 +106,8 @@ class RunModel:
 
                     logits_accumulated = torch.cat([snapshot.get_logits()[:, :position_start, :], logits_denoising], dim=1)
                     x_accumulated = x[:, :position_end]
-                    snapshot = SimpleLogitsSnapshot(logits_accumulated, x_accumulated, x_accumulated, id_mask)
-                    conf_snapshot = snapshot.transform_logits(collector)
+                    snapshot = SimpleLogitsSnapshot(logits_accumulated, x_accumulated, x_accumulated, id_mask, snapshot.conf)
+                    conf_snapshot = snapshot.transform_logits(collector, idx=idx_block.unsqueeze(0))
                 else:
                     score_attn = plugin_cache_attn.collect_attn_from_all_blocks(model)
                     idx_in_attn = torch.where(idx_transform_2d.squeeze(0) == idx_block)[0]    # idx_current is now last round

@@ -73,23 +73,33 @@ class TopKSorter(ConfKSorter):
 
 class ConfCollectorInterface(ABC):
     @abstractmethod
-    def get_index(self, snapshot):
+    def get_index(self, snapshot, idx=None):
         pass
     # end
 # end
 
 class TruthCollector(ConfCollectorInterface):
-    def get_index(self, snapshot):
-        index = snapshot.y.unsqueeze(-1)
-        return index
+    def get_index(self, snapshot, idx=None):
+        index = snapshot.y
+
+        if idx is not None:
+            index = torch.gather(index, 1, idx)
+        # end
+
+        return index.unsqueeze(-1)
     # end
 # end
 
 
 class MaxCollector(ConfCollectorInterface):
-    def get_index(self, snapshot):
-        index = snapshot.x0.unsqueeze(-1)
-        return index
+    def get_index(self, snapshot, idx=None):
+        index = snapshot.x0
+
+        if idx is not None:
+            index = torch.gather(index, 1, idx)
+        # end
+        #         
+        return index.unsqueeze(-1)
     # end
 # end
 

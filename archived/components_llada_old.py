@@ -10,7 +10,7 @@ class SimpleLogitsSnapshot:
         return  sample[:, :target.shape[1]]
     # end
 
-    def __init__(self, logits, x, y, id_mask, conf):
+    def __init__(self, logits, x, y, id_mask):
         self.id_mask = id_mask
 
         self.logits = logits
@@ -20,12 +20,7 @@ class SimpleLogitsSnapshot:
 
         self.x0 = torch.argmax(self.logits, dim=-1)
 
-        self.p_finalized = torch.zeros(self.x.shape, dtype=torch.float32).to(self.x.device)
-        if conf is None:
-            self.conf = torch.zeros(self.x.shape, dtype=torch.float32, device=self.x.device)
-        else:
-            self.conf = conf
-        # end
+        self.p_finalized = torch.zeros(self.x.shape, dtype=torch.float64).to(self.x.device)
     # end
 
     def get_x(self):
@@ -59,6 +54,28 @@ class SimpleLogitsSnapshot:
 
 
 
+    def transform_logits(self, collector):
+
+        logits_tranform = self.logits
+        p = F.softmax(logits_tranform.to(torch.float64), dim=-1)
+
+        index_p_all = collector.get_index(self)
+
+        x0_p = torch.gather(p, dim=-1, index=index_p_all).squeeze(-1)
+
+        neg_inf = torch.tensor(torch.finfo(x0_p.dtype).min, device=x0_p.device, dtype=x0_p.dtype)
+
+        mask_mask = self.x == self.id_mask
+        conf = torch.where(mask_mask, x0_p, neg_inf)  # (B, L)   # so only the masked part has confidence
+
+        return conf
+    # end
+
+
+    def transform_logits_fast(self, collector):
+        pass
+    # end
+
 
     def materialize_by_idx_(self, idx, conf):
 
@@ -74,41 +91,11 @@ class SimpleLogitsSnapshot:
         
         idx_logits = idx_transform.view(B,-1,1).expand(B, -1, H)
 
+        # end match
+
         self.logits.scatter_(1, idx_logits, logits)
         x0 = torch.argmax(logits, dim=-1)
         self.x0.scatter_(1, idx_transform, x0)
-        return idx_transform
-    # end
-
-
-    def transform_logits(self, collector, idx_transform=None):
-        if idx_transform is not None:
-            idx_transform_3d = idx_transform.unsqueeze(-1).expand(-1, -1, self.logits.shape[-1])
-            logits_transform = torch.gather(self.logits, dim=1, index=idx_transform_3d)
-        else:
-            logits_transform = self.logits
-        # end
-
-        index_p_transform = collector.get_index(self, idx_transform)
-        p_transformed = F.softmax(logits_transform.float(), dim=-1)
-
-        x0_p_transformed = torch.gather(p_transformed, dim=-1, index=index_p_transform).squeeze(-1)
-
-        if idx_transform is not None:
-            self.conf.scatter_(1, idx_transform, x0_p_transformed)
-        else:
-            self.conf = x0_p_transformed
-        # end
-
-        neg_inf = torch.tensor(
-            torch.finfo(self.conf.dtype).min,
-            device=self.conf.device,
-            dtype=self.conf.dtype
-        )
-
-        mask_mask = self.x == self.id_mask
-
-        return torch.where(mask_mask, self.conf, neg_inf)
     # end
 
     def update_this(self, dim, idx_src, idx_tgt=None, **kwargs):
@@ -152,35 +139,6 @@ class SimpleLogitsSnapshot:
     #     b = torch.gather(p, -1, idx_sorted[:, idx_b:idx_b+1])         # [N, 1]
     #     return (a - b).squeeze(-1)
     # # end
-
-    # def update_logits_(self, idx_transform, logits):
-    #     B, L, H = logits.shape
-    #     assert idx_transform.dim() == 2, "idx_transform.dim(): {} == 2 false".format(idx_transform.dim())
-        
-    #     idx_logits = idx_transform.view(B,-1,1).expand(B, -1, H)
-
-    #     self.logits.scatter_(1, idx_logits, logits)
-    #     x0 = torch.argmax(logits, dim=-1)
-    #     self.x0.scatter_(1, idx_transform, x0)
-    # # end
-
-    # def transform_logits_(self, collector):
-
-    #     logits_transform = self.logits
-    #     p = F.softmax(logits_transform.to(torch.float64), dim=-1)
-
-    #     index_p_all = collector.get_index(self)
-
-    #     x0_p = torch.gather(p, dim=-1, index=index_p_all).squeeze(-1)
-
-    #     neg_inf = torch.tensor(torch.finfo(x0_p.dtype).min, device=x0_p.device, dtype=x0_p.dtype)
-
-    #     mask_mask = self.x == self.id_mask
-    #     self.conf = torch.where(mask_mask, x0_p, neg_inf)  # (B, L)   # so only the masked part has confidence
-
-    #     return self.conf
-    # # end
-
 # end
 
 '''For RunModelAndCollectStats'''
