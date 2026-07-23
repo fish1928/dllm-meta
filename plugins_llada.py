@@ -431,8 +431,11 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
 
     def clear(self, model):
         for block_transformer in model.model.transformer.blocks[:]:
-            if hasattr(block_transformer, 'scores_attn_avg'):
+            if hasattr(block_transformer, 'scores_attn_origin'):
                 del block_transformer.scores_attn_origin
+            # end
+            if hasattr(block_transformer, 'idx_origin'):
+                del block_transformer.idx_origin
             # end
         # end        
     # end
