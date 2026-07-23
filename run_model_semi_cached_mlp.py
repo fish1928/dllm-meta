@@ -119,7 +119,7 @@ class RunModel:
                     x0_accumulated = torch.cat([snapshot.x0, x0_pad], dim=1)
 
                     snapshot = SimpleLogitsSnapshot(x_accumulated, x_accumulated, id_mask, x0_accumulated, conf_accumulated)
-                    snapshot.update_logits_(idx_block.unsqueeze(0), logits_denoising)
+                    snapshot.update_x0_(idx_block.unsqueeze(0), logits_denoising)
                     conf_snapshot = snapshot.transform_logits(collector, logits_denoising, idx_transform=idx_block.unsqueeze(0))
                 else:
                     score_attn = plugin_cache_attn.collect_attn_from_all_blocks(model)
@@ -134,7 +134,7 @@ class RunModel:
                     logits_transform = logits[:, -idx_denoising.shape[-1]:]
 
                     # different here compared to step == 0
-                    snapshot.update_logits_(idx_denoising.unsqueeze(0), logits_transform)
+                    snapshot.update_x0_(idx_denoising.unsqueeze(0), logits_transform)
                     conf_snapshot = snapshot.transform_logits(collector, logits_transform, idx_transform=idx_denoising.unsqueeze(0))
                     # different ends
 
