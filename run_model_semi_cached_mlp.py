@@ -122,7 +122,7 @@ class RunModel:
 
                     # different here compared to step == 0
                     snapshot.update_logits_(idx_denoising.unsqueeze(0), logits_transform)
-                    conf_snapshot = snapshot.transform_logits(collector)
+                    conf_snapshot = snapshot.transform_logits(collector, idx=idx_denoising.unsqueeze(0))
                     # different ends
 
                     if future_idx_selector.select_only_in_h: #TODO: be careful of the use of scatter(shape)
