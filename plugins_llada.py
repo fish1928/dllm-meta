@@ -374,11 +374,12 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
 
         idx_block_current_min = self.get_block_idx_min(id_block_current, len_block, len_base)
 
-        idx_current = idx_current[idx_current >= idx_block_current_min]   # select by mask
+        mask_row_current = idx_current >= idx_block_current_min
+        idx_current = idx_current[mask_row_current]   # select by mask
         assert idx_current.shape[-1] > 0
 
         # idx_current 处理完成
-        idx_current_relevant = idx_current - idx_block_current_min
+        matrix_current = matrix_current[:, mask_row_current, :]   # keep rows aligned with filtered idx_current
         matrix_current = matrix_current[:, :, -len_block:]
 
         if id_block_current != id_block_origin:
