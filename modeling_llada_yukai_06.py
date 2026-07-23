@@ -440,11 +440,14 @@ class RotaryEmbedding(nn.Module):
         return ((t * pos_cos) + (self.rotate_half(t) * pos_sin)).to(t.dtype)
 
     # jinyu rotary
+    # q and k rows sit at the same absolute positions (idx_q), so both use the
+    # position-selected tables. len_table only needs to cover max(idx_q); the table is
+    # precomputed up to max_sequence_length at init, so requesting it is a cheap slice.
     def forward(self, q: torch.Tensor, k: torch.Tensor,
-                block_end_index: Optional[torch.Tensor] = None,
+                len_table: Optional[int] = None,
                 idx_q: Optional[torch.Tensor] = None
                 ) -> Tuple[torch.Tensor, torch.Tensor]:
-        
+
         if self.config.rope_full_precision:
             q_, k_ = q.float(), k.float()
         else:
@@ -452,8 +455,11 @@ class RotaryEmbedding(nn.Module):
         # end
 
         with torch.autocast(q.device.type, enabled=False):
-            query_len, key_len = q_.shape[-2], k_.shape[-2]
-            pos_sin, pos_cos = self.get_rotary_embedding(key_len, q_.device)
+            if len_table is None:
+                len_table = k_.shape[-2]
+            # end
+
+            pos_sin, pos_cos = self.get_rotary_embedding(len_table, q_.device)
             pos_sin = pos_sin.type_as(q_)
             pos_cos = pos_cos.type_as(q_)
 
@@ -462,7 +468,7 @@ class RotaryEmbedding(nn.Module):
             pos_cos_slice = pos_cos.index_select(2, idx_q)
 
             q_ = self.apply_rotary_pos_emb(pos_sin_slice, pos_cos_slice, q_)
-            k_ = self.apply_rotary_pos_emb(pos_sin, pos_cos, k_)
+            k_ = self.apply_rotary_pos_emb(pos_sin_slice, pos_cos_slice, k_)
         # end
 
         return q_.type_as(q), k_.type_as(k)
@@ -773,12 +779,15 @@ class LLaDABlock(nn.Module):
         # shape: (B, n_kv_h, T, hs)
         v_current = v_current.view(B, T, self.config.effective_n_kv_heads, C // self.config.n_heads).transpose(1, 2)
 
-        k_final, v_final = self.plugin_cache_past_kv.load()   
-
-        max_replace_pos = k_final.shape[1]
-        q_current_rotated, k_final_rotated = self.rotary_emb(
-            q_current, k_final, max_replace_pos, idx_current
+        # RoPE at absolute positions BEFORE the cache merge: a key's rotation depends only on
+        # its fixed position, so the K cache stores rotated keys and only the current T rows
+        # are rotated each step (instead of re-rotating the full-length cache in every layer).
+        q_current_rotated, k_current = self.rotary_emb(
+            q_current, k_current, self.config.max_sequence_length, idx_current
         )
+
+        k_final, v_final = self.plugin_cache_past_kv.load()   # merges rotated k_current into the rotated-K cache
+        k_final_rotated = k_final    # alias: plugin_cache_attn reads this name from the frame
 
         self.plugin_cache_attn.save()
 
