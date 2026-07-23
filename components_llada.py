@@ -52,7 +52,7 @@ class SimpleLogitsSnapshot:
     # end
 
     # logits rows must be aligned with idx_transform positions (same order)
-    def update_logits_(self, idx_transform, logits):
+    def update_x0_(self, idx_transform, logits):
         assert idx_transform.dim() == 2, "idx_transform.dim(): {} == 2 false".format(idx_transform.dim())
 
         x0 = torch.argmax(logits, dim=-1)
