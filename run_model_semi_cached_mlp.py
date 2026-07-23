@@ -1,5 +1,8 @@
 import os
-os.environ["CUDA_LAUNCH_BLOCKING"] = "1"  # put this at the very top of your script
+
+if os.environ.get("JINYU_DEBUG", False):
+    os.environ["CUDA_LAUNCH_BLOCKING"] = "1"  # put this at the very top of your script
+# end
 
 import torch
 from tqdm import tqdm

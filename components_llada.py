@@ -39,15 +39,6 @@ class SimpleLogitsSnapshot:
         return self.p_finalized
     # end
 
-    # def get_margin_p(self, idx_a=0, idx_b=1):
-    #     p = F.softmax(self.logits.to(torch.float64), dim=-1)
-    #     idx_sorted = torch.argsort(p, dim=-1, descending=True)        # [N, V]
-
-    #     a = torch.gather(p, -1, idx_sorted[:, idx_a:idx_a+1])         # [N, 1]  keep dim
-    #     b = torch.gather(p, -1, idx_sorted[:, idx_b:idx_b+1])         # [N, 1]
-    #     return (a - b).squeeze(-1)
-    # # end
-
     def get_margin_p(self, idx_a=0, idx_b=1):   # returns p[rank a] - p[rank b], rank 0 = top-1
         logits = self.logits
         mask_mask = self.x == self.id_mask
@@ -61,20 +52,6 @@ class SimpleLogitsSnapshot:
         return margin_p
     # end
 
-    # def get_margin_p(self, idx_a=0, idx_b=1):
-    #     logits = logits.to(torch.float64)                            # match the float64 softmax convention; chunk over T if memory-bound
-    #     mask_mask = self.x == self.id_mask
-
-    #     lse = torch.logsumexp(logits, dim=-1)                        # [T, L]  log-partition (full vocab scan)
-    #     top2 = logits.topk(2, dim=-1).values                        # [T, L, 2]  rank 0 = largest logit
-    #     p1 = (top2[..., idx_a] - lse).exp()                             # [T, L]  top-1 prob
-    #     p2 = (top2[..., idx_b] - lse).exp()                             # [T, L]  top-2 prob
-    #     margin_p = p1 - p2
-
-    #     neg_inf = torch.tensor(torch.finfo(logits.dtype).min, device=logits.device, dtype=logits.dtype)
-    #     margin_p = torch.where(mask_mask.squeeze(0), margin_p.squeeze(0), neg_inf)
-    #     return margin_p
-    # # end
 
 
     def transform_logits(self, collector):
@@ -95,23 +72,9 @@ class SimpleLogitsSnapshot:
     # end
 
 
-    def transform_logits2(self, collector):
-
-        logits_tranform = self.logits
-        p = F.softmax(logits_tranform.to(torch.float64), dim=-1)
-
-        index_p_all = collector.get_index(self)
-
-        x0_p = torch.gather(p, dim=-1, index=index_p_all).squeeze(-1)
-
-        neg_inf = torch.tensor(torch.finfo(x0_p.dtype).min, device=x0_p.device, dtype=x0_p.dtype)
-
-        mask_mask = self.x == self.id_mask
-        conf = torch.where(mask_mask, x0_p, neg_inf)  # (B, L)   # so only the masked part has confidence
-
-        return conf, index_p_all
+    def transform_logits_fast(self, collector):
+        pass
     # end
-
 
 
     def materialize_by_idx_(self, idx, conf):
@@ -151,6 +114,31 @@ class SimpleLogitsSnapshot:
 
         return self
     # end
+
+
+    # def get_margin_p(self, idx_a=0, idx_b=1):
+    #     logits = logits.to(torch.float64)                            # match the float64 softmax convention; chunk over T if memory-bound
+    #     mask_mask = self.x == self.id_mask
+
+    #     lse = torch.logsumexp(logits, dim=-1)                        # [T, L]  log-partition (full vocab scan)
+    #     top2 = logits.topk(2, dim=-1).values                        # [T, L, 2]  rank 0 = largest logit
+    #     p1 = (top2[..., idx_a] - lse).exp()                             # [T, L]  top-1 prob
+    #     p2 = (top2[..., idx_b] - lse).exp()                             # [T, L]  top-2 prob
+    #     margin_p = p1 - p2
+
+    #     neg_inf = torch.tensor(torch.finfo(logits.dtype).min, device=logits.device, dtype=logits.dtype)
+    #     margin_p = torch.where(mask_mask.squeeze(0), margin_p.squeeze(0), neg_inf)
+    #     return margin_p
+    # # end
+
+    # def get_margin_p(self, idx_a=0, idx_b=1):
+    #     p = F.softmax(self.logits.to(torch.float64), dim=-1)
+    #     idx_sorted = torch.argsort(p, dim=-1, descending=True)        # [N, V]
+
+    #     a = torch.gather(p, -1, idx_sorted[:, idx_a:idx_a+1])         # [N, 1]  keep dim
+    #     b = torch.gather(p, -1, idx_sorted[:, idx_b:idx_b+1])         # [N, 1]
+    #     return (a - b).squeeze(-1)
+    # # end
 # end
 
 '''For RunModelAndCollectStats'''
