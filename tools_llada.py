@@ -40,6 +40,10 @@ class BlockDiffusionQuotaHelper(DiffusionQuotaHelper):
 
         return int(quota_current.max())    # python int; batch size 1 in this pipeline
     # end
+
+    def get_quota_max(self):
+        return int(self.num_transfer_tokens.max())
+    # end
 # end
 
 

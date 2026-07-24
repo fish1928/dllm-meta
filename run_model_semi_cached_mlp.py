@@ -81,7 +81,13 @@ class RunModel:
             position_start = len_prompt + id_block * size_block
             position_end = position_start + size_block
             mask_mask_block = x[:,position_start:position_end] == id_mask
-            quota_helper = BlockDiffusionQuotaHelper(mask_mask_block, size_block)
+            quota_helper = BlockDiffusionQuotaHelper(mask_mask_block, step_per_block)    # quotas spread over actual steps, not block size
+
+            if future_idx_selector.select_only_in_h:
+                assert future_idx_selector.h >= quota_helper.get_quota_max(),\
+                    'horizon h must cover the per-step unmask quota: {} >= {}'.format(
+                        future_idx_selector.h, quota_helper.get_quota_max())
+            # end
 
             idx_block = torch.arange(position_start, position_end, dtype=torch.long, device=x.device)
             shape_target = (x.shape[0], position_end, -1)
@@ -123,8 +129,9 @@ class RunModel:
                     conf_snapshot = snapshot.transform_logits(collector, logits_denoising, idx_transform=idx_block.unsqueeze(0))
                 else:
                     score_attn = plugin_cache_attn.collect_attn_from_all_blocks(model)
-                    idx_in_attn = idx_transform_2d.squeeze(0) - position_start    # block is contiguous: global position -> block-local row
-                    score_attn = score_attn[-1, idx_in_attn, -idx_block.shape[-1]:].squeeze(1)  # (1,64)
+                    idx_in_attn = idx_transform_2d.squeeze(0) - position_start    # block is contiguous: global position -> block-local rows
+                    score_attn = score_attn[-1, idx_in_attn, -idx_block.shape[-1]:]  # (num_unmask, size_block)
+                    score_attn = score_attn.mean(dim=0, keepdim=True)  # aggregate the just-unmasked tokens' rows -> (1, size_block)
                     mask_mask_current_no = ~(x[:,position_start:position_end] == id_mask).view(1,-1)    # (B, K)
                     score_attn.masked_fill_(mask_mask_current_no, torch.finfo(score_attn.dtype).min)
                     idx_denoising = (future_idx_selector.select_future_by_attn(score_attn) + position_start).squeeze(0)
