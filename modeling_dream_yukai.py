@@ -154,7 +154,12 @@ class DreamDecoderLayerYukai(nn.Module):
     # end
 
     def get_attn_score_avg(self, Q, K):
-        # Q, K: (batch, heads, seq_len, head_dim)
+        # Q: (B, n_heads, T, hd); K: (B, n_kv_heads, L, hd)
+        num_q_heads, num_kv_heads = Q.size(1), K.size(1)
+        if num_q_heads != num_kv_heads:    # GQA (Dream-v0-7B: 28 q heads / 4 kv heads)
+            K = K.repeat_interleave(num_q_heads // num_kv_heads, dim=1, output_size=num_q_heads)
+        # end
+
         scale = Q.size(-1) ** -0.5
         attn_weights = torch.matmul(Q, K.transpose(-2, -1)) * scale
         attn_weights = F.softmax(attn_weights, dim=-1)
