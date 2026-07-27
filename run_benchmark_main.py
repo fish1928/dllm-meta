@@ -19,7 +19,6 @@ from tqdm import tqdm
 
 from dataprocess_llada import Preprocessor_Until, Collater_Until_One
 from tools_llada import TopKSorter, MaxCollector
-from modeling_llada_yukai_06 import LLaDAModelLM
 # from run_model_semi import RunModelSemi as RunModel
 # from run_model_semi_cached import RunModelSemiCached as RunModel
 # from run_model_semi_cached_mlp import RunModelSemiCachedMLP as RunModel
@@ -82,13 +81,25 @@ class TestLM(LM):
             tokenizer.padding_side = 'left'
         # end
 
-        assert tokenizer.pad_token_id != 126336
+        assert tokenizer.pad_token_id != self.config.id_mask
         return tokenizer
     # end
 
 
     def _init_model(self, id_model):
-        model = LLaDAModelLM.from_pretrained(
+        id_model_lower = id_model.lower()
+
+        if 'dream' in id_model_lower:
+            from modeling_dream_yukai import DreamModelLM
+            klass_model = DreamModelLM
+        elif 'llada' in id_model_lower:
+            from modeling_llada_yukai_06 import LLaDAModelLM
+            klass_model = LLaDAModelLM
+        else:
+            raise "only dream and llada are supported for now"
+        # end
+
+        model = klass_model.from_pretrained(
             id_model,
             trust_remote_code=True,
             torch_dtype=DTYPE_EVAL,
