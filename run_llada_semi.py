@@ -55,15 +55,23 @@ class RunModel:
         for id_block in range(num_blocks):
             position_end = position_start + len_prompt + (id_block+1) * size_block
             mask_mask_blk = x[:,position_start:position_end] == id_mask
-            
+
             idx_denoising = torch.arange(position_start, position_end, dtype=torch.long).to(x.device)
-            quota_helper = BlockDiffusionQuotaHelper(mask_mask_blk, size_block)
+            idx_block = torch.arange(position_end - size_block, position_end, dtype=torch.long).to(x.device)
+            quota_helper = BlockDiffusionQuotaHelper(mask_mask_blk, step_per_block)    # quotas spread over actual steps, not block size
+            shape_target = (x.shape[0], position_end, -1)
 
             for step in range(step_per_block):
                 x_denoising,  y_denoising= x[:, idx_denoising], x[:, idx_denoising]
-                logits = model(x_denoising, idx_current=idx_denoising).logits
-                snapshot = SimpleLogitsSnapshot(logits, x_denoising, y_denoising, id_mask)
-                conf_snapshot = snapshot.transform_logits(collector)
+                logits = model(x_denoising, idx_current=idx_denoising, shape_target=shape_target).logits
+
+                # only the current block can hold masked positions, so x0/conf are
+                # computed on the block slice only (keeps softmax at (1, size_block, V));
+                # window starts at 0 -> global positions == logits row positions
+                snapshot = SimpleLogitsSnapshot(x_denoising, y_denoising, id_mask)
+                snapshot.update_x0_(idx_block.unsqueeze(0), logits[:, idx_block])
+                conf_snapshot = snapshot.transform_logits(collector, logits[:, idx_block], idx_transform=idx_block.unsqueeze(0))
+
                 idx_sorted_by_conf = sorter.argsort(conf_snapshot, snapshot)
                 num_unmask = quota_helper.get_quota(step)
                 idx_transform = idx_sorted_by_conf[:, :num_unmask]
