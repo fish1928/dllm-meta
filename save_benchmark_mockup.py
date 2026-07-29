@@ -1,227 +1,145 @@
-import importlib
-from abc import ABC, abstractmethod
+#################################################
+# Benchmark mockup collector.
+#
+# Registers a fake lm_eval model ("mockup") whose generate_until does NOT run
+# any model: lm_eval builds the exact benchmark requests (few-shot context,
+# templates, stop strings), and we dump a seeded random subset of them to CSV.
+# That CSV is the input pool for oracle generation (full-denoising runs).
+#
+# Usage:
+#   python save_benchmark_mockup.py --tasks gsm8k --model mockup --num_fewshot 5 \
+#       --model_args percent=0.1,folder_output=benchmark_mockup,tag=5shot
+#
+# Output: <folder_output>/mockup_<task>_<tag>_p<percent>.csv with columns
+#   id_request, task_name, doc_id, prompt, until (json), doc (json)
+# plus a .meta.json sidecar recording percent/counts.
+#
+# NOTES:
+#   - the LAST <percent> of the requests are kept: lm_eval's --limit N evaluates
+#     the FIRST N documents, so any later benchmark run with
+#     limit <= (1 - percent) * dataset size never touches the oracle subset.
+#   - lm_eval still computes metrics afterwards on our empty outputs; ignore them.
+#   - the 'doc' column keeps the raw document (incl. gold answer) for
+#     truth-conditioned oracle modes (TruthCollector / the y problem).
+#################################################
 
-import torch, random
-import torch.nn.functional as F
-import numpy as np
-# import accelerate
-
-from transformers import AutoTokenizer
-
-from datasets import Dataset
-from torch.utils.data import DataLoader
+import csv
+import json
+import os
 
 from lm_eval.__main__ import cli_evaluate
-from lm_eval.api.instance import Instance
 from lm_eval.api.model import LM
 from lm_eval.api.registry import register_model
-from tqdm import tqdm
 
-from tools_llada import TopKSorter, MaxCollector
-from modeling_llada_yukai_06 import LLaDAModelLM
-# from run_model_semi import RunModelSemi as RunModel
-# from run_model_semi_cached import RunModelSemiCached as RunModel
-from run_model_semi_cached_mlp import RunModelSemiCachedMLP as RunModel
-# from run_model_dllm import RunModelDLLM as RunModel
-
-
-
-from configs_llada import DiffusionConfig_Eval
 from tools_debug import jprint
 
 
-from constants_llada import DTYPE_EVAL, TEXT_MASK
+@register_model("mockup")
+class MockupCollectorLM(LM):
 
-
-def set_seed(seed):
-    torch.manual_seed(seed)
-    random.seed(seed)
-    np.random.seed(seed)
-
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-# end
-
-
-'''define token encoder function'''
-class Preprocessor_(ABC):
-
-    def __init__(self, tokenizer):
-        self.tokenizer = tokenizer
-    # end
-
-    @abstractmethod
-    def _tokenize(self, ds_each):
-        pass
-    # end
-
-    def __call__(self, ds_each):
-        return self._tokenize(ds_each)
-    # end
-# end
-
-class Preprocessor_Until(Preprocessor_):
-
-    def _tokenize(self, ds_each):
-        ids = self.tokenizer(
-            ds_each['prompt'],
-            add_special_tokens=False
-        )["input_ids"]
-
-        return {
-            'ids_prompt': ids,
-            'text_prompt': ds_each['prompt'],
-            'until': ds_each['until']
-        }
-    # end tokenize
-# end
-
-
-class Collater_(ABC):
-    @abstractmethod
-    def _collate(self, ds_batch):
-        pass
-    # end
-
-    def __call__(self, ds_batch):
-        return self._collate(ds_batch)
-    # end
-# end
-
-class Collater_Until_One(Collater_):
-
-    def __init__(self, config):
-        self.len_target = config.len_target
-        self.id_mask = config.id_mask
-    # end
-
-    def _collate(self, ds_batch):
-        if type(ds_batch) is list:
-            ds_batch = ds_batch[0]  #<- hit
-        # end
-
-        ids_prompt = ds_batch['ids_prompt']
-        len_prompt = len(ids_prompt)
-
-        ids_input = ids_prompt + [self.id_mask] * self.len_target
-        ids_input = torch.tensor(ids_input, dtype=torch.long).view(1, -1)
-        # masks_input = torch.zeros_like(ids_input, dtype=torch.bool)
-        # masks_input[:, len_prompt:] = True
-
-        return {
-            'ids_input': ids_input,
-            'text_prompt': ds_batch['text_prompt'],
-            'len_prompt': len_prompt,
-            'until': ds_batch['until']
-        }
-    # end
-# end
-
-
-@register_model("test")
-class TestLM(LM):
-    def __init__(self, batch_size=1, *args, **kwargs):
+    def __init__(self, batch_size=1, percent=0.1, folder_output='benchmark_mockup', tag='', path_output=None, *args, **kwargs):
         super().__init__()
 
-        kwargs['klass_sorter']=TopKSorter
-        kwargs['klass_collector']=MaxCollector
+        self.percent = float(percent)
+        self.folder_output = folder_output
+        self.tag = tag
+        self.path_output = path_output
 
-        self.config = DiffusionConfig_Eval(
-            **kwargs
-        )
-
-        self.tokenizer = self._init_tokenizer(self.config.id_model)
-        self.model = self._init_model(self.config.id_model).eval().to(self.config.device)
-        self.runner_model = RunModel()
-
-        self.runner_model.config_plugin_(self.config)
-        self.runner_model.register_plugin_(self.model, self.config)
+        assert 0.0 < self.percent <= 1.0, f'percent must be in (0, 1], got {self.percent}'
     # end
 
-
-    def _init_tokenizer(self, id_model):
-        tokenizer = AutoTokenizer.from_pretrained(
-            id_model,
-            trust_remote_code=True
-        )
-
-        if tokenizer.padding_side != 'left':
-            tokenizer.padding_side = 'left'
+    def _build_path_output(self, task_name):
+        if self.path_output is not None:
+            return self.path_output
         # end
 
-        assert tokenizer.pad_token_id != 126336
-        return tokenizer
+        name_parts = ['mockup', task_name]
+        if self.tag:
+            name_parts.append(self.tag)
+        # end
+        name_parts.append(f'p{int(self.percent * 100)}')
+
+        return os.path.join(self.folder_output, '_'.join(name_parts) + '.csv')
     # end
 
+    def generate_until(self, requests_eval):
+        n_total = len(requests_eval)
+        n_keep = max(1, int(n_total * self.percent))
 
-    def _init_model(self, id_model):
-        model = LLaDAModelLM.from_pretrained(
-            id_model,
-            trust_remote_code=True,
-            torch_dtype=DTYPE_EVAL,
-        )
+        # keep the TAIL: --limit N evaluates the first N docs, so the tail stays
+        # out of any later benchmark run with limit <= n_total - n_keep
+        idxs_keep = list(range(n_total - n_keep, n_total))
 
-        return model
-    # end
+        rows = []
+        for idx_request in idxs_keep:
+            request_eval = requests_eval[idx_request]
+            prompt = request_eval.args[0]
+            kwargs_gen = request_eval.args[1] if len(request_eval.args) > 1 else {}
 
-
-    @torch.inference_mode()
-    def generate_until(self, requests_eval):    # requests_eval is all
-        outputs_eval = []
-        errors_eval = []
-
-        ds = [{"prompt": req_eval.args[0], "until": req_eval.args[1]['until']} for req_eval in requests_eval]
-        ds = Dataset.from_list(ds)
-        ds = ds.map(Preprocessor_Until(self.tokenizer))
-
-        '''prepare dataloader'''
-        loader = DataLoader(
-            ds,
-            batch_size=self.config.size_batch,
-            shuffle=False,
-            drop_last=False,
-            collate_fn=Collater_Until_One(self.config)
-        )
-
-        
-        for id_batch, batch in enumerate(tqdm(loader)):
-            for k in batch.keys():
-                if type(batch[k]) is torch.Tensor:
-                    batch[k] = batch[k].to(self.config.device)
-                # end
-            # end
-
-            text_generated, has_done = self.runner_model.run_one(
-                self.model, self.tokenizer, self.config, **batch
-            )
-
-            if not has_done:
-                errors_eval.append(id_batch)
-            # end
-            
-            outputs_eval.append(text_generated)
-            # end
+            rows.append({
+                'id_request': idx_request,
+                'task_name': getattr(request_eval, 'task_name', ''),
+                'doc_id': getattr(request_eval, 'doc_id', ''),
+                'prompt': prompt,
+                'until': json.dumps(kwargs_gen.get('until', [])),
+                'doc': json.dumps(getattr(request_eval, 'doc', {}), default=str),
+            })
         # end
 
-        jprint('Total unfinished: {}'.format(len(errors_eval)))
-        return outputs_eval
+        task_name = rows[0]['task_name'] if rows else 'unknown'
+        path_output = self._build_path_output(task_name)
+        os.makedirs(os.path.dirname(path_output) or '.', exist_ok=True)
+
+        with open(path_output, 'w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=list(rows[0].keys()), quoting=csv.QUOTE_ALL)
+            writer.writeheader()
+            writer.writerows(rows)
+        # end
+
+        with open(path_output + '.meta.json', 'w') as file:
+            json.dump({
+                'task_name': task_name,
+                'mode': 'tail',
+                'percent': self.percent,
+                'n_total': n_total,
+                'n_keep': n_keep,
+                'limit_safe_max': n_total - n_keep,    # benchmark runs with --limit <= this never touch the oracle subset
+                'ids_request': idxs_keep,
+            }, file)
+        # end
+
+        jprint(f'saved {n_keep}/{n_total} requests to {path_output}')
+
+        # lm_eval expects one output per request; empty strings keep it moving
+        # (the printed metrics are meaningless for this run)
+        return [''] * n_total
     # end
 
-
-    @torch.inference_mode()
-    def loglikelihood_rolling(self, requests):
-        raise NotImplementedError
-    # end
-
-
-    @torch.inference_mode()
     def loglikelihood(self, requests):
-        raise NotImplementedError
+        raise NotImplementedError('mockup collector only supports generate_until tasks')
     # end
 
+    def loglikelihood_rolling(self, requests):
+        raise NotImplementedError('mockup collector only supports generate_until tasks')
+    # end
 # end
 
+
+def load_benchmark_mockup(path_csv):
+    '''read a mockup CSV back into a list of dicts; until/doc are decoded from json'''
+    rows = []
+    with open(path_csv, 'r', newline='') as file:
+        for row in csv.DictReader(file):
+            row['until'] = json.loads(row['until'])
+            row['doc'] = json.loads(row['doc'])
+            row['id_request'] = int(row['id_request'])
+            rows.append(row)
+        # end
+    # end
+    return rows
+# end
+
+
 if __name__ == "__main__":
-    set_seed(233)
     cli_evaluate()
 # end
