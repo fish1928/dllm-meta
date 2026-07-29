@@ -33,7 +33,6 @@ class RunModel:
     # end
 
 
-    #TODO: 有一个y的问题
     @ torch.no_grad()
     def generate(self, model, tokenizer, config_diffusion, *args, **kwargs):
 
