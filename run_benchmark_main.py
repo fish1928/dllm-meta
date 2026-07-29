@@ -19,13 +19,6 @@ from tqdm import tqdm
 
 from dataprocess_llada import Preprocessor_Until, Collater_Until_One
 from tools_llada import TopKSorter, MaxCollector
-# from run_model_semi import RunModelSemi as RunModel
-# from run_model_semi_cached import RunModelSemiCached as RunModel
-# from run_model_semi_cached_mlp import RunModelSemiCachedMLP as RunModel
-# from run_model_dllm import RunModelDLLM as RunModel
-
-
-
 from configs_llada import DiffusionConfig_Eval
 from tools_debug import jprint, Timer
 
@@ -50,6 +43,8 @@ class TestLM(LM):
     def __init__(self, batch_size=1, *args, **kwargs):
         super().__init__()
 
+        jprint(kwargs)
+
         kwargs['klass_sorter']=TopKSorter
         kwargs['klass_collector']=MaxCollector
 
@@ -57,12 +52,14 @@ class TestLM(LM):
         self.runner_model = module_runner.RunModel()
         del kwargs['runner']
 
-        self.config = DiffusionConfig_Eval(
-            **kwargs
-        )
+        trust_remote_code = kwargs.get('trust_remote_code', True)
+        if 'trust_remote_code' in kwargs:
+            del kwargs['trust_remote_code']
 
-        self.tokenizer = self._init_tokenizer(self.config.id_model)
-        self.model = self._init_model(self.config.id_model).eval().to(self.config.device)
+        self.config = DiffusionConfig_Eval(**kwargs)
+
+        self.tokenizer = self._init_tokenizer(self.config.id_model, trust_remote_code)
+        self.model = self._init_model(self.config.id_model, trust_remote_code).eval().to(self.config.device)
 
 
 
@@ -70,11 +67,10 @@ class TestLM(LM):
         self.runner_model.register_plugin_(self.model, self.config)
     # end
 
-
-    def _init_tokenizer(self, id_model):
+    def _init_tokenizer(self, id_model, trust_remote_code=True):
         tokenizer = AutoTokenizer.from_pretrained(
             id_model,
-            trust_remote_code=True
+            trust_remote_code=trust_remote_code
         )
 
         if tokenizer.padding_side != 'left':
@@ -86,7 +82,7 @@ class TestLM(LM):
     # end
 
 
-    def _init_model(self, id_model):
+    def _init_model(self, id_model, trust_remote_code=True):
         id_model_lower = id_model.lower()
 
         if 'dream' in id_model_lower:
@@ -101,7 +97,7 @@ class TestLM(LM):
 
         model = klass_model.from_pretrained(
             id_model,
-            trust_remote_code=True,
+            trust_remote_code=trust_remote_code,
             torch_dtype=DTYPE_EVAL,
         )
 
