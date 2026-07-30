@@ -2,21 +2,28 @@
 # Oracle collection for LLaDA (full denoising, no cache).
 #
 # Input:  a benchmark mockup CSV from save_benchmark_mockup.py
-# Output: per-sample folders under <folder_output>/<id_row>/ with
-#           margin_<s>_<e>.pt   (T, size_block)          fp32, -inf at non-masked
-#           conf_<s>_<e>.pt     (T, size_block)           fp32, -inf at non-masked
+# Output: per-sample folders under <folder_output>/<id_row>/ with, per block
+#         (row index of every tensor = step within the block):
+#           margin_<s>_<e>.pt   (T, size_block)           fp32, p(top1)-p(top2), -inf at non-masked
+#           conf_<s>_<e>.pt     (T, size_block)           fp32, p(top1), -inf at non-masked
+#           entropy_<s>_<e>.pt  (T, size_block)           fp32, full-vocab entropy, -inf at non-masked
 #           attn_<s>_<e>.pt     (T, num_layers, 1, size_block)  attention rows of the
-#                                unmasked token, all layers, block-local K
+#                                unmasked token, all layers, head-averaged, block-local K
 #           unmask_<s>_<e>.pt   (T, 1)                    GLOBAL unmask position per step
+#           token_<s>_<e>.pt    (T, 1)                    token id written at the unmask position
+#           x0_<s>_<e>.pt       (T, size_block)           long, argmax token id per candidate per step
 #           .pos_root           len_prompt (text)
-#           generated.json      generated text + has_done (oracle quality check)
-#         consumable by train_mlp.py (same layout as the legacy stats folders).
+#           generated.json      text, has_done, result: pass/fail/unknown
+#         consumable by train_mlp.py (superset of the legacy stats layout).
 #
 # NOTES:
-#   - GENERATION-mode oracle: x is materialized with the model's own predictions
-#     (x0), matching deployment. The legacy script teacher-forced with ground
-#     truth y; the gold answer is still available in the CSV 'doc' column if a
-#     truth-forced variant is wanted later.
+#   - GENERATION-mode oracle (one-pass): x is materialized with the model's own
+#     predictions, matching deployment; metrics are recorded on the same run.
+#   - unmask + token together checkpoint the full trajectory, so a future replay
+#     can re-verify or collect new metrics on exactly these trajectories.
+#   - 'result' is computed by a per-task checker (gsm8k: final-number match after
+#     stop-word truncation); tasks without a checker get 'unknown'. Both passed
+#     and failed samples are kept -- filter at training time.
 #   - num_unmask_per_step is asserted to 1: the oracle records one position per step.
 #
 # Usage:
@@ -27,6 +34,7 @@
 import argparse
 import json
 import os
+import re
 
 import torch
 import torch.nn.functional as F
@@ -58,6 +66,31 @@ def parse_args():
     parser.add_argument('--seed', type=int, default=233)
     return parser.parse_args()
 # end
+
+
+def check_result_gsm8k(text_checked, doc):
+    match_gold = re.search(r'####\s*(-?[0-9\.,]+)', str(doc.get('answer', '')))
+    if match_gold is None:
+        return 'unknown'
+    # end
+    gold = match_gold.group(1).replace(',', '').rstrip('.')
+
+    nums = re.findall(r'-?[0-9][0-9,]*\.?[0-9]*', text_checked.replace('$', ''))
+    if not nums:
+        return 'fail'
+    # end
+    pred = nums[-1].replace(',', '').rstrip('.')
+
+    return 'pass' if pred == gold else 'fail'
+# end
+
+
+MAP_TASK_CHECKER = {
+    'gsm8k': check_result_gsm8k,
+}
+
+
+NAMES_STATS = ('margin', 'conf', 'entropy', 'attn', 'unmask', 'token', 'x0')
 
 
 class CollectMetricsRunner:
@@ -94,7 +127,7 @@ class CollectMetricsRunner:
             quota_helper = BlockDiffusionQuotaHelper(mask_mask_blk, self.step_per_block)
             shape_target = (x.shape[0], position_end, -1)
 
-            stats = Stats(block_start, position_end)
+            stats = Stats(block_start, position_end, names=NAMES_STATS)
 
             for step in range(self.step_per_block):
                 x_denoising, y_denoising = x[:, idx_denoising], x[:, idx_denoising]
@@ -103,12 +136,23 @@ class CollectMetricsRunner:
                 # metrics on the current block only (window starts at 0 -> global == row positions)
                 logits_blk = logits[:, idx_block].float()
                 mask_blk = (x[:, block_start:position_end] == id_mask).squeeze(0)
+                sentinel = torch.tensor(neg_inf, device=x.device)
+
+                logp_blk = F.log_softmax(logits_blk, dim=-1)
+                p_blk = logp_blk.exp()
 
                 # margin = p(top1) - p(top2), fresh, pre-decision
-                p_blk = F.softmax(logits_blk, dim=-1)
                 top2 = p_blk.topk(2, dim=-1).values.squeeze(0)    # (size_block, 2)
-                margin_blk = torch.where(mask_blk, top2[:, 0] - top2[:, 1], torch.tensor(neg_inf, device=x.device))
+                margin_blk = torch.where(mask_blk, top2[:, 0] - top2[:, 1], sentinel)
                 stats.margin.add(block_start + step, margin_blk.cpu())
+
+                # full-vocab predictive entropy per candidate
+                entropy_blk = -(p_blk * logp_blk).sum(dim=-1).squeeze(0)    # (size_block,)
+                entropy_blk = torch.where(mask_blk, entropy_blk, sentinel)
+                stats.entropy.add(block_start + step, entropy_blk.cpu())
+
+                # argmax token per candidate (for offline argmax-stability features)
+                stats.x0.add(block_start + step, logits_blk.argmax(dim=-1).squeeze(0).cpu())
 
                 # confidence via the standard snapshot path
                 snapshot = SimpleLogitsSnapshot(x_denoising, y_denoising, id_mask)
@@ -130,6 +174,10 @@ class CollectMetricsRunner:
                 stats.attn.add(block_start + step, attn_all[:, idx_local, :].cpu())
 
                 stats.unmask.add(block_start + step, idx_transform.squeeze(0).cpu())
+
+                # token id written at the unmask position (unmask + token = full trajectory)
+                token_written = torch.gather(snapshot.x0, 1, idx_transform).squeeze(0)
+                stats.token.add(block_start + step, token_written.cpu())
 
                 snapshot.update_this(1, idx_transform, x0=x)
             # end for step
@@ -164,11 +212,23 @@ class CollectMetricsRunner:
 
             text_generated = self.tokenizer.batch_decode(x[:, len_prompt:position_end], skip_special_tokens=False)[0]
             has_done = any(word_stop in text_generated for word_stop in row['until'])
+
+            # benchmark check on the cleaned, stop-word-truncated text
+            text_checked = self.tokenizer.batch_decode(x[:, len_prompt:position_end], skip_special_tokens=True)[0]
+            for word_stop in row['until']:
+                if word_stop in text_checked:
+                    text_checked = text_checked.split(word_stop)[0]
+                # end
+            # end
+            checker = MAP_TASK_CHECKER.get(row['task_name'])
+            result = checker(text_checked, row['doc']) if checker else 'unknown'
+
             with open(os.path.join(folder_stats, 'generated.json'), 'w') as file:
                 json.dump({
                     'id_request': row['id_request'],
                     'doc_id': row['doc_id'],
                     'has_done': has_done,
+                    'result': result,
                     'text_generated': text_generated,
                 }, file)
             # end

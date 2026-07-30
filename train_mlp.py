@@ -231,7 +231,7 @@ def main(model, optimizer, config_train=None, id_loop=0, transformer=None, limit
 
     for id_sample in ids_sample:
         folder_base = os.path.join(folder_root, str(id_sample))
-        num_blk = int(len([f for f in os.listdir(folder_base) if f[0] != '.' and f.endswith('.pt')]) / 4)
+        num_blk = len([f for f in os.listdir(folder_base) if f.startswith('unmask_') and f.endswith('.pt')])    # one unmask file per block
         with open(os.path.join(folder_base, '.pos_root'), 'r') as file:
             pos_root = int(file.read())
         # end

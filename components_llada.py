@@ -196,17 +196,21 @@ class IndexedElementList:
 class Stats:
     _STATS = ('margin', 'conf', 'attn', 'unmask')
 
-    def __init__(self, idx_start, idx_end, margin_idx_a=0, margin_idx_b=1):
-        for name in self._STATS:
+    def __init__(self, idx_start, idx_end, names=None, margin_idx_a=0, margin_idx_b=1):
+        self.names = tuple(names) if names is not None else self._STATS
+
+        for name in self.names:
             setattr(self, name, IndexedElementList(idx_start, idx_end, name=name))
         # end
 
-        self.margin.idx_a = margin_idx_a
-        self.margin.idx_b = margin_idx_b
+        if 'margin' in self.names:
+            self.margin.idx_a = margin_idx_a
+            self.margin.idx_b = margin_idx_b
+        # end
     # end
 
     def stack_and_save_all(self, path_to_save):
-        for name_stat in self._STATS:
+        for name_stat in self.names:
             statlist = getattr(self, name_stat)
             if not statlist.has_empty():
                 statlist.stack_and_save(path_to_save)
