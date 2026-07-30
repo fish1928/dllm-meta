@@ -143,7 +143,7 @@ class ScoreOrderEval(AttnOrderEval):
     # end
 
     def get_score(self):
-        return self.score
+        return self.attn   # the base stores the ranking score here (generic [T, L] score slot)
     # end
 # end
 
