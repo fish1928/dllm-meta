@@ -1,299 +1,219 @@
-import os
-os.environ["CUDA_LAUNCH_BLOCKING"] = "1"  # put this at the very top of your script
+#################################################
+# Oracle collection for LLaDA (full denoising, no cache).
+#
+# Input:  a benchmark mockup CSV from save_benchmark_mockup.py
+# Output: per-sample folders under <folder_output>/<id_row>/ with
+#           margin_<s>_<e>.pt   (T, size_block)          fp32, -inf at non-masked
+#           conf_<s>_<e>.pt     (T, size_block)           fp32, -inf at non-masked
+#           attn_<s>_<e>.pt     (T, num_layers, 1, size_block)  attention rows of the
+#                                unmasked token, all layers, block-local K
+#           unmask_<s>_<e>.pt   (T, 1)                    GLOBAL unmask position per step
+#           .pos_root           len_prompt (text)
+#           generated.json      generated text + has_done (oracle quality check)
+#         consumable by train_mlp.py (same layout as the legacy stats folders).
+#
+# NOTES:
+#   - GENERATION-mode oracle: x is materialized with the model's own predictions
+#     (x0), matching deployment. The legacy script teacher-forced with ground
+#     truth y; the gold answer is still available in the CSV 'doc' column if a
+#     truth-forced variant is wanted later.
+#   - num_unmask_per_step is asserted to 1: the oracle records one position per step.
+#
+# Usage:
+#   python run_collect_metrics_llada.py --path_mockup benchmark_mockup/mockup_gsm8k_5shot_p10.csv \
+#       --folder_output stats_oracle_gsm8k --len_target 256 --num_blocks 4
+#################################################
 
+import argparse
 import json
+import os
 
-from datasets import load_dataset, Dataset
-from dataclasses import dataclass
-from typing import Optional
 import torch
 import torch.nn.functional as F
-
 from transformers import AutoTokenizer
-from torch.utils.data import DataLoader
+from tqdm import tqdm
 
-from tools_llada import TopKSorter, TruthCollector, MaxCollector
-from plugins_llada_06 import \
-    SaveKVPreviousPlugin_Disabled, SaveKVPreviousPlugin_Enabled,\
-    CachePastKVPlugin_Disabled, CachePastKVPlugin_Enabled,\
-    CacheAttnPlugin_Disabled, CacheAttnPlugin_Enabled,\
-    CacheVOPlugin_Disabled, CacheVOPlugin_Enabled
-
-from configs_llada import DiffusionConfig
-
-from components_llada import SimpleLogitsSnapshot
-from tools_llada import ConfKSorter, ConfCollectorInterface, BlockDiffusionQuotaHelper
-from plugins_llada_06 import InspectorPlugin
-
-from dataset_llada import LIST_DATASET
-from datapreprocess_llada import parse_lines_with_index, merge_subdocs, PATTEN_REG_WIKI
-from dataprocess_llada import Collater_sample
-
+from components_llada import SimpleLogitsSnapshot, Stats
+from tools_llada import TopKSorter, MaxCollector, BlockDiffusionQuotaHelper
+from plugins_llada import SaveKVPreviousPlugin_Disabled,\
+                            CachePastKVPlugin_Disabled,\
+                            CacheAttnPlugin_Enabled,\
+                            CacheVOPlugin_Disabled
 from modeling_llada_yukai_06 import LLaDAModelLM
-
+from save_benchmark_mockup import load_benchmark_mockup
+from constants_llada import DTYPE_EVAL, ID_MASK
 from tools_debug import jprint
 
 
-config = DiffusionConfig(
-    id_model='GSAI-ML/LLaDA-8B-Base',
-    len_prompt=-1,
-    len_target=64*4,
-    num_blocks=4,
-    num_unmask_per_step=1,
-    id_mask=126336,
-    size_batch=1,
-    device='cuda:0',
-    klass_sorter=TopKSorter,
-    klass_collector=MaxCollector,
-    klass_save_kv_previous=SaveKVPreviousPlugin_Disabled,
-    klass_cache_past_kv=CachePastKVPlugin_Disabled,
-    klass_cache_attn=CacheAttnPlugin_Enabled,
-    klass_cache_vo=CacheVOPlugin_Disabled
-)
-
-import json
-import os
-from datasets import load_dataset, Dataset
-'''load dataset first'''
-
-
-
-folder_samples = 'samples_ifeval'
-samples = []
-for filename_sample in [f for f in os.listdir(folder_samples) if f[0] != '.']:
-    path_sample = os.path.join(folder_samples, filename_sample)
-    with open(path_sample, 'r') as file:
-        sample = json.load(file)
-        samples.append(sample)
-    # end
-# end
-
-ds_origin = Dataset.from_list(samples[:])
-
-
-'''initialize constant hyper-parameters'''
-
-'''load tokenizer'''
-tokenizer = AutoTokenizer.from_pretrained(
-    config.id_model,
-    trust_remote_code=True
-)
-
-if tokenizer.padding_side != 'left':
-    tokenizer.padding_side = 'left'
-# end
-assert tokenizer.pad_token_id != 126336
-
-
-'''load model'''
-model_kwargs = {}
-model = LLaDAModelLM.from_pretrained(
-    config.id_model,
-    trust_remote_code=True,
-    torch_dtype=torch.bfloat16,
-    **model_kwargs
-)
-
-model = model.eval().to(config.device)
-
-
-
-'''prepare dataloader'''
-loader = DataLoader(
-    ds_origin,
-    batch_size=config.size_batch,
-    shuffle=False,                 # keep sorted order
-    collate_fn=Collater_sample(config.id_mask),
-    drop_last=False
-)
-
-class IndexedElementList:
-    def __init__(self, idx_start, idx_end, name=None):
-        self.idx_start = idx_start
-        self.idx_end = idx_end
-        self.indexed_elements = [None] * (idx_end - idx_start)
-        self.name = name
-    # end
-
-    def add(self, idx_relative, element):
-        self.indexed_elements[idx_relative - self.idx_start] = element
-    # end
-
-    def get(self, idx_relative):
-        return self.indexed_elements[idx_relative - self.idx_start]
-    # end
-
-    def has_empty(self):
-        for indexed_element in self.indexed_elements:
-            if indexed_element is None:
-                return True
-            # end
-        # end
-
-        return False
-    # end
-
-    def stack_and_save(self, path_to_save):
-        stacked_elements = torch.stack(self.indexed_elements)
-        torch.save(stacked_elements, os.path.join(path_to_save, f'{self.name}_{self.idx_start}_{self.idx_end}.pt'))
-    # end
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--path_mockup', type=str, required=True)
+    parser.add_argument('--folder_output', type=str, required=True)
+    parser.add_argument('--id_model', type=str, default='GSAI-ML/LLaDA-8B-Base')
+    parser.add_argument('--len_target', type=int, default=256)
+    parser.add_argument('--num_blocks', type=int, default=4)
+    parser.add_argument('--id_mask', type=int, default=ID_MASK)
+    parser.add_argument('--device', type=str, default='cuda:0')
+    parser.add_argument('--limit', type=int, default=None, help='cap on mockup rows')
+    parser.add_argument('--seed', type=int, default=233)
+    return parser.parse_args()
 # end
 
 
-class Stats:
-    _STATS = ('margin', 'conf', 'attn', 'unmask')
+class CollectMetricsRunner:
 
-    def __init__(self, idx_start, idx_end, margin_idx_a=0, margin_idx_b=1):
-        for name in self._STATS:
-            setattr(self, name, IndexedElementList(idx_start, idx_end, name=name))
-        # end
+    def __init__(self, model, tokenizer, plugin_cache_attn, args):
+        self.model = model
+        self.tokenizer = tokenizer
+        self.plugin_cache_attn = plugin_cache_attn
+        self.args = args
 
-        self.margin.idx_a = margin_idx_a
-        self.margin.idx_b = margin_idx_b
+        self.size_block = args.len_target // args.num_blocks
+        self.step_per_block = self.size_block    # num_unmask_per_step == 1 by design
+        self.sorter = TopKSorter()
+        self.collector = MaxCollector()
     # end
 
-    def stack_and_save_all(self, path_to_save):
-        for name_stat in self._STATS:
-            statlist = getattr(self, name_stat)
-            if not statlist.has_empty():
-                statlist.stack_and_save(path_to_save)
-            # end
-        # end
-    # end
-# end
+    @torch.no_grad()
+    def collect_one(self, x, len_prompt, folder_stats):
+        args = self.args
+        id_mask = args.id_mask
+        size_block = self.size_block
 
-
-class RunModelAndCollectStats:
-    @ torch.no_grad()
-    def run_model_semi(self, model, x, y, config_diffusion, *args, **kwargs):
-
-        '''declare required variables'''
-        num_blocks = config_diffusion.num_blocks
-        step_per_block = config_diffusion.step_per_block
-        size_block = config_diffusion.size_block
-        id_mask = config_diffusion.id_mask
-        sorter = config_diffusion.klass_sorter()
-        collector = config_diffusion.klass_collector()
-
-        plugin_cache_attn = kwargs['plugin_cache_attn']
-        id_batch =kwargs['id_batch']
-        len_prompt = kwargs['len_prompt']
-        
-        p_finalized = torch.zeros(x.shape, dtype=torch.float64, device=x.device)
+        neg_inf = torch.finfo(torch.float32).min
         position_start = 0
 
-        for id_block in range(num_blocks):
-            position_end = position_start + len_prompt + (id_block+1) * size_block
-            mask_mask_blk = x[:,position_start:position_end] == id_mask
+        for id_block in range(args.num_blocks):
+            position_end = position_start + len_prompt + (id_block + 1) * size_block
+            block_start = position_end - size_block
+            mask_mask_blk = x[:, position_start:position_end] == id_mask
 
-            idx_denoising = torch.arange(position_start, position_end, dtype=torch.long).to(x.device)
-            quota_helper = BlockDiffusionQuotaHelper(mask_mask_blk, size_block)
-            stats = Stats(position_end-size_block, position_end)
+            idx_denoising = torch.arange(position_start, position_end, dtype=torch.long, device=x.device)
+            idx_block = torch.arange(block_start, position_end, dtype=torch.long, device=x.device)
+            idx_block_2d = idx_block.unsqueeze(0)
+            quota_helper = BlockDiffusionQuotaHelper(mask_mask_blk, self.step_per_block)
+            shape_target = (x.shape[0], position_end, -1)
 
-            for step in range(step_per_block):
-                step_global = id_block * step_per_block + step + len_prompt
-                slice_pos_current = slice(position_end-size_block, position_end)
+            stats = Stats(block_start, position_end)
 
-                x_denoising,  y_denoising= x[:, idx_denoising], y[:, idx_denoising]
-                logits = model(x_denoising, idx_current=idx_denoising).logits
+            for step in range(self.step_per_block):
+                x_denoising, y_denoising = x[:, idx_denoising], x[:, idx_denoising]
+                logits = self.model(x_denoising, idx_current=idx_denoising, shape_target=shape_target).logits
 
-                snapshot = SimpleLogitsSnapshot(logits, x_denoising, y_denoising, id_mask)
+                # metrics on the current block only (window starts at 0 -> global == row positions)
+                logits_blk = logits[:, idx_block].float()
+                mask_blk = (x[:, block_start:position_end] == id_mask).squeeze(0)
 
-                margin_p = snapshot.get_margin_p(stats.margin.idx_a, stats.margin.idx_b)[slice_pos_current]
-                stats.margin.add(step_global, margin_p)
+                # margin = p(top1) - p(top2), fresh, pre-decision
+                p_blk = F.softmax(logits_blk, dim=-1)
+                top2 = p_blk.topk(2, dim=-1).values.squeeze(0)    # (size_block, 2)
+                margin_blk = torch.where(mask_blk, top2[:, 0] - top2[:, 1], torch.tensor(neg_inf, device=x.device))
+                stats.margin.add(block_start + step, margin_blk.cpu())
 
-                conf_snapshot = snapshot.transform_logits(collector)    #(B,L)
-                stats.conf.add(step_global, conf_snapshot.squeeze(0)[slice_pos_current])
+                # confidence via the standard snapshot path
+                snapshot = SimpleLogitsSnapshot(x_denoising, y_denoising, id_mask)
+                snapshot.update_x0_(idx_block_2d, logits_blk)
+                conf_snapshot = snapshot.transform_logits(self.collector, logits_blk, idx_transform=idx_block_2d)
+                stats.conf.add(block_start + step, conf_snapshot.squeeze(0)[block_start:position_end].cpu())
 
-                idx_sorted_by_conf = sorter.argsort(conf_snapshot, snapshot)
+                # unmask decision (model's own prediction, matching deployment)
+                idx_sorted_by_conf = self.sorter.argsort(conf_snapshot, snapshot)
                 num_unmask = quota_helper.get_quota(step)
                 idx_transform = idx_sorted_by_conf[:, :num_unmask]
                 snapshot.materialize_by_idx_(idx_transform, conf_snapshot)
 
-                attn_all = plugin_cache_attn.collect_attn_from_all_blocks(model) #(Ls, Blk, K), Blk=64, Ls=32
-                attn = attn_all[:, idx_transform.squeeze(0), slice_pos_current] #(Ls, 1, K)
+                # attention rows of the just-unmasked token: all layers, block-local coordinates
+                attn_all = self.plugin_cache_attn.collect_attn_from_all_blocks(self.model)   # (num_layers, size_block, size_block)
+                idx_local = idx_transform.squeeze(0) - block_start
+                assert bool((idx_local >= 0).all() and (idx_local < size_block).all()),\
+                    f'unmask position outside current block: {idx_transform.tolist()}'
+                stats.attn.add(block_start + step, attn_all[:, idx_local, :].cpu())
 
-                stats.attn.add(step_global, attn)
-                stats.unmask.add(step_global, idx_transform.squeeze(0))
+                stats.unmask.add(block_start + step, idx_transform.squeeze(0).cpu())
 
-                snapshot.update_this(1, idx_transform, y=x).update_this(1, idx_transform, p_finalized=p_finalized)
-
+                snapshot.update_this(1, idx_transform, x0=x)
             # end for step
-            folder_stats = f'stats_ifeval_256/{id_batch}/'
-            os.makedirs(folder_stats,exist_ok=True)
+
+            os.makedirs(folder_stats, exist_ok=True)
             stats.stack_and_save_all(folder_stats)
-            with open(os.path.join(folder_stats, '.pos_root'), 'w+') as file:
-                file.write(str(len_prompt))
-            # end
         # end for block
 
-        return p_finalized[:, len_prompt:]
+        with open(os.path.join(folder_stats, '.pos_root'), 'w+') as file:
+            file.write(str(len_prompt))
+        # end
+
+        return position_end
     # end
 
-    def run(self):
-        import json
-        from tqdm import tqdm
-        from tools_llada import PPLCalculator, RefreshIdxHelper
+    def run(self, rows):
+        args = self.args
 
-        model\
-            .fill_plugin(config.klass_cache_past_kv)\
-            .fill_plugin(config.klass_save_kv_previous)\
-            .fill_plugin(config.klass_cache_attn)\
-            .fill_plugin(config.klass_cache_vo)
+        for id_row, row in enumerate(tqdm(rows)):
+            ids_prompt = self.tokenizer(row['prompt'], add_special_tokens=False)['input_ids']
+            len_prompt = len(ids_prompt)
 
-        plugin_cache_attn = config.klass_cache_attn()
+            x = torch.tensor(ids_prompt + [args.id_mask] * args.len_target, dtype=torch.long).view(1, -1)
+            x = x.to(args.device)
 
+            # attn plugin block arithmetic depends on per-sample prompt length
+            CacheAttnPlugin_Enabled.set_len_prompt(len_prompt).set_size_block(self.size_block)
+            self.plugin_cache_attn.clear(self.model)
 
-        '''start the evaluation process'''
-        for id_batch, sample in enumerate(tqdm(loader)):
-            plugin_cache_attn.clear(model)
+            folder_stats = os.path.join(args.folder_output, str(id_row))
+            position_end = self.collect_one(x, len_prompt, folder_stats)
 
-            conf = RunModelAndCollectStats().run_model_semi(
-                model,
-                sample['ids_prompt_masked_full'].to(config.device),
-                sample['ids_target_masked_full'].to(config.device),
-                config,
-                plugin_cache_attn=plugin_cache_attn,
-                id_batch=id_batch,
-                len_prompt=sample['len_prompt']
-            )
-
-            # if id_batch >=5:
-            #     break
-            # # end
+            text_generated = self.tokenizer.batch_decode(x[:, len_prompt:position_end], skip_special_tokens=False)[0]
+            has_done = any(word_stop in text_generated for word_stop in row['until'])
+            with open(os.path.join(folder_stats, 'generated.json'), 'w') as file:
+                json.dump({
+                    'id_request': row['id_request'],
+                    'doc_id': row['doc_id'],
+                    'has_done': has_done,
+                    'text_generated': text_generated,
+                }, file)
+            # end
         # end for
     # end
 # end
 
 
-import json
-from tqdm import tqdm
-from tools_llada import PPLCalculator, RefreshIdxHelper
+def main():
+    args = parse_args()
+    torch.manual_seed(args.seed)
 
-model\
-    .fill_plugin(config.klass_cache_past_kv)\
-    .fill_plugin(config.klass_save_kv_previous)\
-    .fill_plugin(config.klass_cache_attn)\
-    .fill_plugin(config.klass_cache_vo)
+    assert args.len_target % args.num_blocks == 0
 
-plugin_cache_attn = config.klass_cache_attn()
+    rows = load_benchmark_mockup(args.path_mockup)
+    if args.limit is not None:
+        rows = rows[:args.limit]
+    # end
+    jprint(f'collecting oracle for {len(rows)} prompts from {args.path_mockup}')
+
+    tokenizer = AutoTokenizer.from_pretrained(args.id_model, trust_remote_code=True)
+    if tokenizer.padding_side != 'left':
+        tokenizer.padding_side = 'left'
+    # end
+    assert tokenizer.pad_token_id != args.id_mask
+
+    model = LLaDAModelLM.from_pretrained(
+        args.id_model,
+        trust_remote_code=True,
+        torch_dtype=DTYPE_EVAL,
+    ).eval().to(args.device)
+
+    model\
+        .fill_plugin(CachePastKVPlugin_Disabled)\
+        .fill_plugin(SaveKVPreviousPlugin_Disabled)\
+        .fill_plugin(CacheAttnPlugin_Enabled)\
+        .fill_plugin(CacheVOPlugin_Disabled)
+
+    plugin_cache_attn = CacheAttnPlugin_Enabled()
+
+    runner = CollectMetricsRunner(model, tokenizer, plugin_cache_attn, args)
+    runner.run(rows)
+# end
 
 
-'''start the evaluation process'''
-for id_sample, sample in enumerate(tqdm(loader)):
-    plugin_cache_attn.clear(model)
-
-    conf = RunModelAndCollectStats().run_model_semi(
-        model,
-        sample['ids_prompt_masked_full'].to(config.device),
-        sample['ids_target_masked_full'].to(config.device),
-        config,
-        plugin_cache_attn=plugin_cache_attn,
-        id_batch=id_sample,
-        len_prompt=sample['len_prompt']
-    )
-
-    # if id_batch >=5:
-    #     break
-    # # end
-# end for
+if __name__ == '__main__':
+    main()
+# end

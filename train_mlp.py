@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from dataclasses import dataclass
 import os
 
-from test_attn_order_eval import ScoreOrderEval, summ
+from attn_order_eval import ScoreOrderEval, summ
 from tools_debug import jprint
 
 MYDTYPE = torch.float64
@@ -77,10 +77,11 @@ def generate_y(unmask, l, h=5):
     mask_current = (b <= h) & (b > 0)
     b[mask_current] = (h+1 - b[mask_current])
     b[~mask_current] = 0
-    b = b/b[0].sum()
 
-    # neg_inf = torch.finfo(b.dtype).min
-    # b[~mask_current] = neg_inf
+    # per-row normalization (rows near the block end have fewer than h future
+    # unmasks; empty rows stay all-zero and are excluded by the train loop)
+    b = b.to(MYDTYPE)
+    b = b / b.sum(dim=-1, keepdim=True).clamp(min=1.0)
     return b
 # end
 
@@ -162,10 +163,6 @@ def eval_model(model, x, unmask, h=5,transformer=None):
 
     shape_x = x.shape
 
-    # normalize x
-    x = torch.clamp(x, min=-1.0, max=1.0)
-    # end
-
     if transformer:
         x_transformed = transformer.transform(x.reshape(-1, shape_x[-1]).cpu().numpy())
         x = torch.tensor(x_transformed, dtype=MYDTYPE, device=MYDEVICE).reshape(shape_x)
@@ -214,12 +211,12 @@ import os
 
 def load_sample(folder_base, pos_base, l):
     L = l
-    margin = torch.load(f'{folder_base}/margin_{pos_base}_{pos_base + L}.pt').to(dtype=MYDTYPE)
-    conf = torch.load(f'{folder_base}/conf_{pos_base}_{pos_base + L}.pt').to(dtype=MYDTYPE)
-    attn_last = torch.load(f'{folder_base}/attn_{pos_base}_{pos_base + L}.pt').squeeze(-2)[:,-1,:].to(dtype=MYDTYPE)
-    unmask = torch.load(f'{folder_base}/unmask_{pos_base}_{pos_base + L}.pt').squeeze(-1) - pos_base
-    
-    return margin, conf, attn_last, unmask
+    margin = torch.load(f'{folder_base}/margin_{pos_base}_{pos_base + L}.pt', map_location=MYDEVICE).to(dtype=MYDTYPE)
+    conf = torch.load(f'{folder_base}/conf_{pos_base}_{pos_base + L}.pt', map_location=MYDEVICE).to(dtype=MYDTYPE)
+    attn = torch.load(f'{folder_base}/attn_{pos_base}_{pos_base + L}.pt', map_location=MYDEVICE).squeeze(-2).to(dtype=MYDTYPE)    # (T, num_layers, L): ALL layers kept
+    unmask = torch.load(f'{folder_base}/unmask_{pos_base}_{pos_base + L}.pt', map_location=MYDEVICE).squeeze(-1) - pos_base
+
+    return margin, conf, attn, unmask
 # end
 
 def main(model, optimizer, config_train=None, id_loop=0, transformer=None, limits=10):
@@ -229,25 +226,26 @@ def main(model, optimizer, config_train=None, id_loop=0, transformer=None, limit
 
     folder_root = config_train.folder_root
 
-    ids_sample = sorted([int(f) for f in os.listdir(folder_root) if f[0] != '.'])[limits:]
+    ids_sample = sorted([int(f) for f in os.listdir(folder_root) if f[0] != '.'])[limits:]    # skip the first `limits` sample folders
     losses = []
 
     for id_sample in ids_sample:
         folder_base = os.path.join(folder_root, str(id_sample))
-        num_blk = int(len([f for f in os.listdir(folder_base) if f[0] != '.']) / 4)
+        num_blk = int(len([f for f in os.listdir(folder_base) if f[0] != '.' and f.endswith('.pt')]) / 4)
         with open(os.path.join(folder_base, '.pos_root'), 'r') as file:
             pos_root = int(file.read())
         # end
 
         for id_blk in range(num_blk):
             pos_base = pos_root + id_blk * L
-            margin, conf, attn_last, unmask = load_sample(folder_base, pos_base, L)
+            margin, conf, attn, unmask = load_sample(folder_base, pos_base, L)
+            attn_last = attn[:, -1, :]    # last layer only (feature ablations pick from `attn` here)
 
             # x = torch.stack([conf, margin, attn_last], dim=-1)
             x = attn_last.unsqueeze(-1)
             y = generate_y(unmask, L, h)
 
-            if id_sample == len(ids_sample)-1 and id_blk == num_blk - 1:
+            if id_sample == ids_sample[-1] and id_blk == num_blk - 1:    # hold out the LAST sample's last block
                 eval_model(model, x, unmask, h, transformer=transformer)
             else:
                 loss = train_model(model, optimizer, x, y, unmask, h, transformer=transformer)
