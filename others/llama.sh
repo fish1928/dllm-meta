@@ -1,0 +1,1 @@
+python run_llama.py --model_id "meta-llama/Llama-2-7b-hf" --device "cuda:0" --max_new_tokens 128 --limit 100 --num_fewshot 5
