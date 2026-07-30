@@ -85,8 +85,28 @@ def check_result_gsm8k(text_checked, doc):
 # end
 
 
+def check_result_ifeval(text_checked, doc):
+    # reuse lm_eval's own rule checkers; doc carries key / prompt /
+    # instruction_id_list / kwargs through the mockup CSV round-trip
+    try:
+        from lm_eval.tasks.ifeval.utils import process_results
+        scores = process_results(doc, [text_checked])
+    except Exception as error:
+        jprint(f'ifeval checker unavailable or failed: {error}')
+        return 'unknown'
+    # end
+
+    # sample-level flag = strict prompt-level accuracy (all instructions followed);
+    # the full score dict is kept as detail for instruction-level ablations
+    result = 'pass' if scores.get('prompt_level_strict_acc') else 'fail'
+    return result, scores
+# end
+
+
+# a checker returns 'pass'/'fail'/'unknown', optionally as (result, detail_dict)
 MAP_TASK_CHECKER = {
     'gsm8k': check_result_gsm8k,
+    'ifeval': check_result_ifeval,
 }
 
 
@@ -221,16 +241,27 @@ class CollectMetricsRunner:
                 # end
             # end
             checker = MAP_TASK_CHECKER.get(row['task_name'])
-            result = checker(text_checked, row['doc']) if checker else 'unknown'
+            result, result_detail = 'unknown', None
+            if checker is not None:
+                result = checker(text_checked, row['doc'])
+                if isinstance(result, tuple):
+                    result, result_detail = result
+                # end
+            # end
+
+            record = {
+                'id_request': row['id_request'],
+                'doc_id': row['doc_id'],
+                'has_done': has_done,
+                'result': result,
+                'text_generated': text_generated,
+            }
+            if result_detail is not None:
+                record['result_detail'] = result_detail
+            # end
 
             with open(os.path.join(folder_stats, 'generated.json'), 'w') as file:
-                json.dump({
-                    'id_request': row['id_request'],
-                    'doc_id': row['doc_id'],
-                    'has_done': has_done,
-                    'result': result,
-                    'text_generated': text_generated,
-                }, file)
+                json.dump(record, file)
             # end
         # end for
     # end
