@@ -277,20 +277,68 @@ class FeatureWrapperBase(FeatureBase):
 
 
 class Feature_rank_normed(FeatureWrapperBase):
-    # each dim replaced by its percentile rank AMONG CANDIDATES in [0, 1]; non-candidates -> 0
+    """
+    Replace each feature value with its percentile rank among candidates.
+
+    Tied values receive their average rank.
+    Non-candidates are set to 0.
+
+    Examples:
+        [0.2, 0.2, 0.8] -> [0.25, 0.25, 1.0]
+        [0.5, 0.5, 0.5] -> [0.5, 0.5, 0.5]
+    """
+
     def load_block(self, id_sample, pos_base, size_block):
-        x = self.feature_inner.load_block(id_sample, pos_base, size_block)    # (T, L, d)
-        cand = self._cand_mask_3d(id_sample, pos_base, size_block).expand_as(x)
-        L = x.shape[1]
+        x = self.feature_inner.load_block(
+            id_sample,
+            pos_base,
+            size_block,
+        )  # (T, L, d)
 
-        x_masked = x.masked_fill(~cand, NEG_INF)    # non-candidates sink below every candidate
-        idx_sorted = x_masked.argsort(dim=1)
-        rank = torch.empty_like(idx_sorted)
-        rank.scatter_(1, idx_sorted, torch.arange(L).view(1, -1, 1).expand_as(x).contiguous())
+        cand = self._cand_mask_3d(
+            id_sample,
+            pos_base,
+            size_block,
+        ).expand_as(x)  # (T, L, d)
 
-        n_cand = cand.sum(dim=1, keepdim=True)    # candidates occupy the top n ranks
-        rank_cand = (rank - (L - n_cand)).float() / (n_cand - 1).clamp(min=1).float()
-        return rank_cand.masked_fill(~cand, 0.0)
+        # Compare every candidate i against every candidate j.
+        #
+        # x_i: (T, L, 1, d)
+        # x_j: (T, 1, L, d)
+        x_i = x.unsqueeze(2)
+        x_j = x.unsqueeze(1)
+
+        # Whether comparison position j is a valid candidate.
+        cand_j = cand.unsqueeze(1)
+
+        # Number of candidate values strictly below x_i.
+        num_lower = ((x_j < x_i) & cand_j).sum(dim=2)
+
+        # Number of candidate values equal to x_i, including x_i itself.
+        num_equal = ((x_j == x_i) & cand_j).sum(dim=2)
+
+        # Average rank for tied values:
+        #
+        # rank range occupied by the tie group:
+        #   num_lower, ..., num_lower + num_equal - 1
+        #
+        # average:
+        #   num_lower + (num_equal - 1) / 2
+        average_rank = (
+            num_lower.float()
+            + 0.5 * (num_equal.float() - 1.0)
+        )
+
+        # Number of candidates per row and feature dimension.
+        num_candidates = cand.sum(dim=1).float()  # (T, d)
+
+        # Map ranks from [0, n - 1] into [0, 1].
+        denominator = (num_candidates - 1.0).clamp(min=1.0)
+        rank_normed = average_rank / denominator.unsqueeze(1)
+
+        # A row containing one candidate receives rank 0.
+        # Non-candidates are always zero.
+        return rank_normed.masked_fill(~cand, 0.0)
     # end
 # end
 
