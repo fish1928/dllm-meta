@@ -317,6 +317,17 @@ class Feature_rank_normed(FeatureWrapperBase):
         # Number of candidate values equal to x_i, including x_i itself.
         num_equal = ((x_j == x_i) & cand_j).sum(dim=2)
 
+        ##############
+        # Plan B for num_equal
+        # equal = torch.isclose(
+        #     x_j,
+        #     x_i,
+        #     rtol=1e-5,
+        #     atol=1e-8,
+        # )
+        # num_equal = (equal & cand_j).sum(dim=2)
+        ###############
+
         # Average rank for tied values:
         #
         # rank range occupied by the tie group:
