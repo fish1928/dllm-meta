@@ -917,6 +917,7 @@ class RouterTrainer:
 
         values = {h: [] for h in hs}
         values_ap = []
+        values_ndgc = []
         for x, order in self._iter_blocks(ids_sample):
             scores = self.router(x)
             evaluator = ScoreOrderEval(scores.cpu(), order.cpu())
@@ -924,10 +925,12 @@ class RouterTrainer:
                 values[h].append(evaluator.recall_at_h(h))
             # end
             values_ap.append(evaluator.pr_auc(self.h))
+            values_ndgc.append(evaluator.ndcg_at_h(self.h))
         # end
 
         report = {f'recall@{h}': summ(torch.cat(values[h])) for h in hs}
         report[f'pr_auc@{self.h}'] = summ(torch.cat(values_ap))
+        report[f'ndgc@{self.h}'] = summ(torch.cat(values_ndgc))
         report['n_blocks'] = len(values_ap)
         report['router'] = self.router.describe()
         return report
