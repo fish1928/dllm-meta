@@ -238,11 +238,14 @@ class Feature_x0_stability(FeatureBase):
 
 '''---------------- feature normalization wrappers ----------------
 
-Row-wise wrappers (rank / znorm_row / minmax_row / softmax_row) are computed
-within each step's candidate row only, so inference can reproduce them exactly
-from the live candidate set -- prefer these when mixing feature scales.
-Feature_znormed_global is dataset-fitted: the trainer auto-fits it on the train
-split and its statistics are persisted inside the router checkpoint.
+Row-wise wrappers (rank / znorm_row / minmax_row / softmax_row) compute their
+statistics over the CANDIDATES of each step only (still-masked positions) and
+zero out non-candidates -- so a candidate's normalized value does not drift as
+the block fills up. Candidacy is known from the live mask state at inference,
+so all row-wise wrappers stay exactly reproducible at deployment.
+Feature_znormed_global is dataset-fitted (over candidate entries): the trainer
+auto-fits it on the train split and its statistics are persisted inside the
+router checkpoint.
 '''
 
 
@@ -264,45 +267,65 @@ class FeatureWrapperBase(FeatureBase):
     def _tag(self):
         return self.__class__.__name__.replace('Feature_', '')
     # end
+
+    def _cand_mask_3d(self, id_sample, pos_base, size_block):    # (T, L, 1) bool
+        order = self._order_local(id_sample, pos_base, size_block)
+        _, cand_mask = build_geometry(order, size_block)
+        return cand_mask.unsqueeze(-1)
+    # end
 # end
 
 
 class Feature_rank_normed(FeatureWrapperBase):
-    # each dim replaced by its within-row percentile rank in [0, 1]
+    # each dim replaced by its percentile rank AMONG CANDIDATES in [0, 1]; non-candidates -> 0
     def load_block(self, id_sample, pos_base, size_block):
         x = self.feature_inner.load_block(id_sample, pos_base, size_block)    # (T, L, d)
-        idx_sorted = x.argsort(dim=1)
+        cand = self._cand_mask_3d(id_sample, pos_base, size_block).expand_as(x)
+        L = x.shape[1]
+
+        x_masked = x.masked_fill(~cand, NEG_INF)    # non-candidates sink below every candidate
+        idx_sorted = x_masked.argsort(dim=1)
         rank = torch.empty_like(idx_sorted)
-        rank.scatter_(1, idx_sorted, torch.arange(x.shape[1]).view(1, -1, 1).expand_as(x).contiguous())
-        return rank.float() / max(x.shape[1] - 1, 1)
+        rank.scatter_(1, idx_sorted, torch.arange(L).view(1, -1, 1).expand_as(x).contiguous())
+
+        n_cand = cand.sum(dim=1, keepdim=True)    # candidates occupy the top n ranks
+        rank_cand = (rank - (L - n_cand)).float() / (n_cand - 1).clamp(min=1).float()
+        return rank_cand.masked_fill(~cand, 0.0)
     # end
 # end
 
 
 class Feature_znormed_row(FeatureWrapperBase):
-    # standardize each dim within the row: (x - mean_row) / (std_row + eps)
+    # standardize each dim over the row's candidates; non-candidates -> 0
     def load_block(self, id_sample, pos_base, size_block):
         x = self.feature_inner.load_block(id_sample, pos_base, size_block)
-        mean = x.mean(dim=1, keepdim=True)
-        std = x.std(dim=1, keepdim=True)
-        return (x - mean) / (std + 1e-6)
+        cand = self._cand_mask_3d(id_sample, pos_base, size_block).expand_as(x).float()
+
+        n = cand.sum(dim=1, keepdim=True).clamp(min=1.0)
+        mean = (x * cand).sum(dim=1, keepdim=True) / n
+        var = ((x - mean).pow(2) * cand).sum(dim=1, keepdim=True) / n
+        out = (x - mean) / (var.sqrt() + 1e-6)
+        return out * cand
     # end
 # end
 
 
 class Feature_minmax_row(FeatureWrapperBase):
-    # scale each dim within the row to [0, 1]
+    # scale each dim over the row's candidates to [0, 1]; non-candidates -> 0
     def load_block(self, id_sample, pos_base, size_block):
         x = self.feature_inner.load_block(id_sample, pos_base, size_block)
-        x_min = x.amin(dim=1, keepdim=True)
-        x_max = x.amax(dim=1, keepdim=True)
-        return (x - x_min) / (x_max - x_min + 1e-6)
+        cand = self._cand_mask_3d(id_sample, pos_base, size_block).expand_as(x)
+
+        x_min = x.masked_fill(~cand, float('inf')).amin(dim=1, keepdim=True)
+        x_max = x.masked_fill(~cand, float('-inf')).amax(dim=1, keepdim=True)
+        out = (x - x_min) / (x_max - x_min + 1e-6)
+        return sanitize(out).masked_fill(~cand, 0.0)    # rows without candidates -> 0
     # end
 # end
 
 
 class Feature_softmax_row(FeatureWrapperBase):
-    # softmax each dim within the row; temperature controls sharpness
+    # softmax each dim over the row's candidates; non-candidates -> 0
     def __init__(self, feature_inner, temperature=1.0):
         super().__init__(feature_inner)
         self.temperature = temperature
@@ -310,13 +333,17 @@ class Feature_softmax_row(FeatureWrapperBase):
 
     def load_block(self, id_sample, pos_base, size_block):
         x = self.feature_inner.load_block(id_sample, pos_base, size_block)
-        return torch.softmax(x / self.temperature, dim=1)
+        cand = self._cand_mask_3d(id_sample, pos_base, size_block).expand_as(x)
+
+        out = torch.softmax((x / self.temperature).masked_fill(~cand, NEG_INF), dim=1)
+        return torch.nan_to_num(out, nan=0.0).masked_fill(~cand, 0.0)
     # end
 # end
 
 
 class Feature_log_scaled(FeatureWrapperBase):
     # log(x + eps) for heavily right-skewed non-negative signals (e.g. attention);
+    # non-candidates -> 0 so the negative log values never leak into set statistics.
     # compose with a row normalizer on top, e.g. Feature_znormed_row(Feature_log_scaled(...))
     def __init__(self, feature_inner, eps=1e-6):
         super().__init__(feature_inner)
@@ -325,14 +352,15 @@ class Feature_log_scaled(FeatureWrapperBase):
 
     def load_block(self, id_sample, pos_base, size_block):
         x = self.feature_inner.load_block(id_sample, pos_base, size_block)
-        return torch.log(x.clamp(min=0.0) + self.eps)
+        cand = self._cand_mask_3d(id_sample, pos_base, size_block).expand_as(x)
+        return torch.log(x.clamp(min=0.0) + self.eps).masked_fill(~cand, 0.0)
     # end
 # end
 
 
 class Feature_znormed_global(FeatureWrapperBase):
-    # dataset-fitted per-dim standardization; the trainer fits it on the train
-    # split and the statistics are saved/restored with the router checkpoint
+    # dataset-fitted per-dim standardization over CANDIDATE entries; the trainer
+    # fits it on the train split and the statistics are saved with the checkpoint
     def __init__(self, feature_inner):
         super().__init__(feature_inner)
         self.mean = None
@@ -344,8 +372,12 @@ class Feature_znormed_global(FeatureWrapperBase):
     # end
 
     def fit(self, blocks, size_block):    # blocks: iterable of (id_sample, pos_base)
-        xs = [self.feature_inner.load_block(id_sample, pos_base, size_block).reshape(-1, self.dim())
-              for id_sample, pos_base in blocks]
+        xs = []
+        for id_sample, pos_base in blocks:
+            x = self.feature_inner.load_block(id_sample, pos_base, size_block)
+            cand = self._cand_mask_3d(id_sample, pos_base, size_block).expand_as(x)
+            xs.append(x[cand].reshape(-1, self.dim()))    # (t, l) candidate entries keep d-contiguity
+        # end
         x_all = torch.cat(xs, dim=0)
         self.mean = x_all.mean(dim=0)
         self.std = x_all.std(dim=0) + 1e-6
@@ -363,7 +395,8 @@ class Feature_znormed_global(FeatureWrapperBase):
     def load_block(self, id_sample, pos_base, size_block):
         assert self.fitted(), 'Feature_znormed_global must be fitted (the trainer fits it on register_router)'
         x = self.feature_inner.load_block(id_sample, pos_base, size_block)
-        return (x - self.mean) / self.std
+        cand = self._cand_mask_3d(id_sample, pos_base, size_block).expand_as(x)
+        return ((x - self.mean) / self.std).masked_fill(~cand, 0.0)
     # end
 # end
 
