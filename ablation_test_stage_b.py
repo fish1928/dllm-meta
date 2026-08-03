@@ -21,6 +21,8 @@ reset_stage(STAGE, REPORT_PATH)
 # Two representative feature sets from the plan.
 FEATURE_ANCHORS = {
     "attention_only": ["attn_last"],
+    "attention_full": ["attn_full"],
+    "easy_mixed": ["attn_last", "pos_delta", "mask_density"],
     "core_mixed": ["attn_last", "conf", "margin", "pos_delta", "mask_density"],
 }
 
