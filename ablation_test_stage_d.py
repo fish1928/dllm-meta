@@ -22,16 +22,16 @@ STAGE = "stage_d"
 
 # Replace these defaults with the three strongest Stage C feature sets.
 TOP_FEATURE_SETS = {
-    "attention_only": ["attn_last"],
+    "attention_stale": ["attn_last", "conf", "margin"],
     "attention_geometry": ["attn_last", "pos_delta", "mask_density"],
     "core_mixed": ["attn_last", "conf", "margin", "pos_delta", "mask_density"],
 }
 
 # Replace these with the two strongest Stage B normalization recipes.
-TOP_NORMALIZATIONS = ["log_znorm", "rank"]
+TOP_NORMALIZATIONS = ["softmax_attn", "rank"]
 
 # Replace these with the two strongest Stage B losses.
-TOP_LOSSES = ["decay_within_h", "uniform_within_h"]
+TOP_LOSSES = ["decay_within_h", "plackett_luce"]
 
 SEEDS = [233, 234, 235]
 

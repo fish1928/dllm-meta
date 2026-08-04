@@ -20,7 +20,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--json", default="ablation_test_report.json")
     parser.add_argument("--db", default="ablation_test.db")
-    parser.add_argument("--schema", default="create_ablation_db_v2.sql")
+    parser.add_argument("--schema", default="create_ablation_db.sql")
     parser.add_argument("--stage", action="append", dest="stages")
     return parser.parse_args()
 

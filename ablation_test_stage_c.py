@@ -16,7 +16,7 @@ NUM_EPOCHS = 10
 STAGE = "stage_c"
 
 # Edit these two values after reading the Stage B report.
-BEST_NORMALIZATION = "log_znorm"
+BEST_NORMALIZATION = "rank"
 BEST_LOSS = "decay_within_h"
 BEST_LOSS_POS_WEIGHT = None
 

@@ -12,9 +12,11 @@ NUM_EPOCHS = 10
 STAGE = "stage_e"
 
 # Replace these values with the winning Stage D configuration.
-BEST_FEATURES = ["attn_last", "conf", "margin", "pos_delta", "mask_density"]
-BEST_NORMALIZATION = "log_znorm"
-BEST_LOSS = "decay_within_h"
+#BEST_FEATURES = ["attn_last", "pos_delta", "mask_density"]
+#BEST_FEATURES = ["attn_last", "conf", "margin", "pos_delta", "mask_density"]
+BEST_FEATURES = ["attn_last", "pos_delta", "mask_density"]
+BEST_NORMALIZATION = "rank"
+BEST_LOSS = "plackett_luce"
 BEST_LOSS_POS_WEIGHT = None
 
 reset_stage(STAGE, REPORT_PATH)

@@ -13,7 +13,7 @@ DEVICE = "cuda:0"
 H = 5
 SIZE_BLOCK = 128
 NUM_LAYERS = 32
-NUM_EPOCHS = 3  # Screening budget. Increase after the code is verified.
+NUM_EPOCHS = 10  # Screening budget. Increase after the code is verified.
 STAGE = "stage_b"
 
 reset_stage(STAGE, REPORT_PATH)
@@ -21,9 +21,14 @@ reset_stage(STAGE, REPORT_PATH)
 # Two representative feature sets from the plan.
 FEATURE_ANCHORS = {
     "attention_only": ["attn_last"],
-    "attention_full": ["attn_full"],
+    "attention_full": ["attn_all"],
+    "stale_only": ["conf", "margin"],
+    "easy_only": ["pos_delta", "mask_density"],
+    "stale_mixed": ["attn_last", "conf", "margin"],
     "easy_mixed": ["attn_last", "pos_delta", "mask_density"],
+    "easy_mixed_full": ["attn_all", "pos_delta", "mask_density"],
     "core_mixed": ["attn_last", "conf", "margin", "pos_delta", "mask_density"],
+    "core_mixed_all": ["attn_all", "conf", "margin", "pos_delta", "mask_density"]
 }
 
 NORMALIZATIONS = [
