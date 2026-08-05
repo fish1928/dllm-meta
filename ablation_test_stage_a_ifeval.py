@@ -13,6 +13,7 @@ from router_llada import (
     Feature_entropy,
     Feature_margin,
     Feature_pos_delta,
+    Feature_mask_density,
     FactoryLoss,
     FactoryRouter,
     RouterTrainer,
