@@ -1,12 +1,12 @@
 """Stage E: router architecture and small capacity comparison."""
-
 import os
+
 from ablation_test_common import REPORT_PATH, reset_stage, run_experiment
 
+REPORT_PATH = 'ablation_test_report_stage_e_tune_h.json'
 
 FOLDER_DATA = os.environ['FOLDER_DATA']
-DEVICE = os.environ.get('DEVICE', 'cuda:0')
-H = 5
+DEVICE = os.environ.get('DEVICE','cuda:0')
 SIZE_BLOCK = int(os.environ['SIZE_BLOCK'])
 NUM_LAYERS = 32
 NUM_EPOCHS = 10
@@ -23,20 +23,15 @@ BEST_LOSS_POS_WEIGHT = None
 reset_stage(STAGE, REPORT_PATH)
 
 ROUTERS = [
-    ("linear", "linear", {}),
-    ("mlp_h32_b2", "mlp", {"dim_hidden": 32, "num_blocks_mlp": 2}),
-    ("mlp_h64_b1", "mlp", {"dim_hidden": 64, "num_blocks_mlp": 1}),
-    ("mlp_h64_b2", "mlp", {"dim_hidden": 64, "num_blocks_mlp": 2}),
-    ("mlp_h64_b3", "mlp", {"dim_hidden": 64, "num_blocks_mlp": 3}),
-    ("mlp_h128_b2", "mlp", {"dim_hidden": 128, "num_blocks_mlp": 2}),
-    (
-        "set_attention",
-        "set_attention",
-        {"dim_model": 32, "num_heads": 1, "dim_hidden": 64},
-    ),
+    ("mlp_h64_b2", "mlp", 5, {"dim_hidden": 64, "num_blocks_mlp": 2}),
+    ("mlp_h64_b2", "mlp", 7, {"dim_hidden": 64, "num_blocks_mlp": 2}),
+    ("mlp_h64_b2", "mlp", 9, {"dim_hidden": 64, "num_blocks_mlp": 2}),
+    ("mlp_h64_b2", "mlp", 11, {"dim_hidden": 64, "num_blocks_mlp": 2}),
+    ("mlp_h64_b2", "mlp", 13, {"dim_hidden": 64, "num_blocks_mlp": 2}),
+    ("mlp_h64_b2", "mlp", 15, {"dim_hidden": 64, "num_blocks_mlp": 2}),
 ]
 
-for experiment_name, router_name, router_kwargs in ROUTERS:
+for experiment_name, router_name, h, router_kwargs in ROUTERS:
     run_experiment(
         stage=STAGE,
         name=experiment_name,
@@ -47,7 +42,7 @@ for experiment_name, router_name, router_kwargs in ROUTERS:
         loss_pos_weight=BEST_LOSS_POS_WEIGHT,
         router_name=router_name,
         router_kwargs=router_kwargs,
-        h=H,
+        h=h,
         size_block=SIZE_BLOCK,
         device=DEVICE,
         num_layers=NUM_LAYERS,

@@ -1,5 +1,7 @@
 """Stage B: screen loss functions and normalization recipes."""
 
+import os
+
 from ablation_test_common import (
     REPORT_PATH,
     estimate_balanced_pos_weight,
@@ -7,11 +9,13 @@ from ablation_test_common import (
     run_experiment,
 )
 
+REPORT_PATH = 'ablation_test_report_stage_b.json'
 
-FOLDER_DATA = "stats_gsm8k"
+
+FOLDER_DATA = os.environ['FOLDER_DATA']
 DEVICE = "cuda:0"
 H = 5
-SIZE_BLOCK = 128
+SIZE_BLOCK = int(os.environ['SIZE_BLOCK'])
 NUM_LAYERS = 32
 NUM_EPOCHS = 10  # Screening budget. Increase after the code is verified.
 STAGE = "stage_b"

@@ -1,4 +1,5 @@
 """Stage A: sanity checks and simple baselines."""
+import os
 
 from ablation_test_common import (
     Feature_negated,
@@ -18,10 +19,10 @@ from router_llada import (
 )
 
 
-FOLDER_DATA = "stats_gsm8k"
+FOLDER_DATA = os.environ['FOLDER_DATA']
 DEVICE = "cuda:0"
 H = 5
-SIZE_BLOCK = 128
+SIZE_BLOCK = int(os.environ['SIZE_BLOCK'])
 NUM_EPOCHS = 5
 STAGE = "stage_a"
 

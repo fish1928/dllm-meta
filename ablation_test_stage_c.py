@@ -3,16 +3,16 @@ Stage C: feature ablation.
 
 After Stage B, edit BEST_NORMALIZATION and BEST_LOSS to match its result.
 """
-
+import os
 from ablation_test_common import REPORT_PATH, reset_stage, run_experiment
 
 
-FOLDER_DATA = "stats_gsm8k"
-DEVICE = "cuda:0"
+FOLDER_DATA = os.environ['FOLDER_DATA']
+DEVICE = os.environ.get('DEVICE', 'cuda:0')
 H = 5
-SIZE_BLOCK = 128
+SIZE_BLOCK = int(os.environ['SIZE_BLOCK'])
 NUM_LAYERS = 32
-NUM_EPOCHS = 10
+NUM_EPOCHS = 5
 STAGE = "stage_c"
 
 # Edit these two values after reading the Stage B report.

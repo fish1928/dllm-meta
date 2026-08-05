@@ -3,6 +3,7 @@ Stage D: compact factorial confirmation.
 
 Edit the top feature sets, normalizations, and losses after Stages B and C.
 """
+import os
 
 from ablation_test_common import (
     REPORT_PATH,
@@ -12,10 +13,10 @@ from ablation_test_common import (
 )
 
 
-FOLDER_DATA = "stats_gsm8k"
-DEVICE = "cuda:0"
+FOLDER_DATA = os.environ['FOLDER_DATA']
+DEVICE = os.environ.get('DEVICE', 'cuda:0')
 H = 5
-SIZE_BLOCK = 128
+SIZE_BLOCK = int(os.environ['SIZE_BLOCK'])
 NUM_LAYERS = 32
 NUM_EPOCHS = 10
 STAGE = "stage_d"
