@@ -242,8 +242,11 @@ class Feature_mask_density(FeatureBase):
         gap, cand_mask = build_geometry(order, size_block)
         masked = cand_mask.float()    # (T, L) still-masked after step t
 
-        kernel = torch.ones(1, 1, 2 * self.window + 1) / (2 * self.window + 1)
-        density = F.conv1d(masked.unsqueeze(1), kernel, padding=self.window).squeeze(1)
+        # ones-kernel (exact integer counts) then divide: keeps density values
+        # bit-identical across compute paths, so downstream rank ties are stable
+        kernel = torch.ones(1, 1, 2 * self.window + 1)
+        count = F.conv1d(masked.unsqueeze(1), kernel, padding=self.window).squeeze(1)
+        density = count / (2 * self.window + 1)
         return density.unsqueeze(-1)
     # end
 # end

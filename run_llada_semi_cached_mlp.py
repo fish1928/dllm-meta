@@ -4,6 +4,9 @@ if os.environ.get("JINYU_DEBUG", False):
     os.environ["CUDA_LAUNCH_BLOCKING"] = "1"  # put this at the very top of your script
 # end
 
+import json
+import time
+
 import torch
 from tqdm import tqdm
 
@@ -15,6 +18,7 @@ from plugins_llada import SaveKVPreviousPlugin_Disabled, SaveKVPreviousPlugin_En
                             CacheVOPlugin_Disabled, CacheVOPlugin_Enabled
 
 from future_idx_selector import FutureIDXSelector, RandomModel, FutureIdxSelectorModelLoader
+from router_deploy import load_router_bundle, select_topk_candidates
 
 from tools_debug import jprint
 
@@ -25,6 +29,8 @@ class RunModel:
 
     def __init__(self):
         self.mlp = None
+        self.router_bundle = None    # (router, spec) when config.path_router is set
+        self.report_rows = []
     # end
 
     def config_plugin_(self, config):
@@ -64,6 +70,7 @@ class RunModel:
 
         plugin_cache_attn = kwargs['plugin_cache_attn']
         future_idx_selector = kwargs['future_idx_selector'] # budget is also here
+        router_bundle = kwargs.get('router_bundle')    # (router, spec) or None (legacy MLP path)
 
         has_done = False
 
@@ -128,13 +135,29 @@ class RunModel:
                     snapshot.update_x0_(idx_block.unsqueeze(0), logits_denoising)
                     conf_snapshot = snapshot.transform_logits(collector, logits_denoising, idx_transform=idx_block.unsqueeze(0))
                 else:
-                    score_attn = plugin_cache_attn.collect_attn_from_all_blocks(model)
+                    score_attn_layers = plugin_cache_attn.collect_attn_from_all_blocks(model)    # (num_layers, size_block, size_block)
                     idx_in_attn = idx_transform_2d.squeeze(0) - position_start    # block is contiguous: global position -> block-local rows
-                    score_attn = score_attn[-1, idx_in_attn, -idx_block.shape[-1]:]  # (num_unmask, size_block)
-                    score_attn = score_attn.mean(dim=0, keepdim=True)  # aggregate the just-unmasked tokens' rows -> (1, size_block)
-                    mask_mask_current_no = ~(x[:,position_start:position_end] == id_mask).view(1,-1)    # (B, K)
-                    score_attn.masked_fill_(mask_mask_current_no, torch.finfo(score_attn.dtype).min)
-                    idx_denoising = (future_idx_selector.select_future_by_attn(score_attn) + position_start).squeeze(0)
+                    mask_still = (x[0, position_start:position_end] == id_mask)
+
+                    if router_bundle is not None:
+                        # router path: online features (attention rows / geo / live conf)
+                        # built exactly as at training time (router_deploy parity)
+                        router, spec_router = router_bundle
+                        attn_rows_all = score_attn_layers[:, idx_in_attn, -idx_block.shape[-1]:].mean(dim=1)    # (num_layers, size_block)
+                        conf_block = snapshot.conf[0, position_start:position_end]
+                        idx_local = select_topk_candidates(
+                            router, spec_router,
+                            attn_rows_all.float(), conf_block.float(), mask_still,
+                            idx_in_attn[-1], future_idx_selector.h,
+                        )
+                        idx_denoising = idx_local + position_start
+                    else:
+                        # legacy scalar-MLP path
+                        score_attn = score_attn_layers[-1, idx_in_attn, -idx_block.shape[-1]:]  # (num_unmask, size_block)
+                        score_attn = score_attn.mean(dim=0, keepdim=True)  # aggregate the just-unmasked tokens' rows -> (1, size_block)
+                        score_attn.masked_fill_(~mask_still.view(1, -1), torch.finfo(score_attn.dtype).min)
+                        idx_denoising = (future_idx_selector.select_future_by_attn(score_attn) + position_start).squeeze(0)
+                    # end
                     idx_current = torch.cat([idx_refresh, idx_denoising])
 
                     logits = model(x[:, idx_current], idx_current=idx_current, shape_target=shape_target).logits
@@ -184,7 +207,14 @@ class RunModel:
         config.klass_cache_attn.set_size_block(config.size_block)
         config.klass_cache_attn.set_len_prompt(kwargs['len_prompt'])
 
-        if self.mlp is None:
+        path_router = getattr(config, 'path_router', None)
+        if path_router:
+            if self.router_bundle is None:
+                router, spec_router = load_router_bundle(path_router, device=config.device)
+                self.router_bundle = (router, spec_router)
+                jprint(f'loaded router bundle {path_router}: {spec_router["features"]} norm={spec_router["normalization"]}')
+            # end
+        elif self.mlp is None:
             loader_mlp = FutureIdxSelectorModelLoader(1, config.device)
             self.mlp = loader_mlp.load(NAME_MLP).to(DTYPE_EVAL)
             # self.mlp = RandomModel()
@@ -209,7 +239,9 @@ class RunModel:
 
         kwargs['future_idx_selector'] = future_idx_selector
         kwargs['plugin_cache_attn'] = plugin_cache_attn
+        kwargs['router_bundle'] = self.router_bundle
 
+        time_start = time.perf_counter()
         sentence_generated, has_done = self.generate(
             model,
             tokenizer,
@@ -217,7 +249,26 @@ class RunModel:
             *args,
             **kwargs
         )
+        duration_s = time.perf_counter() - time_start
+
+        path_report = getattr(config, 'path_report', None)
+        if path_report:
+            self.report_rows.append({
+                'id_sample': len(self.report_rows),
+                'len_prompt': kwargs['len_prompt'],
+                'has_done': has_done,
+                'duration_s': round(duration_s, 4),
+            })
+            with open(path_report, 'w') as file:    # rewritten per sample: crash-safe
+                json.dump({
+                    'path_router': path_router,
+                    'num_samples': len(self.report_rows),
+                    'duration_total_s': round(sum(r['duration_s'] for r in self.report_rows), 2),
+                    'rows': self.report_rows,
+                }, file, indent=2)
+            # end
+        # end
 
         return sentence_generated, has_done
-    # end    
+    # end
 # end class

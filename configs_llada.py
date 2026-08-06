@@ -48,6 +48,8 @@ class DiffusionConfig_Eval:
     step_refresh_remainder: Optional[int] = None
     h: Optional[int] = None
     select_only_in_h: Optional[bool] = None
+    path_router: Optional[str] = None    # router bundle (.pt with .json sidecar); None -> legacy scalar MLP
+    path_report: Optional[str] = None    # per-sample runner report (json)
     '''with mlp'''
 
     klass_save_kv_previous: Optional[InspectorPlugin] = None
