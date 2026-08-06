@@ -43,7 +43,7 @@ Results are appended under:
 in:
     ablation_test_report.json
 """
-
+from copy import deepcopy
 import json
 import math
 import os
@@ -89,7 +89,7 @@ LEARNING_RATE = 1e-3
 WEIGHT_DECAY = 1e-4
 HOLDOUT = 0.2
 FILTER_RESULT = "all"
-SEED = 233
+SEED = int.from_bytes(os.urandom(8), "big") % (2**63 - 1)
 
 FULL_REFRESH_INTERVAL = 16
 
@@ -109,7 +109,7 @@ MAX_CONF_AGE = 16
 #   age 16 -> 0.202
 #
 # Reduce this value for even slower decay.
-AGE_DECAY_RATE = 0.10
+AGE_DECAY_RATE = 0.15
 
 # Average metrics over multiple deterministic random-age evaluation draws.
 NUM_EVAL_AGE_DRAWS = 5
@@ -135,6 +135,9 @@ CHECKPOINT_DIR = "checkpoints"
 
 # Both aged-confidence models receive identical age metadata. Their only
 # difference is whether the confidence channel is manually discounted.
+
+
+
 EXPERIMENTS = [
     {
         "name": "base_attn_geo",
@@ -147,14 +150,22 @@ EXPERIMENTS = [
         "use_random_aged_conf": True,
         "use_age_metadata": True,
         "confidence_decay_rate": 0.0,
-    },
-    {
+    }
+]
+
+template_experiment = {
         "name": "random_aged_conf_with_age_slow_decay",
         "use_random_aged_conf": True,
         "use_age_metadata": True,
         "confidence_decay_rate": AGE_DECAY_RATE,
-    },
-]
+    }
+
+for i in range(1,51):
+    i_real = i / 100
+    experiment = deepcopy(template_experiment)
+    experiment['confidence_decay_rate'] = i_real
+    EXPERIMENTS.append(experiment)
+# end
 
 
 # ---------------------------------------------------------------------------
