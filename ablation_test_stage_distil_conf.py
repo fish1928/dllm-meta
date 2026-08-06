@@ -7,12 +7,18 @@ The router uses only inference-time features:
 Fresh full-denoising confidence is used only as an auxiliary TRAINING target.
 It is never registered as a router feature and is not needed during inference.
 
-Total loss:
-    L_total = L_plackett_luce + lambda_distill * L_conf_distill
+Training schedule (per experiment):
+    stage 1 (optional): distill-only epochs   L = L_conf_distill
+    stage 2 (optional): joint epochs          L = L_plackett_luce + lambda * L_conf_distill
+
+The distill-only arm measures the DISTILLATION CEILING: how much of the fresh-
+confidence ranking is expressible from inference-time features at all.
 
 L_conf_distill is a listwise cross-entropy between:
-    teacher distribution: fresh-confidence ranking over current candidates
+    teacher distribution: softmax(teacher_transform(conf) / T) over candidates
+                          (transform 'log' => teacher proportional to conf^(1/T))
     student distribution: router scores over current candidates
+The reported 'kl' component is CE minus teacher entropy (floor 0).
 
 Expected local modules:
     router_llada_v2.py
@@ -39,6 +45,7 @@ from router_llada import (
     RouterTrainer,
     build_geometry,
     load_stat,
+    percentile_rank_masked,
     sanitize,
 )
 
@@ -74,23 +81,28 @@ ROUTER_KWARGS = {
     "num_blocks_mlp": 2,
 }
 
-# lambda=0 is the ordinary Plackett-Luce baseline.
-DISTILL_WEIGHTS = [
-    0.0,
-    0.05,
-    0.10,
-    0.25,
-    0.50,
-    1.00,
-]
-
-# Lower temperature makes the teacher more concentrated on the
-# highest-confidence candidates.
+# With teacher_transform="log":  teacher_prob ∝ conf^(1/T)
+#   T = 1.0  -> teacher IS the (normalized) confidence distribution
+#   T = 0.5  -> conf squared (sharper)
+# NOTE: with "rank" the scores live in [0, 1], so a meaningful temperature must
+# be on the order of the rank spacing (~1/n ≈ 0.02) -- T=0.5 over ranks makes
+# the teacher nearly uniform, which turns the distill term into an
+# anti-sharpening regularizer (the loss then RISES as Plackett-Luce sharpens
+# the student). "log" is scale-correct by construction.
 DISTILL_TEMPERATURE = 0.5
 
 # Supported: "rank", "raw", "log".
-# "rank" is recommended because the router is evaluated as a ranking model.
-TEACHER_TRANSFORM = "rank"
+TEACHER_TRANSFORM = "log"
+
+# Each experiment: optional distill-only stage, then optional joint stage.
+# The optimizer (and Adam state) restarts at the stage boundary.
+EXPERIMENTS = [
+    {"name": "pl_only",              "distill_weight": 0.0,  "epochs_distill_only": 0,          "epochs_joint": NUM_EPOCHS},
+    {"name": "distill_only_ceiling", "distill_weight": 1.0,  "epochs_distill_only": NUM_EPOCHS, "epochs_joint": 0},
+    {"name": "joint_lambda_0.1",     "distill_weight": 0.1,  "epochs_distill_only": 0,          "epochs_joint": NUM_EPOCHS},
+    {"name": "joint_lambda_0.5",     "distill_weight": 0.5,  "epochs_distill_only": 0,          "epochs_joint": NUM_EPOCHS},
+    {"name": "two_stage_lambda_0.25", "distill_weight": 0.25, "epochs_distill_only": NUM_EPOCHS // 2, "epochs_joint": NUM_EPOCHS},
+]
 
 NEG_INF = torch.finfo(torch.float32).min
 
@@ -111,54 +123,6 @@ def build_router_features(folder_data: str):
 # ---------------------------------------------------------------------------
 # Confidence teacher loss
 # ---------------------------------------------------------------------------
-
-def candidate_percentile_rank(
-    values: torch.Tensor,
-    candidate_mask: torch.Tensor,
-) -> torch.Tensor:
-    """
-    Tie-aware percentile rank among candidates.
-
-    Args:
-        values:         (T, L)
-        candidate_mask: (T, L) bool
-
-    Returns:
-        (T, L), candidate values in [0, 1], non-candidates equal to zero.
-    """
-    if values.shape != candidate_mask.shape:
-        raise ValueError(
-            f"values shape {values.shape} does not match "
-            f"candidate mask shape {candidate_mask.shape}"
-        )
-
-    output = torch.zeros_like(values, dtype=torch.float32)
-
-    for row_index in range(values.shape[0]):
-        mask_row = candidate_mask[row_index]
-        row_values = values[row_index, mask_row]
-        n = int(row_values.numel())
-
-        if n == 0:
-            continue
-        if n == 1:
-            output[row_index, mask_row] = 1.0
-            continue
-
-        smaller = (
-            row_values[:, None] > row_values[None, :]
-        ).sum(dim=1)
-        equal = (
-            row_values[:, None] == row_values[None, :]
-        ).sum(dim=1)
-
-        average_rank = (
-            smaller.float() + 0.5 * (equal.float() - 1.0)
-        )
-        output[row_index, mask_row] = average_rank / float(n - 1)
-
-    return output
-
 
 class LossConfidenceDistill:
     """
@@ -193,7 +157,7 @@ class LossConfidenceDistill:
         confidence = sanitize(confidence)
 
         if self.teacher_transform == "rank":
-            return candidate_percentile_rank(confidence, candidate_mask)
+            return percentile_rank_masked(confidence, candidate_mask)
         if self.teacher_transform == "log":
             return torch.log(confidence.clamp(min=self.eps))
         return confidence
@@ -238,7 +202,23 @@ class LossConfidenceDistill:
             torch.zeros_like(student_log_prob),
         ).sum(dim=-1)
 
-        return loss_rows[row_valid].mean()
+        # KL = CE - H(teacher): same gradient (teacher fixed), but floor 0, so
+        # "distance from the teacher" is readable at a glance in the logs
+        teacher_log_prob = torch.where(
+            teacher_prob > 0,
+            teacher_prob.clamp(min=1e-12).log(),
+            torch.zeros_like(teacher_prob),
+        )
+        entropy_rows = -(teacher_prob * teacher_log_prob).sum(dim=-1)
+
+        loss = loss_rows[row_valid].mean()
+        self.last_components = {
+            "ce": float(loss.detach().item()),
+            "kl": float((loss_rows - entropy_rows)[row_valid].mean().detach().item()),
+            "teacher_entropy": float(entropy_rows[row_valid].mean().detach().item()),
+        }
+
+        return loss
 
 
 # ---------------------------------------------------------------------------
@@ -332,9 +312,18 @@ class ConfidenceDistillTrainer(RouterTrainer):
 
     def train(
         self,
-        num_epochs: int = 10,
+        num_epochs_distill_only: int = 0,
+        num_epochs_joint: int = 10,
         log_every: int = 1,
     ):
+        """
+        Two-stage schedule:
+            stage 'distill': L = L_conf_distill                    (teacher only)
+            stage 'joint':   L = L_pl + distill_weight * L_distill
+
+        Either stage may be empty. Call once per stage from outside if an
+        evaluation between stages is wanted (the optimizer restarts per call).
+        """
         if self.router is None:
             raise RuntimeError("register_router() must be called first")
         if not self.router.trainable():
@@ -352,10 +341,16 @@ class ConfidenceDistillTrainer(RouterTrainer):
 
         self.router.train()
 
+        num_epochs = num_epochs_distill_only + num_epochs_joint
+
         for epoch in range(num_epochs):
+            stage_distill_only = epoch < num_epochs_distill_only
+            name_stage = "distill" if stage_distill_only else "joint"
+
             total_values: List[float] = []
             sequence_values: List[float] = []
             distill_values: List[float] = []
+            kl_values: List[float] = []
 
             for x, order, confidence in self._iter_blocks_with_confidence(
                 self.ids_train
@@ -378,19 +373,26 @@ class ConfidenceDistillTrainer(RouterTrainer):
                     self.h,
                 )
 
-                if self.distill_weight > 0:
+                need_distill = stage_distill_only or self.distill_weight > 0
+                if need_distill:
                     loss_distill = self.distill_loss(
                         scores,
                         confidence,
                         candidate_mask,
                     )
+                    kl_values.append(
+                        self.distill_loss.last_components["kl"]
+                    )
                 else:
                     loss_distill = scores.new_zeros(())
 
-                loss_total = (
-                    loss_sequence
-                    + self.distill_weight * loss_distill
-                )
+                if stage_distill_only:
+                    loss_total = loss_distill
+                else:
+                    loss_total = (
+                        loss_sequence
+                        + self.distill_weight * loss_distill
+                    )
 
                 loss_total.backward()
                 optimizer.step()
@@ -404,6 +406,7 @@ class ConfidenceDistillTrainer(RouterTrainer):
 
             self.last_train_report = {
                 "epoch": epoch,
+                "stage": name_stage,
                 "loss_total": sum(total_values) / len(total_values),
                 "loss_plackett_luce": (
                     sum(sequence_values) / len(sequence_values)
@@ -411,14 +414,20 @@ class ConfidenceDistillTrainer(RouterTrainer):
                 "loss_conf_distill": (
                     sum(distill_values) / len(distill_values)
                 ),
+                "distill_kl": (
+                    sum(kl_values) / len(kl_values)
+                    if kl_values else None
+                ),
             }
 
             if epoch % log_every == 0:
+                kl_report = self.last_train_report["distill_kl"]
                 print(
-                    f"epoch {epoch}: "
+                    f"epoch {epoch} [{name_stage}]: "
                     f"total={self.last_train_report['loss_total']:.6f}, "
                     f"pl={self.last_train_report['loss_plackett_luce']:.6f}, "
-                    f"distill={self.last_train_report['loss_conf_distill']:.6f}"
+                    f"distill_ce={self.last_train_report['loss_conf_distill']:.6f}, "
+                    f"distill_kl={kl_report if kl_report is None else round(kl_report, 6)}"
                 )
 
         return self
@@ -524,12 +533,11 @@ class ConfidenceDistillTrainer(RouterTrainer):
 # Experiment runner
 # ---------------------------------------------------------------------------
 
-def run_experiment(distill_weight: float):
-    experiment_name = (
-        "plackett_luce_only"
-        if distill_weight == 0
-        else f"pl_plus_conf_distill_lambda_{distill_weight:g}"
-    )
+def run_experiment(experiment: Dict):
+    experiment_name = experiment["name"]
+    distill_weight = float(experiment["distill_weight"])
+    epochs_distill_only = int(experiment["epochs_distill_only"])
+    epochs_joint = int(experiment["epochs_joint"])
 
     config = {
         "folder_data": FOLDER_DATA,
@@ -539,16 +547,23 @@ def run_experiment(distill_weight: float):
             "rank(mask_density)",
         ],
         "fresh_confidence_is_router_input": False,
-        "fresh_confidence_training_target": distill_weight > 0,
+        "fresh_confidence_training_target": (
+            distill_weight > 0 or epochs_distill_only > 0
+        ),
         "loss": {
             "sequence": "plackett_luce",
             "distillation": "candidate_listwise_cross_entropy",
-            "total": (
+            "schedule": {
+                "epochs_distill_only": epochs_distill_only,
+                "epochs_joint": epochs_joint,
+            },
+            "total_joint_stage": (
                 "plackett_luce + lambda_distill * confidence_distillation"
             ),
             "lambda_distill": distill_weight,
             "teacher_transform": TEACHER_TRANSFORM,
             "teacher_temperature": DISTILL_TEMPERATURE,
+            "teacher_semantics": "prob ∝ conf^(1/T) for transform='log'",
         },
         "router": "mlp",
         "router_kwargs": ROUTER_KWARGS,
@@ -590,15 +605,34 @@ def run_experiment(distill_weight: float):
         )
 
         trainer.register_router(router)
-        trainer.train(num_epochs=NUM_EPOCHS)
 
-        metrics = {
-            "all": trainer.evaluate_fixed_h(
+        metrics = {}
+
+        if epochs_distill_only > 0:
+            trainer.train(
+                num_epochs_distill_only=epochs_distill_only,
+                num_epochs_joint=0,
+            )
+            # distillation ceiling: how much of the teacher's ranking the
+            # inference-time features can express, before any label training
+            metrics["after_distill_stage"] = trainer.evaluate_fixed_h(
                 horizon=EVALUATION_HORIZON
-            ),
-            "teacher_diagnostic": trainer.evaluate_teacher_alignment(),
-            "final_train_loss": trainer.last_train_report,
-        }
+            )
+            trainer.router.train()
+        # end
+
+        if epochs_joint > 0:
+            trainer.train(
+                num_epochs_distill_only=0,
+                num_epochs_joint=epochs_joint,
+            )
+        # end
+
+        metrics["all"] = trainer.evaluate_fixed_h(
+            horizon=EVALUATION_HORIZON
+        )
+        metrics["teacher_diagnostic"] = trainer.evaluate_teacher_alignment()
+        metrics["final_train_loss"] = trainer.last_train_report
 
         os.makedirs(CHECKPOINT_DIR, exist_ok=True)
         checkpoint_path = os.path.join(
@@ -692,9 +726,49 @@ def verify_distillation_loss():
     )
 
 
+def verify_teacher_sharpness():
+    """
+    The teacher must be meaningfully sharper than uniform; a near-uniform
+    teacher turns the distill term into an anti-sharpening regularizer
+    (this is exactly what T=0.5 over [0,1] rank scores produced).
+    """
+    n = 50
+    confidence = torch.rand(1, n)
+    candidate_mask = torch.ones(1, n, dtype=torch.bool)
+
+    loss_fn = LossConfidenceDistill(
+        temperature=DISTILL_TEMPERATURE,
+        teacher_transform=TEACHER_TRANSFORM,
+    )
+    teacher_scores = loss_fn._teacher_scores(confidence, candidate_mask)
+    teacher_prob = torch.softmax(
+        (teacher_scores / loss_fn.temperature).masked_fill(
+            ~candidate_mask, NEG_INF
+        ),
+        dim=-1,
+    )
+
+    entropy = -(teacher_prob * teacher_prob.clamp(min=1e-12).log()).sum()
+    entropy_uniform = torch.log(torch.tensor(float(n)))
+    ratio = float(entropy / entropy_uniform)
+
+    if ratio > 0.97:
+        raise AssertionError(
+            "Teacher is nearly uniform "
+            f"(entropy ratio {ratio:.4f}); lower the temperature or use "
+            "teacher_transform='log'"
+        )
+
+    print(
+        "Teacher sharpness self-test passed:",
+        {"entropy_ratio_vs_uniform": round(ratio, 4)},
+    )
+
+
 if __name__ == "__main__":
     verify_distillation_loss()
+    verify_teacher_sharpness()
     reset_stage(STAGE, REPORT_PATH)
 
-    for weight in DISTILL_WEIGHTS:
-        run_experiment(distill_weight=weight)
+    for experiment in EXPERIMENTS:
+        run_experiment(experiment)

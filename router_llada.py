@@ -67,6 +67,34 @@ def build_geometry(order, size_block):    # order (T,) block-local -> gap (T, L)
 # end
 
 
+def percentile_rank_masked(values, mask):
+    """
+    Tie-aware percentile rank among mask-True entries, per row (and per trailing
+    dim). Tied values receive their average rank; ranks map into [0, 1];
+    masked-out entries and single-entry rows return 0.
+
+    values: (T, L) or (T, L, d); mask: (T, L) bool
+    """
+    squeeze_last = values.ndim == 2
+    x = values.unsqueeze(-1) if squeeze_last else values
+    m = mask.unsqueeze(-1).expand_as(x)
+
+    x_i = x.unsqueeze(2)    # (T, L, 1, d)
+    x_j = x.unsqueeze(1)    # (T, 1, L, d)
+    m_j = m.unsqueeze(1)
+
+    num_lower = ((x_j < x_i) & m_j).sum(dim=2)
+    num_equal = ((x_j == x_i) & m_j).sum(dim=2)    # includes x_i itself when valid
+    average_rank = num_lower.float() + 0.5 * (num_equal.float() - 1.0)
+
+    num_valid = m.sum(dim=1, keepdim=True).float()    # (T, 1, d)
+    out = average_rank / (num_valid - 1.0).clamp(min=1.0)
+    out = out.masked_fill(~m, 0.0)
+
+    return out.squeeze(-1) if squeeze_last else out
+# end
+
+
 '''---------------- features ----------------'''
 
 
@@ -288,68 +316,14 @@ class Feature_rank_normed(FeatureWrapperBase):
         [0.5, 0.5, 0.5] -> [0.5, 0.5, 0.5]
     """
 
+    # NOTE (Plan B for ties, kept from exploration): exact equality is the tie
+    # criterion inside percentile_rank_masked; if near-tie tolerance is ever
+    # wanted, add an isclose(rtol=1e-5, atol=1e-8) variant there so every rank
+    # consumer shares it.
     def load_block(self, id_sample, pos_base, size_block):
-        x = self.feature_inner.load_block(
-            id_sample,
-            pos_base,
-            size_block,
-        )  # (T, L, d)
-
-        cand = self._cand_mask_3d(
-            id_sample,
-            pos_base,
-            size_block,
-        ).expand_as(x)  # (T, L, d)
-
-        # Compare every candidate i against every candidate j.
-        #
-        # x_i: (T, L, 1, d)
-        # x_j: (T, 1, L, d)
-        x_i = x.unsqueeze(2)
-        x_j = x.unsqueeze(1)
-
-        # Whether comparison position j is a valid candidate.
-        cand_j = cand.unsqueeze(1)
-
-        # Number of candidate values strictly below x_i.
-        num_lower = ((x_j < x_i) & cand_j).sum(dim=2)
-
-        # Number of candidate values equal to x_i, including x_i itself.
-        num_equal = ((x_j == x_i) & cand_j).sum(dim=2)
-
-        ##############
-        # Plan B for num_equal
-        # equal = torch.isclose(
-        #     x_j,
-        #     x_i,
-        #     rtol=1e-5,
-        #     atol=1e-8,
-        # )
-        # num_equal = (equal & cand_j).sum(dim=2)
-        ###############
-
-        # Average rank for tied values:
-        #
-        # rank range occupied by the tie group:
-        #   num_lower, ..., num_lower + num_equal - 1
-        #
-        # average:
-        #   num_lower + (num_equal - 1) / 2
-        average_rank = (
-            num_lower.float()
-            + 0.5 * (num_equal.float() - 1.0)
-        )
-
-        # Number of candidates per row and feature dimension.
-        num_candidates = cand.sum(dim=1).float()  # (T, d)
-
-        # Map ranks from [0, n - 1] into [0, 1].
-        denominator = (num_candidates - 1.0).clamp(min=1.0)
-        rank_normed = average_rank / denominator.unsqueeze(1)
-
-        # A row containing one candidate receives rank 0.
-        # Non-candidates are always zero.
-        return rank_normed.masked_fill(~cand, 0.0)
+        x = self.feature_inner.load_block(id_sample, pos_base, size_block)    # (T, L, d)
+        cand_mask = self._cand_mask_3d(id_sample, pos_base, size_block).squeeze(-1)    # (T, L)
+        return percentile_rank_masked(x, cand_mask)
     # end
 # end
 
