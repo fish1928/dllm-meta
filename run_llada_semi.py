@@ -1,3 +1,6 @@
+import json
+import time
+
 import torch
 from tqdm import tqdm
 
@@ -12,6 +15,10 @@ from tools_debug import jprint
 
 # model runner
 class RunModel:
+
+    def __init__(self):
+        self.report_rows = []
+    # end
 
     def config_plugin_(self, config):
         config.klass_save_kv_previous=SaveKVPreviousPlugin_Disabled
@@ -99,6 +106,7 @@ class RunModel:
 
     def run_one(self, model, tokenizer, config, *args, **kwargs):
 
+        time_start = time.perf_counter()
         sentence_generated, has_done = self.generate(
             model,
             tokenizer,
@@ -106,6 +114,27 @@ class RunModel:
             *args,
             **kwargs
         )
+        duration_s = time.perf_counter() - time_start
+
+        # same per-sample report as run_llada_semi_cached_mlp, so baseline and
+        # router runs produce directly comparable wall-clock artifacts
+        path_report = getattr(config, 'path_report', None)
+        if path_report:
+            self.report_rows.append({
+                'id_sample': len(self.report_rows),
+                'len_prompt': kwargs['len_prompt'],
+                'has_done': has_done,
+                'duration_s': round(duration_s, 4),
+            })
+            with open(path_report, 'w') as file:    # rewritten per sample: crash-safe
+                json.dump({
+                    'path_router': None,
+                    'num_samples': len(self.report_rows),
+                    'duration_total_s': round(sum(r['duration_s'] for r in self.report_rows), 2),
+                    'rows': self.report_rows,
+                }, file, indent=2)
+            # end
+        # end
 
         return sentence_generated, has_done
     # end
