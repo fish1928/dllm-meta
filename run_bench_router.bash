@@ -106,13 +106,21 @@ for name in "${ROUTERS[@]}"; do
         fi
 
         flag_unsafe=""
+        allow_code_eval=""
         if [ "$unsafe" = "yes" ]; then
+            # two independent gates for code benchmarks:
+            #   --confirm_run_unsafe_code : lm_eval's own flag
+            #   HF_ALLOW_CODE_EVAL=1      : HF evaluate's code_eval metric gate,
+            #                               checked at TASK LOAD time (mbpp/utils.py
+            #                               runs a pass@k smoke test on import)
             flag_unsafe="--confirm_run_unsafe_code"
+            allow_code_eval="1"
         fi
 
         echo "=== $tag (len_target=$len_target, nshot=$nshot, limit=$LIMIT) ==="
         num_run=$((num_run + 1))
 
+        HF_ALLOW_CODE_EVAL="$allow_code_eval" \
         accelerate launch --num_processes=1 run_benchmark_main.py \
             --tasks "$task" --limit "$LIMIT" --model test --batch_size 1 \
             --num_fewshot "$nshot" --device "$DEVICE" $flag_unsafe \
