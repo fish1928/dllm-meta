@@ -23,6 +23,3 @@ for passage in passages:
 
     print(info_run)
 # end
-
-
-
