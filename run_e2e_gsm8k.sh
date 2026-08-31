@@ -45,7 +45,7 @@ for path_pt in "$FOLDER_ROUTERS"/*.pt; do
 
     for task in gsm8k; do
         if [ "$task" = "gsm8k" ]; then
-            LEN_TARGET=128
+            LEN_TARGET=256
             NSHOT=5
         else
             LEN_TARGET=256

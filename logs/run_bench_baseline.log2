@@ -1,3 +1,6 @@
+SKIP baseline__minerva_math: runner report already exists
+SKIP baseline__bbh: runner report already exists
+=== baseline__mbpp (len_target=512, nshot=3, limit=100) ===
 The following values were not passed to `accelerate launch` and had defaults used instead:
 	`--num_machines` was set to a value of `1`
 	`--mixed_precision` was set to a value of `'no'`
@@ -26,3 +29,7 @@ test ({'id_model': 'GSAI-ML/LLaDA-8B-Base', 'size_batch': 1, 'len_target': 512, 
 |-----|------:|------|-----:|---------|---|----:|---|-----:|
 |mbpp |      1|none  |     3|pass_at_1|↑  | 0.41|±  |0.0494|
 
+SKIP baseline__humaneval: runner report already exists
+SKIP baseline__truthfulqa_gen: runner report already exists
+
+baseline sweep complete: 1 launched, 4 skipped, 0 failed -> results_bench_baseline

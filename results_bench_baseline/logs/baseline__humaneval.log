@@ -3,119 +3,26 @@ The following values were not passed to `accelerate launch` and had defaults use
 	`--mixed_precision` was set to a value of `'no'`
 	`--dynamo_backend` was set to a value of `'no'`
 To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
-2026-08-12:22:28:40 WARNING  [config.evaluate_config:287] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
-2026-08-12:22:28:42 INFO     [_cli.run:388] Selected Tasks: ['humaneval']
-2026-08-12:22:28:42 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
-2026-08-12:22:28:42 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Base', 'size_batch': 1, 'len_target': 512, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_semi', 'path_report': 'results_bench_baseline/baseline__humaneval__runner.json'}
+2026-08-17:10:48:55 WARNING  [config.evaluate_config:287] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-08-17:10:48:57 INFO     [_cli.run:388] Selected Tasks: ['humaneval']
+2026-08-17:10:48:57 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-08-17:10:48:57 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Base', 'size_batch': 1, 'len_target': 512, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_semi', 'path_report': 'results_bench_baseline/baseline__humaneval__runner.json'}
 The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
 [YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Base', 'size_batch': 1, 'len_target': 512, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_semi', 'path_report': 'results_bench_baseline/baseline__humaneval__runner.json', 'device': 'cuda:1'} [FILE] /home/exx/Workspace/dllm-meta/run_benchmark_main.py
-Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:01,  3.89it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  4.03it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  4.08it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  4.13it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:01<00:00,  4.13it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  4.12it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  4.10it/s]
-Traceback (most recent call last):
-  File "/home/exx/Workspace/dllm-meta/run_benchmark_main.py", line 169, in <module>
-    cli_evaluate()
-    ~~~~~~~~~~~~^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/__main__.py", line 10, in cli_evaluate
-    parser.execute(args)
-    ~~~~~~~~~~~~~~^^^^^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/_cli/harness.py", line 60, in execute
-    args.func(args)
-    ~~~~~~~~~^^^^^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/_cli/run.py", line 391, in _execute
-    results = simple_evaluate(
-        model=cfg.model,
-    ...<32 lines>...
-        metadata=cfg.metadata,
-    )
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/utils.py", line 575, in _wrapper
-    return fn(*args, **kwargs)
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/evaluator.py", line 302, in simple_evaluate
-    loaded = task_manager.load(tasks)
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/tasks/manager.py", line 208, in load
-    obj = self._load_spec(spec) if not isinstance(spec, (Task, Group)) else spec  # type:ignore[invalid-argument-type]
-          ~~~~~~~~~~~~~~~^^^^^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/tasks/manager.py", line 154, in _load_spec
-    return self._factory.build(
-           ~~~~~~~~~~~~~~~~~~~^
-        entry, overrides=None, registry=self._index
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/tasks/_factory.py", line 61, in build
-    return self._build_task(entry, overrides)
-           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/tasks/_factory.py", line 67, in _build_task
-    cfg = self._load_full_config(entry, overrides)
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/tasks/_factory.py", line 261, in _load_full_config
-    cfg = deepcopy(load_yaml(entry.yaml_path, resolve_func=True))
-                   ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/tasks/_yaml_loader.py", line 185, in load_yaml
-    cfg = yaml.load(fh, Loader=loader_cls)  # noqa: S506
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/yaml/__init__.py", line 81, in load
-    return loader.get_single_data()
-           ~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/yaml/constructor.py", line 51, in get_single_data
-    return self.construct_document(node)
-           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/yaml/constructor.py", line 60, in construct_document
-    for dummy in generator:
-                 ^^^^^^^^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/yaml/constructor.py", line 413, in construct_yaml_map
-    value = self.construct_mapping(node)
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/yaml/constructor.py", line 218, in construct_mapping
-    return super().construct_mapping(node, deep=deep)
-           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/yaml/constructor.py", line 143, in construct_mapping
-    value = self.construct_object(value_node, deep=deep)
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/yaml/constructor.py", line 100, in construct_object
-    data = constructor(self, node)
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/tasks/_yaml_loader.py", line 22, in ctor
-    return _import_func_in_yml(spec, base_dir)
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/tasks/_yaml_loader.py", line 109, in _import_func_in_yml
-    module = _load_module_with_cache(rel)
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/tasks/_yaml_loader.py", line 88, in _load_module_with_cache
-    spec.loader.exec_module(module)  # type: ignore[arg-type]
-    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
-  File "<frozen importlib._bootstrap_external>", line 1023, in exec_module
-  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/tasks/humaneval/utils.py", line 10, in <module>
-    raise e
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/lm_eval/tasks/humaneval/utils.py", line 8, in <module>
-    results = compute_.compute(references=test_cases, predictions=candidates, k=[1])
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/evaluate/module.py", line 467, in compute
-    output = self._compute(**inputs, **compute_kwargs)
-  File "/home/exx/.cache/huggingface/modules/evaluate_modules/metrics/evaluate-metric--code_eval/78d307ea938083398db7d9815f03ed661e9c15f60d77880ce007a8a02648f176/code_eval.py", line 159, in _compute
-    raise ValueError(_WARNING)
-ValueError: 
-################################################################################
-                                  !!!WARNING!!!
-################################################################################
-The "code_eval" metric executes untrusted model-generated code in Python.
-Although it is highly unlikely that model-generated code will do something
-overtly malicious in response to this test suite, model-generated code may act
-destructively due to a lack of model capability or alignment.
-Users are strongly encouraged to sandbox this evaluation suite so that it
-does not perform destructive actions on their host or network. For more
-information on how OpenAI sandboxes its code, see the paper "Evaluating Large
-Language Models Trained on Code" (https://arxiv.org/abs/2107.03374).
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:01,  4.04it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  4.26it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  4.36it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  4.42it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:01<00:00,  4.45it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  4.50it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  4.42it/s]
+2026-08-17:10:49:03 INFO     [evaluator_utils:446] Selected tasks:
+2026-08-17:10:49:03 INFO     [evaluator_utils:480] Task: humaneval (humaneval/humaneval.yaml)
+2026-08-17:10:49:03 INFO     [evaluator:314] humaneval: Using gen_kwargs: {'until': ['\nclass', '\ndef', '\n#', '\nif', '\nprint'], 'max_gen_toks': 1024, 'do_sample': False}
+2026-08-17:10:49:03 INFO     [evaluator:329] num_fewshot has been set to 0 for humaneval in its config. Manual configuration will be ignored.
+2026-08-17:10:49:03 INFO     [api.task:312] Building contexts for humaneval on rank 0...
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 3534.87it/s]
+2026-08-17:10:49:03 INFO     [evaluator:585] Running generate_until requests
+Map:   0%|          | 0/100 [00:00<?, ? examples/s]Map: 100%|██████████| 100/100 [00:00<00:00, 6003.10 examples/s]
+  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [00:34<57:05, 34.60s/it]  2%|▏         | 2/100 [01:08<56:16, 34.45s/it]  3%|▎         | 3/100 [01:43<55:25, 34.28s/it]  4%|▍         | 4/100 [02:17<54:56, 34.34s/it]  5%|▌         | 5/100 [02:52<54:29, 34.41s/it]  6%|▌         | 6/100 [03:26<53:50, 34.36s/it]  7%|▋         | 7/100 [04:00<53:18, 34.39s/it]  8%|▊         | 8/100 [04:47<58:33, 38.19s/it]  9%|▉         | 9/100 [06:01<1:15:04, 49.50s/it] 10%|█         | 10/100 [07:15<1:25:32, 57.03s/it] 11%|█         | 11/100 [08:33<1:34:03, 63.40s/it] 12%|█▏        | 12/100 [09:47<1:37:39, 66.58s/it] 13%|█▎        | 13/100 [11:01<1:39:53, 68.89s/it] 14%|█▍        | 14/100 [12:14<1:40:33, 70.15s/it] 15%|█▌        | 15/100 [13:28<1:41:14, 71.46s/it] 16%|█▌        | 16/100 [14:42<1:41:02, 72.17s/it] 17%|█▋        | 17/100 [15:56<1:40:33, 72.69s/it] 18%|█▊        | 18/100 [17:14<1:41:43, 74.43s/it] 19%|█▉        | 19/100 [18:28<1:40:16, 74.28s/it] 20%|██        | 20/100 [19:43<1:39:03, 74.30s/it] 21%|██        | 21/100 [21:01<1:39:34, 75.62s/it] 22%|██▏       | 22/100 [22:18<1:38:50, 76.03s/it] 23%|██▎       | 23/100 [23:32<1:36:46, 75.41s/it] 24%|██▍       | 24/100 [24:47<1:35:05, 75.08s/it] 25%|██▌       | 25/100 [26:01<1:33:36, 74.88s/it] 26%|██▌       | 26/100 [27:18<1:33:16, 75.63s/it] 27%|██▋       | 27/100 [28:32<1:31:24, 75.13s/it] 28%|██▊       | 28/100 [29:47<1:29:46, 74.82s/it] 29%|██▉       | 29/100 [31:01<1:28:23, 74.69s/it] 30%|███       | 30/100 [32:15<1:26:56, 74.53s/it] 31%|███       | 31/100 [33:30<1:25:41, 74.51s/it] 32%|███▏      | 32/100 [34:44<1:24:17, 74.38s/it] 33%|███▎      | 33/100 [36:12<1:27:48, 78.63s/it] 34%|███▍      | 34/100 [37:31<1:26:27, 78.60s/it] 35%|███▌      | 35/100 [38:45<1:23:38, 77.20s/it] 36%|███▌      | 36/100 [39:59<1:21:19, 76.24s/it] 37%|███▋      | 37/100 [41:13<1:19:22, 75.59s/it] 38%|███▊      | 38/100 [42:30<1:18:31, 76.00s/it] 39%|███▉      | 39/100 [43:48<1:17:51, 76.59s/it] 40%|████      | 40/100 [45:02<1:15:51, 75.86s/it] 41%|████      | 41/100 [46:20<1:15:20, 76.62s/it] 42%|████▏     | 42/100 [47:38<1:14:32, 77.11s/it] 43%|████▎     | 43/100 [48:53<1:12:26, 76.26s/it] 44%|████▍     | 44/100 [50:11<1:11:47, 76.92s/it] 45%|████▌     | 45/100 [51:25<1:09:41, 76.04s/it] 46%|████▌     | 46/100 [52:39<1:07:54, 75.45s/it] 47%|████▋     | 47/100 [53:58<1:07:27, 76.38s/it] 48%|████▊     | 48/100 [55:11<1:05:29, 75.56s/it] 49%|████▉     | 49/100 [56:25<1:03:45, 75.01s/it] 50%|█████     | 50/100 [57:40<1:02:21, 74.83s/it] 51%|█████     | 51/100 [58:54<1:00:58, 74.66s/it] 52%|█████▏    | 52/100 [1:00:11<1:00:16, 75.35s/it] 53%|█████▎    | 53/100 [1:01:24<58:36, 74.81s/it]   54%|█████▍    | 54/100 [1:02:38<57:11, 74.60s/it] 55%|█████▌    | 55/100 [1:03:55<56:28, 75.30s/it] 56%|█████▌    | 56/100 [1:05:10<55:00, 75.00s/it] 57%|█████▋    | 57/100 [1:06:24<53:35, 74.79s/it] 58%|█████▊    | 58/100 [1:07:38<52:11, 74.55s/it] 59%|█████▉    | 59/100 [1:08:52<50:54, 74.50s/it] 60%|██████    | 60/100 [1:10:06<49:28, 74.20s/it] 61%|██████    | 61/100 [1:11:20<48:14, 74.23s/it] 62%|██████▏   | 62/100 [1:12:34<47:00, 74.22s/it] 63%|██████▎   | 63/100 [1:13:49<45:47, 74.25s/it] 64%|██████▍   | 64/100 [1:15:07<45:18, 75.50s/it] 65%|██████▌   | 65/100 [1:16:24<44:18, 75.95s/it] 66%|██████▌   | 66/100 [1:17:38<42:41, 75.34s/it] 67%|██████▋   | 67/100 [1:18:53<41:18, 75.10s/it] 68%|██████▊   | 68/100 [1:20:12<40:40, 76.26s/it] 69%|██████▉   | 69/100 [1:21:42<41:37, 80.57s/it] 70%|███████   | 70/100 [1:23:01<39:58, 79.96s/it] 71%|███████   | 71/100 [1:24:18<38:12, 79.07s/it] 72%|███████▏  | 72/100 [1:25:32<36:14, 77.68s/it] 73%|███████▎  | 73/100 [1:26:52<35:13, 78.26s/it] 74%|███████▍  | 74/100 [1:28:10<33:54, 78.27s/it] 75%|███████▌  | 75/100 [1:29:29<32:39, 78.39s/it] 76%|███████▌  | 76/100 [1:30:43<30:49, 77.08s/it] 77%|███████▋  | 77/100 [1:32:00<29:33, 77.11s/it] 78%|███████▊  | 78/100 [1:33:14<27:56, 76.22s/it] 79%|███████▉  | 79/100 [1:34:45<28:10, 80.52s/it] 80%|████████  | 80/100 [1:36:03<26:37, 79.88s/it] 81%|████████  | 81/100 [1:37:17<24:46, 78.22s/it] 82%|████████▏ | 82/100 [1:38:46<24:25, 81.39s/it] 83%|████████▎ | 83/100 [1:40:00<22:25, 79.13s/it] 84%|████████▍ | 84/100 [1:41:14<20:42, 77.64s/it] 85%|████████▌ | 85/100 [1:42:33<19:27, 77.86s/it] 86%|████████▌ | 86/100 [1:43:47<17:55, 76.84s/it] 87%|████████▋ | 87/100 [1:45:04<16:40, 76.97s/it] 88%|████████▊ | 88/100 [1:46:33<16:04, 80.41s/it] 89%|████████▉ | 89/100 [1:47:51<14:38, 79.90s/it] 90%|█████████ | 90/100 [1:49:06<13:01, 78.19s/it] 91%|█████████ | 91/100 [1:50:20<11:34, 77.12s/it] 92%|█████████▏| 92/100 [1:51:35<10:10, 76.32s/it] 93%|█████████▎| 93/100 [1:52:52<08:57, 76.77s/it] 94%|█████████▍| 94/100 [1:54:07<07:36, 76.14s/it] 95%|█████████▌| 95/100 [1:55:38<06:42, 80.42s/it] 96%|█████████▌| 96/100 [1:56:56<05:19, 79.88s/it] 97%|█████████▋| 97/100 [1:58:15<03:58, 79.49s/it] 98%|█████████▊| 98/100 [1:59:29<02:35, 77.91s/it] 99%|█████████▉| 99/100 [2:00:43<01:16, 76.66s/it]100%|██████████| 100/100 [2:02:01<00:00, 77.19s/it]100%|██████████| 100/100 [2:02:01<00:00, 73.22s/it]
+[YUKAI][DEBUG][generate_until:148] Total unfinished: 9, duration: 2:02:02 [FILE] /home/exx/Workspace/dllm-meta/run_benchmark_main.py
+2026-08-17:12:51:18 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Base', 'size_batch': 1, 'len_target': 512, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_semi', 'path_report': 'results_bench_baseline/baseline__humaneval__runner.json'}), gen_kwargs: ({}), limit: 100.0, num_fewshot: 0, batch_size: 1
+|  Tasks  |Version|  Filter   |n-shot|Metric|   |Value|   |Stderr|
+|---------|------:|-----------|-----:|------|---|----:|---|-----:|
+|humaneval|      1|create_test|     0|pass@1|↑  | 0.47|±  |0.0502|
 
-Once you have read this disclaimer and taken appropriate precautions,
-set the environment variable HF_ALLOW_CODE_EVAL="1". Within Python you can to this
-with:
-
->>> import os
->>> os.environ["HF_ALLOW_CODE_EVAL"] = "1"
-
-################################################################################
-Traceback (most recent call last):
-  File "/home/exx/miniconda3/bin/accelerate", line 7, in <module>
-    sys.exit(main())
-             ~~~~^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/accelerate/commands/accelerate_cli.py", line 48, in main
-    args.func(args)
-    ~~~~~~~~~^^^^^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/accelerate/commands/launch.py", line 1174, in launch_command
-    simple_launcher(args)
-    ~~~~~~~~~~~~~~~^^^^^^
-  File "/home/exx/miniconda3/lib/python3.13/site-packages/accelerate/commands/launch.py", line 769, in simple_launcher
-    raise subprocess.CalledProcessError(returncode=process.returncode, cmd=cmd)
-subprocess.CalledProcessError: Command '['/home/exx/miniconda3/bin/python3.13', 'run_benchmark_main.py', '--tasks', 'humaneval', '--limit', '100', '--model', 'test', '--batch_size', '1', '--num_fewshot', '0', '--device', 'cuda:1', '--confirm_run_unsafe_code', '--output_path', 'results_bench_baseline/baseline__humaneval', '--model_args', 'id_model=GSAI-ML/LLaDA-8B-Base,size_batch=1,len_target=512,num_blocks=1,num_unmask_per_step=1,id_mask=126336,runner=run_llada_semi,path_report=results_bench_baseline/baseline__humaneval__runner.json']' returned non-zero exit status 1.

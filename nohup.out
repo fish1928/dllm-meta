@@ -1,0 +1,3 @@
+bash: run_e2e.gsm8k.sh: No such file or directory
+SKIP *: missing sidecar json
+sweep complete -> results_e2e
