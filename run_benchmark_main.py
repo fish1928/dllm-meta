@@ -112,7 +112,7 @@ class TestLM(LM):
 
         ds = [{"prompt": req_eval.args[0], "until": req_eval.args[1]['until']} for req_eval in requests_eval]
         ds = Dataset.from_list(ds)
-        ds = ds.map(Preprocessor_Until(self.tokenizer))
+        ds = ds.map(Preprocessor_Until(self.tokenizer, use_chat_template=bool(self.config.use_chat_template)))
 
         '''prepare dataloader'''
         loader = DataLoader(

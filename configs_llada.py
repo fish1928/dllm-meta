@@ -44,6 +44,8 @@ class DiffusionConfig_Eval:
     klass_sorter: ConfKSorter
     klass_collector: ConfCollectorInterface
 
+    use_chat_template: Optional[bool] = None    # set True for instruct/SFT checkpoints
+
     '''with mlp'''
     step_refresh_remainder: Optional[int] = None
     h: Optional[int] = None

@@ -21,15 +21,35 @@ class Preprocessor_(ABC):
 
 class Preprocessor_Until(Preprocessor_):
 
+    def __init__(self, tokenizer, use_chat_template=False):
+        super().__init__(tokenizer)
+        self.use_chat_template = use_chat_template
+    # end
+
     def _tokenize(self, ds_each):
+        text_prompt = ds_each['prompt']
+
+        if self.use_chat_template:
+            # instruct/SFT checkpoints (e.g. LLaDA-8B-Instruct) expect the chat
+            # format; the whole lm_eval context (incl. few-shot examples) goes
+            # in as one user turn, matching lm_eval's own --apply_chat_template.
+            # The template string already carries its special tokens, so the
+            # add_special_tokens=False below stays correct (no double BOS).
+            text_prompt = self.tokenizer.apply_chat_template(
+                [{'role': 'user', 'content': text_prompt}],
+                add_generation_prompt=True,
+                tokenize=False,
+            )
+        # end
+
         ids = self.tokenizer(
-            ds_each['prompt'],
+            text_prompt,
             add_special_tokens=False
         )["input_ids"]
 
         return {
             'ids_prompt': ids,
-            'text_prompt': ds_each['prompt'],
+            'text_prompt': text_prompt,
             'until': ds_each['until']
         }
     # end tokenize
