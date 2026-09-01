@@ -64,6 +64,8 @@ def parse_args():
     parser.add_argument('--device', type=str, default='cuda:0')
     parser.add_argument('--limit', type=int, default=None, help='cap on mockup rows')
     parser.add_argument('--seed', type=int, default=233)
+    parser.add_argument('--use_chat_template', action='store_true',
+                        help='wrap prompts with the chat template (instruct/SFT checkpoints)')
     return parser.parse_args()
 # end
 
@@ -217,7 +219,19 @@ class CollectMetricsRunner:
         args = self.args
 
         for id_row, row in enumerate(tqdm(rows)):
-            ids_prompt = self.tokenizer(row['prompt'], add_special_tokens=False)['input_ids']
+            text_prompt = row['prompt']
+            if args.use_chat_template:
+                # same convention as Preprocessor_Until: the whole benchmark
+                # context becomes one user turn; the template string carries its
+                # own special tokens, so add_special_tokens stays False below
+                text_prompt = self.tokenizer.apply_chat_template(
+                    [{'role': 'user', 'content': text_prompt}],
+                    add_generation_prompt=True,
+                    tokenize=False,
+                )
+            # end
+
+            ids_prompt = self.tokenizer(text_prompt, add_special_tokens=False)['input_ids']
             len_prompt = len(ids_prompt)
 
             x = torch.tensor(ids_prompt + [args.id_mask] * args.len_target, dtype=torch.long).view(1, -1)
@@ -233,8 +247,19 @@ class CollectMetricsRunner:
             text_generated = self.tokenizer.batch_decode(x[:, len_prompt:position_end], skip_special_tokens=False)[0]
             has_done = any(word_stop in text_generated for word_stop in row['until'])
 
-            # benchmark check on the cleaned, stop-word-truncated text
-            text_checked = self.tokenizer.batch_decode(x[:, len_prompt:position_end], skip_special_tokens=True)[0]
+            # benchmark check on the cleaned, stop-word-truncated text; cut at the
+            # first EOS in the RAW ids first, so stray tokens in the EOS tail
+            # cannot corrupt last-number answer extraction (instruct models
+            # EOS-fill the block tail)
+            ids_generated = x[0, len_prompt:position_end]
+            id_eos = self.tokenizer.eos_token_id
+            if id_eos is not None:
+                hits_eos = (ids_generated == id_eos).nonzero()
+                if hits_eos.numel() > 0:
+                    ids_generated = ids_generated[:hits_eos[0, 0]]
+                # end
+            # end
+            text_checked = self.tokenizer.decode(ids_generated, skip_special_tokens=True)
             for word_stop in row['until']:
                 if word_stop in text_checked:
                     text_checked = text_checked.split(word_stop)[0]

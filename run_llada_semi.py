@@ -51,7 +51,10 @@ class RunModel:
         sorter = config_diffusion.klass_sorter()
         collector = config_diffusion.klass_collector()
 
-        words_stop = kwargs['until']
+        words_stop = list(kwargs['until'])
+        if getattr(config_diffusion, 'truncate_at_eos', None) and tokenizer.eos_token:
+            words_stop.append(tokenizer.eos_token)
+        # end
         len_prompt = kwargs['len_prompt']
         x = kwargs['ids_input']
 
