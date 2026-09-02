@@ -197,9 +197,30 @@ class RunModel:
             # end
         # end for
 
-        sentence_block_previous = tokenizer.batch_decode(x[:, len_prompt:position_start], skip_special_tokens=False)[0]
-        sentence_all = sentence_block_previous + sentence_block_current
-        sentence_all = tokenizer.decode(tokenizer(sentence_all)['input_ids'], skip_special_tokens=True)
+        if getattr(config_diffusion, 'truncate_at_eos', None):
+            # multi-block-safe extraction (see run_llada_semi.py): cut at the first
+            # EOS across the whole generated region, then apply stop words
+            ids_generated = x[0, len_prompt:position_end]
+            id_eos = tokenizer.eos_token_id
+            if id_eos is not None:
+                hits_eos = (ids_generated == id_eos).nonzero()
+                if hits_eos.numel() > 0:
+                    ids_generated = ids_generated[:hits_eos[0, 0]]
+                    has_done = True
+                # end
+            # end
+            sentence_all = tokenizer.decode(ids_generated, skip_special_tokens=True)
+            for word_stop in words_stop:
+                if word_stop in sentence_all:
+                    sentence_all = sentence_all.split(word_stop)[0]
+                    has_done = True
+                # end
+            # end
+        else:
+            sentence_block_previous = tokenizer.batch_decode(x[:, len_prompt:position_start], skip_special_tokens=False)[0]
+            sentence_all = sentence_block_previous + sentence_block_current
+            sentence_all = tokenizer.decode(tokenizer(sentence_all)['input_ids'], skip_special_tokens=True)
+        # end
 
         return sentence_all, has_done
     # end function
