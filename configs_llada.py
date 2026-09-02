@@ -45,6 +45,9 @@ class DiffusionConfig_Eval:
     klass_collector: ConfCollectorInterface
 
     use_chat_template: Optional[bool] = None    # set True for instruct/SFT checkpoints
+    use_official_gsm8k_prompt: Optional[bool] = None    # rebuild the OpenCompass 4-shot CoT
+                                                        # multiturn prompt (run with --num_fewshot 0;
+                                                        # implies chat template; gsm8k only)
     truncate_at_eos: Optional[bool] = None      # add tokenizer.eos_token to the stop words
                                                 # (instruct models EOS-fill the block tail;
                                                 # stray tokens after EOS otherwise corrupt

@@ -21,13 +21,43 @@ class Preprocessor_(ABC):
 
 class Preprocessor_Until(Preprocessor_):
 
-    def __init__(self, tokenizer, use_chat_template=False):
+    def __init__(self, tokenizer, use_chat_template=False, use_official_gsm8k_prompt=False):
         super().__init__(tokenizer)
         self.use_chat_template = use_chat_template
+        self.use_official_gsm8k_prompt = use_official_gsm8k_prompt
     # end
 
     def _tokenize(self, ds_each):
         text_prompt = ds_each['prompt']
+
+        if self.use_official_gsm8k_prompt:
+            # exact parity with the official OpenCompass gsm8k recipe (78.9):
+            # strip lm_eval's 0-shot shell to recover the raw question, rebuild
+            # the 4-shot CoT multiturn prompt, and tokenize with DEFAULT special
+            # tokens exactly like the official wrapper's batch_encode_plus
+            from run_official_llada_gsm8k import build_messages
+
+            question = text_prompt
+            if question.startswith('Question: '):
+                question = question[len('Question: '):]
+            # end
+            if question.rstrip().endswith('Answer:'):
+                question = question.rstrip()[:-len('Answer:')].rstrip()
+            # end
+
+            text_prompt = self.tokenizer.apply_chat_template(
+                build_messages(question, num_fewshot=4),
+                add_generation_prompt=True,
+                tokenize=False,
+            )
+            ids = self.tokenizer(text_prompt)['input_ids']    # add_special_tokens default, as official
+
+            return {
+                'ids_prompt': ids,
+                'text_prompt': text_prompt,
+                'until': ds_each['until']
+            }
+        # end
 
         if self.use_chat_template:
             # instruct/SFT checkpoints (e.g. LLaDA-8B-Instruct) expect the chat

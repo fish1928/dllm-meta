@@ -67,6 +67,22 @@ class TestLM(LM):
         self.runner_model.register_plugin_(self.model, self.config)
     # end
 
+    # lm_eval-native chat support: enables --apply_chat_template and
+    # --fewshot_as_multiturn (prompts then arrive pre-formatted, so run with
+    # use_chat_template UNSET to avoid double wrapping)
+    @property
+    def tokenizer_name(self):
+        return self.config.id_model.replace('/', '__')
+    # end
+
+    def apply_chat_template(self, chat_history, add_generation_prompt=True):
+        return self.tokenizer.apply_chat_template(
+            chat_history,
+            tokenize=False,
+            add_generation_prompt=add_generation_prompt,
+        )
+    # end
+
     def _init_tokenizer(self, id_model, trust_remote_code=True):
         tokenizer = AutoTokenizer.from_pretrained(
             id_model,
@@ -112,7 +128,11 @@ class TestLM(LM):
 
         ds = [{"prompt": req_eval.args[0], "until": req_eval.args[1]['until']} for req_eval in requests_eval]
         ds = Dataset.from_list(ds)
-        ds = ds.map(Preprocessor_Until(self.tokenizer, use_chat_template=bool(self.config.use_chat_template)))
+        ds = ds.map(Preprocessor_Until(
+            self.tokenizer,
+            use_chat_template=bool(self.config.use_chat_template),
+            use_official_gsm8k_prompt=bool(getattr(self.config, 'use_official_gsm8k_prompt', None)),
+        ))
 
         '''prepare dataloader'''
         loader = DataLoader(
