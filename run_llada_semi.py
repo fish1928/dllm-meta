@@ -59,14 +59,22 @@ class RunModel:
         x = kwargs['ids_input']
 
         has_done = False
-        position_start = 0        
+        position_start = 0
+        len_full = len_prompt + num_blocks * size_block
+        window_full = bool(getattr(config_diffusion, 'window_full', None))
 
         for id_block in range(num_blocks):
-            position_end = position_start + len_prompt + (id_block+1) * size_block
-            mask_mask_blk = x[:,position_start:position_end] == id_mask
+            block_end = len_prompt + (id_block + 1) * size_block
+            block_start = block_end - size_block
+            # window_full = official generate() semantics: the whole canvas is in
+            # context every step (future blocks visible as masks); otherwise the
+            # legacy growing window that ends at the current block
+            position_end = len_full if window_full else block_end
+
+            mask_mask_blk = x[:, block_start:block_end] == id_mask    # quota counts THIS block only
 
             idx_denoising = torch.arange(position_start, position_end, dtype=torch.long).to(x.device)
-            idx_block = torch.arange(position_end - size_block, position_end, dtype=torch.long).to(x.device)
+            idx_block = torch.arange(block_start, block_end, dtype=torch.long).to(x.device)
             quota_helper = BlockDiffusionQuotaHelper(mask_mask_blk, step_per_block)    # quotas spread over actual steps, not block size
             shape_target = (x.shape[0], position_end, -1)
 
@@ -74,12 +82,21 @@ class RunModel:
                 x_denoising,  y_denoising= x[:, idx_denoising], x[:, idx_denoising]
                 logits = model(x_denoising, idx_current=idx_denoising, shape_target=shape_target).logits
 
-                # only the current block can hold masked positions, so x0/conf are
-                # computed on the block slice only (keeps softmax at (1, size_block, V));
+                # only the current block may be unmasked, so x0/conf are computed
+                # on the block slice only (keeps softmax at (1, size_block, V));
                 # window starts at 0 -> global positions == logits row positions
                 snapshot = SimpleLogitsSnapshot(x_denoising, y_denoising, id_mask)
                 snapshot.update_x0_(idx_block.unsqueeze(0), logits[:, idx_block])
                 conf_snapshot = snapshot.transform_logits(collector, logits[:, idx_block], idx_transform=idx_block.unsqueeze(0))
+
+                if window_full:
+                    # future-block masks are in the window but must never be
+                    # unmasked; their conf is 0.0, which could tie with an
+                    # underflowed real confidence -> force them to -inf
+                    mask_outside = torch.ones_like(conf_snapshot, dtype=torch.bool)
+                    mask_outside[:, block_start:block_end] = False
+                    conf_snapshot = conf_snapshot.masked_fill(mask_outside, torch.finfo(conf_snapshot.dtype).min)
+                # end
 
                 idx_sorted_by_conf = sorter.argsort(conf_snapshot, snapshot)
                 num_unmask = quota_helper.get_quota(step)
@@ -89,7 +106,7 @@ class RunModel:
                 snapshot.update_this(1, idx_transform, x0=x)
             # end for step
 
-            sentence_block_current = tokenizer.batch_decode(x[:, position_end-size_block:position_end])[0]
+            sentence_block_current = tokenizer.batch_decode(x[:, block_start:block_end])[0]
 
             for word_stop in words_stop:
                 if word_stop in sentence_block_current:
