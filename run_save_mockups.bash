@@ -26,8 +26,11 @@ FILTER_TASK=${FILTER_TASK:-}
 PCT=$(awk "BEGIN{printf \"%d\", ${PERCENT}*100}")
 
 # task:num_fewshot:merge  (merge -> one combined csv for group tasks)
+# gsm8k appears twice: 5-shot for the base threads, 0-shot for the instruct
+# threads (their prompts are rebuilt at runtime: chat template / official CoT)
 SPECS=(
     "gsm8k:5:"
+    "gsm8k:0:"
     "minerva_math:4:merge"
     "bbh:3:merge"
     "mbpp:3:"

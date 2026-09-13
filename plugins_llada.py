@@ -324,10 +324,20 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
 
     SIZE_BLOCK = 64
     LEN_PROMPT = 32
+    ID_BLOCK_FORCED = None    # full-canvas DENSE forwards (oracle collectors) query
+                              # the whole canvas, so the current decoding block cannot
+                              # be inferred from idx_current[-1]; set it explicitly
+                              # per block and reset to None afterwards
 
     @classmethod
     def set_len_prompt(cls, len_prompt):
         cls.LEN_PROMPT = len_prompt
+        return cls
+    # end
+
+    @classmethod
+    def set_id_block_forced(cls, id_block):
+        cls.ID_BLOCK_FORCED = id_block
         return cls
     # end
 
@@ -370,11 +380,19 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
 
         # 处理idx_current带有上一个block的部分，选取现在的
         id_block_origin = self.get_block_id(idx_origin[-1], len_block, len_base)
-        id_block_current = self.get_block_id(idx_current[-1], len_block, len_base)
+        if self.__class__.ID_BLOCK_FORCED is not None:
+            id_block_current = self.__class__.ID_BLOCK_FORCED
+        else:
+            id_block_current = self.get_block_id(idx_current[-1], len_block, len_base)
+        # end
 
         idx_block_current_min = self.get_block_idx_min(id_block_current, len_block, len_base)
 
-        mask_row_current = idx_current >= idx_block_current_min
+        # both bounds: dense full-canvas queries carry rows BEYOND the current
+        # block too (future blocks); growing/sparse windows never do, so the
+        # upper bound is a no-op there
+        mask_row_current = (idx_current >= idx_block_current_min)\
+                         & (idx_current < idx_block_current_min + len_block)
         idx_current = idx_current[mask_row_current]   # select by mask
         assert idx_current.shape[-1] > 0
 
