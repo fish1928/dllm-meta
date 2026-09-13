@@ -1,0 +1,31 @@
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+2026-08-31:16:16:20 WARNING  [config.evaluate_config:287] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-08-31:16:16:22 INFO     [_cli.run:388] Selected Tasks: ['gsm8k']
+2026-08-31:16:16:22 WARNING  [evaluator:184] pretrained=None appears to be an instruct or chat variant but chat template is not applied. Recommend setting `apply_chat_template`
+        (optionally `fewshot_as_multiturn`).
+2026-08-31:16:16:22 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-08-31:16:16:22 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'use_chat_template': True, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'select_only_in_h': True, 'runner': 'run_llada_semi', 'h': 5}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'use_chat_template': True, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'select_only_in_h': True, 'runner': 'run_llada_semi', 'h': 5, 'device': 'cuda:0'} [FILE] /home/exx/Workspace/dllm-meta/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:01,  3.94it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  4.19it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  4.27it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  4.31it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:01<00:00,  4.35it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  4.35it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  4.30it/s]
+2026-08-31:16:16:27 INFO     [evaluator_utils:446] Selected tasks:
+2026-08-31:16:16:27 INFO     [evaluator_utils:480] Task: gsm8k (gsm8k/gsm8k.yaml)
+2026-08-31:16:16:27 INFO     [evaluator:314] gsm8k: Using gen_kwargs: {'until': ['Question:', '</s>', '<|im_end|>'], 'do_sample': False, 'temperature': 0.0}
+2026-08-31:16:16:27 WARNING  [evaluator:333] Overwriting default num_fewshot of gsm8k from 5 to 5
+2026-08-31:16:16:27 INFO     [api.task:312] Building contexts for gsm8k on rank 0...
+  0%|          | 0/20 [00:00<?, ?it/s]100%|██████████| 20/20 [00:00<00:00, 699.24it/s]
+2026-08-31:16:16:27 INFO     [evaluator:585] Running generate_until requests
+Map:   0%|          | 0/20 [00:00<?, ? examples/s]Map: 100%|██████████| 20/20 [00:00<00:00, 860.14 examples/s]
+  0%|          | 0/20 [00:00<?, ?it/s]  5%|▌         | 1/20 [00:30<09:36, 30.35s/it] 10%|█         | 2/20 [01:00<09:05, 30.31s/it] 15%|█▌        | 3/20 [01:31<08:38, 30.49s/it] 20%|██        | 4/20 [01:56<07:34, 28.41s/it] 25%|██▌       | 5/20 [02:27<07:22, 29.48s/it] 30%|███       | 6/20 [02:53<06:33, 28.08s/it] 35%|███▌      | 7/20 [03:20<06:00, 27.70s/it] 40%|████      | 8/20 [03:51<05:46, 28.86s/it] 45%|████▌     | 9/20 [04:23<05:27, 29.75s/it] 50%|█████     | 10/20 [04:48<04:44, 28.50s/it] 55%|█████▌    | 11/20 [05:16<04:13, 28.13s/it] 60%|██████    | 12/20 [05:52<04:05, 30.74s/it] 65%|██████▌   | 13/20 [06:30<03:49, 32.77s/it] 70%|███████   | 14/20 [07:05<03:20, 33.36s/it] 75%|███████▌  | 15/20 [07:30<02:35, 31.08s/it] 80%|████████  | 16/20 [07:58<01:59, 29.87s/it] 85%|████████▌ | 17/20 [08:33<01:34, 31.51s/it] 90%|█████████ | 18/20 [08:59<00:59, 29.82s/it] 95%|█████████▌| 19/20 [09:24<00:28, 28.55s/it]100%|██████████| 20/20 [09:51<00:00, 28.10s/it]100%|██████████| 20/20 [09:51<00:00, 29.59s/it]
+2026-08-31:16:26:21 INFO     [loggers.evaluation_tracker:316] Output path not provided, skipping saving results aggregated
+[YUKAI][DEBUG][generate_until:148] Total unfinished: 20, duration: 0:09:52 [FILE] /home/exx/Workspace/dllm-meta/run_benchmark_main.py
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'use_chat_template': True, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'select_only_in_h': True, 'runner': 'run_llada_semi', 'h': 5}), gen_kwargs: ({}), limit: 20.0, num_fewshot: 5, batch_size: 1
+|Tasks|Version|     Filter     |n-shot|  Metric   |   |Value|   |Stderr|
+|-----|------:|----------------|-----:|-----------|---|----:|---|-----:|
+|gsm8k|      3|flexible-extract|     5|exact_match|↑  |  0.6|±  |0.1124|
+|     |       |strict-match    |     5|exact_match|↑  |  0.3|±  |0.1051|
+
