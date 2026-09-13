@@ -2,7 +2,7 @@
 # Router deployment adapter.
 #
 # Bridges offline training (router_llada features from stats folders) and
-# online inference (run_llada_semi_cached_mlp building the SAME features from
+# online inference (the run_*_mlp runners building the SAME features from
 # live cache state). Train/deploy parity is the whole point: both sides share
 # percentile_rank_masked / sanitize and identical feature math, and a saved
 # router travels as a BUNDLE = <name>.pt (weights) + <name>.json (spec).

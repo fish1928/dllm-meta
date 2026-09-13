@@ -125,7 +125,7 @@ for name in "${ROUTERS[@]}"; do
             --tasks "$task" --limit "$LIMIT" --model test --batch_size 1 \
             --num_fewshot "$nshot" --device "$DEVICE" $flag_unsafe \
             --output_path "$FOLDER_RESULTS/$tag" \
-            --model_args "id_model=$ID_MODEL,size_batch=1,len_target=$len_target,num_blocks=$NUM_BLOCKS,num_unmask_per_step=$NUM_UNMASK,id_mask=$ID_MASK,step_refresh_remainder=$REFRESH,select_only_in_h=True,runner=run_llada_semi_cached_mlp,h=$H,path_router=$path_pt,path_report=$path_runner" \
+            --model_args "id_model=$ID_MODEL,size_batch=1,len_target=$len_target,num_blocks=$NUM_BLOCKS,num_unmask_per_step=$NUM_UNMASK,id_mask=$ID_MASK,step_refresh_remainder=$REFRESH,select_only_in_h=True,runner=run_llada_semi_mlp,h=$H,path_router=$path_pt,path_report=$path_runner" \
             2>&1 | tee "$FOLDER_LOGS/${tag}.log"
 
         if [ ! -f "$path_runner" ]; then

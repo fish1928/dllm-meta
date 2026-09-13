@@ -380,7 +380,13 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
 
         # idx_current 处理完成
         matrix_current = matrix_current[:, mask_row_current, :]   # keep rows aligned with filtered idx_current
-        matrix_current = matrix_current[:, :, -len_block:]
+        # keep the key columns of the CURRENT block. Columns are global positions
+        # (keys are the merged full-window cache), so slice by block bounds:
+        # under growing windows this equals the old [-len_block:] (the window ends
+        # at the block), but under full-canvas windows (run_llada_instruct_mlp)
+        # the current block sits mid-window and [-len_block:] would grab the
+        # canvas's LAST block instead.
+        matrix_current = matrix_current[:, :, idx_block_current_min:idx_block_current_min + len_block]
 
         if id_block_current != id_block_origin:
             matrix_origin = torch.zeros((1, len_block, len_block), dtype=matrix_current.dtype, device=device)   # -1

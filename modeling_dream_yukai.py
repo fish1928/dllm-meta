@@ -16,7 +16,7 @@ framework, mirroring modeling_llada_yukai_06.py:
 
 NOTE (Dream vs LLaDA): Dream predicts token at position p from the OUTPUT ROW at
 position p-1 (AR-style shift). This file does NOT shift -- the runner
-(run_dream_semi_cached_mlp.py) owns the shift by querying the p-1 rows explicitly.
+(the run_dream_* runners) own the shift by querying the p-1 rows explicitly.
 """
 
 import os

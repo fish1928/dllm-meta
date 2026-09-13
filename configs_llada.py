@@ -48,9 +48,10 @@ class DiffusionConfig_Eval:
     use_official_gsm8k_prompt: Optional[bool] = None    # rebuild the OpenCompass 4-shot CoT
                                                         # multiturn prompt (run with --num_fewshot 0;
                                                         # implies chat template; gsm8k only)
-    truncate_at_eos: Optional[bool] = None      # cached-MLP runner only; the baseline instruct
-                                                # runners (run_llada_instruct/run_dream_instruct)
-                                                # hard-enable EOS truncation instead of flagging it
+    truncate_at_eos: Optional[bool] = None      # DEPRECATED no-op, kept so old command lines
+                                                # still parse; the instruct runners
+                                                # (run_llada_instruct[_mlp]/run_dream_instruct[_mlp])
+                                                # hard-enable EOS truncation instead
 
     '''with mlp'''
     step_refresh_remainder: Optional[int] = None

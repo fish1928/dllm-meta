@@ -63,7 +63,7 @@ for path_pt in "$FOLDER_ROUTERS"/*.pt; do
             --tasks "$task" --limit "$LIMIT" --model test --batch_size 1 \
             --num_fewshot "$NSHOT" --device "$DEVICE" \
             --output_path "$FOLDER_RESULTS/$tag" \
-            --model_args "id_model=$ID_MODEL,size_batch=1,len_target=$LEN_TARGET,num_blocks=$NUM_BLOCKS,num_unmask_per_step=$NUM_UNMASK,id_mask=$ID_MASK,step_refresh_remainder=$REFRESH,select_only_in_h=True,runner=run_llada_semi_cached_mlp,h=$H,path_router=$path_pt,path_report=$FOLDER_RESULTS/${tag}__runner.json" \
+            --model_args "id_model=$ID_MODEL,size_batch=1,len_target=$LEN_TARGET,num_blocks=$NUM_BLOCKS,num_unmask_per_step=$NUM_UNMASK,id_mask=$ID_MASK,step_refresh_remainder=$REFRESH,select_only_in_h=True,runner=run_llada_semi_mlp,h=$H,path_router=$path_pt,path_report=$FOLDER_RESULTS/${tag}__runner.json" \
             || echo "FAILED: $tag"
     done
 done
