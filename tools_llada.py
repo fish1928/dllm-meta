@@ -201,3 +201,86 @@ class RefreshIdxHelper:
         return torch.sort(result)[0] if return_sorted else result
     # end
 # end
+
+
+'''shared runner helpers (used by the four baseline runners:
+   run_llada_semi / run_dream_semi / run_llada_instruct / run_dream_instruct)'''
+
+def collect_ids_stop(tokenizer):
+    # generation-terminator ids for instruct checkpoints: the tokenizer eos plus
+    # the chat-turn terminators some templates use instead of eos (Dream/Qwen
+    # emits <|im_end|>). Missing tokens map to unk/None and are skipped.
+    ids_stop = set()
+    if tokenizer.eos_token_id is not None:
+        ids_stop.add(tokenizer.eos_token_id)
+    # end
+
+    for token_stop in ('<|im_end|>', '<|endoftext|>', '<|eot_id|>'):
+        id_token = tokenizer.convert_tokens_to_ids(token_stop)
+        if id_token is not None and id_token >= 0 and id_token != tokenizer.unk_token_id:
+            ids_stop.add(id_token)
+        # end
+    # end
+
+    return ids_stop
+# end
+
+
+def truncate_text_at_stop(tokenizer, ids_generated, ids_stop, words_stop):
+    # instruct SFT EOS-fills the canvas tail, and an EOS in an EARLIER block
+    # leaves later blocks' junk in the answer (fatal for last-number answer
+    # extraction) -> cut at the first stop id across the WHOLE generated region
+    # at ids level, then decode and apply the harness stop words.
+    has_done = False
+
+    tensor_stop = torch.tensor(sorted(ids_stop), dtype=ids_generated.dtype, device=ids_generated.device)
+    hits_stop = torch.isin(ids_generated, tensor_stop).nonzero()
+    if hits_stop.numel() > 0:
+        ids_generated = ids_generated[:hits_stop[0, 0]]
+        has_done = True
+    # end
+
+    text = tokenizer.decode(ids_generated, skip_special_tokens=True)
+    for word_stop in words_stop:
+        if word_stop in text:
+            text = text.split(word_stop)[0]
+            has_done = True
+        # end
+    # end
+
+    return text, has_done
+# end
+
+
+class RunnerReport:
+    # per-sample wall-clock report shared by all runners, so baseline and router
+    # runs produce directly comparable json artifacts; rewritten per sample
+    # (crash-safe), no-op when config.path_report is unset
+    def __init__(self):
+        self.rows = []
+    # end
+
+    def add_and_dump(self, config, len_prompt, has_done, duration_s):
+        path_report = getattr(config, 'path_report', None)
+        if not path_report:
+            return
+        # end
+
+        self.rows.append({
+            'id_sample': len(self.rows),
+            'len_prompt': len_prompt,
+            'has_done': has_done,
+            'duration_s': round(duration_s, 4),
+        })
+
+        import json
+        with open(path_report, 'w') as file:
+            json.dump({
+                'path_router': getattr(config, 'path_router', None),
+                'num_samples': len(self.rows),
+                'duration_total_s': round(sum(row['duration_s'] for row in self.rows), 2),
+                'rows': self.rows,
+            }, file, indent=2)
+        # end
+    # end
+# end

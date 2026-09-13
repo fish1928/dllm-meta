@@ -1,11 +1,16 @@
 #################################################
-# llada-base baseline runner (full denoising, no cache/router).
+# dream-base baseline runner (full denoising, no cache/router).
 #
-# Thread: GSAI-ML/LLaDA-8B-Base, ONE-BLOCK setting (num_blocks=1 -> the
-# growing window trivially covers the whole canvas from step 0).
-# Base-only on purpose: no chat template, no EOS truncation, no full-canvas
-# multi-block machinery -- those are instruct behaviors and live in
-# run_llada_instruct.py. Prompting stays lm_eval-native (plain few-shot text).
+# Thread: Dream-org/Dream-v0-Base-7B, ONE-BLOCK setting (num_blocks=1).
+# Same skeleton as run_llada_semi.py with ONE model-family difference:
+#   Dream predicts the token at position p from the OUTPUT ROW at position p-1
+#   (AR-style shift inherited from Qwen2.5 init; see run_ppl_dream.py:
+#   logits = cat([logits[:,:1], logits[:,:-1]])). The full window [0, block_end)
+#   is forwarded anyway, so the shift is just a row re-index: the logits for
+#   block positions idx_block are the rows at idx_block - 1 (block_start >= 1
+#   always, the prompt is never empty).
+# Base-only on purpose: no chat template, no EOS truncation -- instruct
+# behaviors live in run_dream_instruct.py.
 #################################################
 
 import time
@@ -69,6 +74,7 @@ class RunModel:
 
             idx_denoising = torch.arange(position_start, position_end, dtype=torch.long).to(x.device)
             idx_block = torch.arange(block_start, block_end, dtype=torch.long).to(x.device)
+            idx_block_shifted = idx_block - 1    # dream shift: row p-1 carries the logits for p
             quota_helper = BlockDiffusionQuotaHelper(mask_mask_blk, step_per_block)    # quotas spread over actual steps, not block size
             shape_target = (x.shape[0], position_end, -1)
 
@@ -78,10 +84,11 @@ class RunModel:
 
                 # only the current block may be unmasked, so x0/conf are computed
                 # on the block slice only (keeps softmax at (1, size_block, V));
-                # window starts at 0 -> global positions == logits row positions
+                # window starts at 0 -> global positions == logits row positions,
+                # and the SHIFTED rows carry the block's predictions
                 snapshot = SimpleLogitsSnapshot(x_denoising, y_denoising, id_mask)
-                snapshot.update_x0_(idx_block.unsqueeze(0), logits[:, idx_block])
-                conf_snapshot = snapshot.transform_logits(collector, logits[:, idx_block], idx_transform=idx_block.unsqueeze(0))
+                snapshot.update_x0_(idx_block.unsqueeze(0), logits[:, idx_block_shifted])
+                conf_snapshot = snapshot.transform_logits(collector, logits[:, idx_block_shifted], idx_transform=idx_block.unsqueeze(0))
 
                 idx_sorted_by_conf = sorter.argsort(conf_snapshot, snapshot)
                 num_unmask = quota_helper.get_quota(step)

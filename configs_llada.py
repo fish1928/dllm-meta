@@ -48,13 +48,9 @@ class DiffusionConfig_Eval:
     use_official_gsm8k_prompt: Optional[bool] = None    # rebuild the OpenCompass 4-shot CoT
                                                         # multiturn prompt (run with --num_fewshot 0;
                                                         # implies chat template; gsm8k only)
-    window_full: Optional[bool] = None    # official generate() semantics: forward the FULL
-                                          # prompt+gen canvas every step (future blocks visible
-                                          # as masks), instead of the growing per-block window
-    truncate_at_eos: Optional[bool] = None      # add tokenizer.eos_token to the stop words
-                                                # (instruct models EOS-fill the block tail;
-                                                # stray tokens after EOS otherwise corrupt
-                                                # last-number answer extraction)
+    truncate_at_eos: Optional[bool] = None      # cached-MLP runner only; the baseline instruct
+                                                # runners (run_llada_instruct/run_dream_instruct)
+                                                # hard-enable EOS truncation instead of flagging it
 
     '''with mlp'''
     step_refresh_remainder: Optional[int] = None

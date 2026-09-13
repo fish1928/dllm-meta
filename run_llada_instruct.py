@@ -1,11 +1,16 @@
 #################################################
-# llada-base baseline runner (full denoising, no cache/router).
+# llada-instruct baseline runner (full denoising, no cache/router).
 #
-# Thread: GSAI-ML/LLaDA-8B-Base, ONE-BLOCK setting (num_blocks=1 -> the
-# growing window trivially covers the whole canvas from step 0).
-# Base-only on purpose: no chat template, no EOS truncation, no full-canvas
-# multi-block machinery -- those are instruct behaviors and live in
-# run_llada_instruct.py. Prompting stays lm_eval-native (plain few-shot text).
+# Thread: GSAI-ML/LLaDA-8B-Instruct, NATIVE block diffusion (official gsm8k
+# recipe: gen 256, block size 8 -> num_blocks = len_target / 8).
+# Two instruct behaviors are ALWAYS on here (no flags):
+#   - full-canvas windows: official generate() forwards the whole prompt+gen
+#     canvas every step, future blocks visible as masks (a growing window is a
+#     DIFFERENT decoding algorithm and costs real accuracy at small blocks)
+#   - EOS truncation: instruct SFT EOS-fills the tail; without an ids-level cut
+#     at the first EOS, later-block junk corrupts last-number extraction
+# Prompting (chat template / official 4-shot CoT) lives in dataprocess_llada:
+# pass use_chat_template=True or use_official_gsm8k_prompt=True in model_args.
 #################################################
 
 import time
@@ -13,7 +18,8 @@ import time
 import torch
 
 from components_llada import SimpleLogitsSnapshot
-from tools_llada import BlockDiffusionQuotaHelper, RunnerReport
+from tools_llada import BlockDiffusionQuotaHelper, RunnerReport,\
+                        collect_ids_stop, truncate_text_at_stop
 from plugins_llada import SaveKVPreviousPlugin_Disabled, CachePastKVPlugin_Disabled,\
                             CacheAttnPlugin_Disabled, CacheVOPlugin_Disabled
 
@@ -22,6 +28,7 @@ class RunModel:
 
     def __init__(self):
         self.report = RunnerReport()
+        self.ids_stop = None
     # end
 
     def config_plugin_(self, config):
@@ -57,20 +64,22 @@ class RunModel:
         len_prompt = kwargs['len_prompt']
         x = kwargs['ids_input']
 
-        has_done = False
         position_start = 0
+        len_full = len_prompt + num_blocks * size_block
+
+        # official generate() semantics: the whole canvas is in context every
+        # step, so window bounds and shape_target are block-invariant
+        idx_denoising = torch.arange(position_start, len_full, dtype=torch.long).to(x.device)
+        shape_target = (x.shape[0], len_full, -1)
 
         for id_block in range(num_blocks):
             block_end = len_prompt + (id_block + 1) * size_block
             block_start = block_end - size_block
-            position_end = block_end    # growing window: context ends at the current block
 
-            mask_mask_blk = x[:, block_start:block_end] == id_mask
+            mask_mask_blk = x[:, block_start:block_end] == id_mask    # quota counts THIS block only
 
-            idx_denoising = torch.arange(position_start, position_end, dtype=torch.long).to(x.device)
             idx_block = torch.arange(block_start, block_end, dtype=torch.long).to(x.device)
             quota_helper = BlockDiffusionQuotaHelper(mask_mask_blk, step_per_block)    # quotas spread over actual steps, not block size
-            shape_target = (x.shape[0], position_end, -1)
 
             for step in range(step_per_block):
                 x_denoising,  y_denoising= x[:, idx_denoising], x[:, idx_denoising]
@@ -83,6 +92,13 @@ class RunModel:
                 snapshot.update_x0_(idx_block.unsqueeze(0), logits[:, idx_block])
                 conf_snapshot = snapshot.transform_logits(collector, logits[:, idx_block], idx_transform=idx_block.unsqueeze(0))
 
+                # future-block masks are in the window but must never be
+                # unmasked; their conf is 0.0, which could tie with an
+                # underflowed real confidence -> force them to -inf
+                mask_outside = torch.ones_like(conf_snapshot, dtype=torch.bool)
+                mask_outside[:, block_start:block_end] = False
+                conf_snapshot = conf_snapshot.masked_fill(mask_outside, torch.finfo(conf_snapshot.dtype).min)
+
                 idx_sorted_by_conf = sorter.argsort(conf_snapshot, snapshot)
                 num_unmask = quota_helper.get_quota(step)
                 idx_transform = idx_sorted_by_conf[:, :num_unmask]
@@ -90,20 +106,13 @@ class RunModel:
                 snapshot.materialize_by_idx_(idx_transform, conf_snapshot)
                 snapshot.update_this(1, idx_transform, x0=x)
             # end for step
-
-            sentence_block_current = tokenizer.batch_decode(x[:, block_start:block_end])[0]
-
-            for word_stop in words_stop:
-                if word_stop in sentence_block_current:
-                    sentence_block_current = sentence_block_current.split(word_stop)[0]
-                    has_done = True
-                # end
-            # end
         # end for block
 
-        sentence_block_previous = tokenizer.batch_decode(x[:, len_prompt:position_end-size_block], skip_special_tokens=False)[0]
-        sentence_all = sentence_block_previous + sentence_block_current
-        sentence_all = tokenizer.decode(tokenizer(sentence_all)['input_ids'], skip_special_tokens=True)
+        if self.ids_stop is None:
+            self.ids_stop = collect_ids_stop(tokenizer)
+        # end
+        sentence_all, has_done = truncate_text_at_stop(
+            tokenizer, x[0, len_prompt:len_full], self.ids_stop, words_stop)
 
         return sentence_all, has_done
     # end
