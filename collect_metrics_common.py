@@ -167,6 +167,60 @@ def resolve_checker(task_name):
 # end
 
 
+'''---------------- evaluation summary ----------------'''
+
+
+def summarize_records(records):
+    """Aggregate per-sample checker results into benchmark scores (the same
+    rules lm_eval applies: gsm8k last-number, ifeval strict prompt-level,
+    minerva sympy equivalence, bbh answer-is match). Grouped per task_name so
+    merged collections (bbh subtasks) report per subtask plus an overall row.
+    'accuracy' = pass / (pass + fail); 'unknown' rows (mbpp/humaneval/
+    truthfulqa_gen/followbench have no offline checker) are excluded from it."""
+    summary = {}
+
+    def _bucket(records_bucket):
+        n_pass = sum(1 for r in records_bucket if r['result'] == 'pass')
+        n_fail = sum(1 for r in records_bucket if r['result'] == 'fail')
+        n_unknown = sum(1 for r in records_bucket if r['result'] == 'unknown')
+        n_scored = n_pass + n_fail
+        entry = {
+            'n': len(records_bucket),
+            'pass': n_pass,
+            'fail': n_fail,
+            'unknown': n_unknown,
+            'accuracy': round(n_pass / n_scored, 4) if n_scored else None,
+            'has_done_rate': round(sum(1 for r in records_bucket if r['has_done']) / len(records_bucket), 4),
+        }
+
+        # ifeval-style detail: mean over every numeric key of result_detail
+        # (prompt/inst level, strict/loose), matching lm_eval's aggregation
+        details = [r['result_detail'] for r in records_bucket if r.get('result_detail')]
+        if details:
+            keys = sorted(set().union(*(d.keys() for d in details)))
+            for key in keys:
+                values = [float(d[key]) for d in details
+                          if isinstance(d.get(key), (int, float, bool))]
+                if values:
+                    entry[f'mean_{key}'] = round(sum(values) / len(values), 4)
+                # end
+            # end
+        # end
+        return entry
+    # end
+
+    names_task = sorted({r['task_name'] for r in records})
+    for name_task in names_task:
+        summary[name_task] = _bucket([r for r in records if r['task_name'] == name_task])
+    # end
+    if len(names_task) > 1:
+        summary['__overall__'] = _bucket(records)
+    # end
+
+    return summary
+# end
+
+
 '''---------------- collector base ----------------'''
 
 
@@ -219,6 +273,7 @@ class OracleCollectorBase:
 
     def run(self, rows):
         args = self.args
+        records_summary = []
 
         for id_row, row in enumerate(tqdm(rows)):
             processed = self.preprocessor({'prompt': row['prompt'], 'until': row['until']})
@@ -267,7 +322,23 @@ class OracleCollectorBase:
             with open(os.path.join(folder_stats, 'generated.json'), 'w') as file:
                 json.dump(record, file)
             # end
+
+            records_summary.append({
+                'task_name': record['task_name'],
+                'result': record['result'],
+                'has_done': record['has_done'],
+                'result_detail': record.get('result_detail'),
+            })
         # end for
+
+        # benchmark score over the whole collection, printed as the run log's
+        # last word and kept machine-readable next to the sample folders
+        summary = summarize_records(records_summary)
+        with open(os.path.join(args.folder_output, 'eval_summary.json'), 'w') as file:
+            json.dump(summary, file, indent=2)
+        # end
+        jprint('=== oracle collection eval summary ({} samples) ==='.format(len(records_summary)))
+        jprint(json.dumps(summary, indent=2))
     # end
 # end
 
