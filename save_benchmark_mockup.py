@@ -19,8 +19,10 @@
 #   gsm8k             5      base threads; instruct threads re-prompt at runtime
 #   minerva_math      4      group -> 7 subtask CSVs
 #   bbh               3      group -> ~27 subtasks; use merge=bbh
-#   mbpp              3      code: HF_ALLOW_CODE_EVAL gate at task load (set below)
-#   humaneval         0      code: same gate
+#   mbpp              3      code: HF_ALLOW_CODE_EVAL gate at task load (set
+#                            below) AND --confirm_run_unsafe_code on the CLI
+#                            (required even with --predict_only)
+#   humaneval         0      code: same two gates
 #   truthfulqa_gen    0
 #   ifeval            0
 #   followbench       0      NOT in stock lm_eval; needs a custom task yaml

@@ -61,6 +61,13 @@ for spec in "${SPECS[@]}"; do
         model_args="$model_args,merge=$task"
     fi
 
+    # code benchmarks refuse to run without the unsafe-code confirmation even
+    # under --predict_only (the gate sits at task load, next to HF_ALLOW_CODE_EVAL)
+    flags_extra=""
+    if [ "$task" = "mbpp" ] || [ "$task" = "humaneval" ]; then
+        flags_extra="--confirm_run_unsafe_code"
+    fi
+
     echo "[mockup] $task (num_fewshot=$fewshot)"
     python save_benchmark_mockup.py \
         --tasks "$task" \
@@ -69,5 +76,6 @@ for spec in "${SPECS[@]}"; do
         --model_args "$model_args" \
         --predict_only \
         --output_path "$FOLDER_OUTPUT/lm_eval_logs" \
+        $flags_extra \
         || echo "[warn] $task failed -- if this is followbench, it needs a custom task yaml (--include_path); see save_benchmark_mockup.py header"
 done
