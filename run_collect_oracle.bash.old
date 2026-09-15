@@ -32,7 +32,7 @@ DEVICE=${DEVICE:-cuda:0}
 LIMIT=${LIMIT:-}
 FILTER_TASK=${FILTER_TASK:-}
 NUM_BLOCKS_LIST=${NUM_BLOCKS_LIST:-1}
-PERCENT=${PERCENT:-0.1}
+PERCENT=${PERCENT:-1}
 FOLDER_MOCKUP=${FOLDER_MOCKUP:-benchmark_mockup}
 FOLDER_OUTPUT=${FOLDER_OUTPUT:-stats_oracle}
 OFFICIAL_GSM8K=${OFFICIAL_GSM8K:-1}
@@ -58,7 +58,6 @@ SPECS=(
     "humaneval:512:0shot"
     "truthfulqa_gen:256:0shot"
     "ifeval:256:0shot"
-    "followbench:256:0shot"
 )
 
 for spec in "${SPECS[@]}"; do

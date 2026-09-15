@@ -1,0 +1,396 @@
+[mockup] gsm8k (num_fewshot=5)
+2026-09-13:23:20:37 INFO     [_cli.run:388] Selected Tasks: ['gsm8k']
+2026-09-13:23:20:37 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-13:23:20:37 INFO     [evaluator:239] Initializing mockup model, with arguments: {'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '5shot'}
+2026-09-13:23:20:39 INFO     [evaluator_utils:446] Selected tasks:
+2026-09-13:23:20:39 INFO     [evaluator_utils:480] Task: gsm8k (gsm8k/gsm8k.yaml)
+2026-09-13:23:20:39 INFO     [evaluator:314] gsm8k: Using gen_kwargs: {'until': ['Question:', '</s>', '<|im_end|>'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:20:39 INFO     [evaluator:319] Processing gsm8k in output-only mode. Metrics will not be calculated!
+2026-09-13:23:20:39 WARNING  [evaluator:333] Overwriting default num_fewshot of gsm8k from 5 to 5
+2026-09-13:23:20:39 INFO     [api.task:312] Building contexts for gsm8k on rank 0...
+  0%|          | 0/1319 [00:00<?, ?it/s]  6%|▌         | 74/1319 [00:00<00:01, 735.59it/s] 11%|█▏        | 149/1319 [00:00<00:01, 740.32it/s] 17%|█▋        | 225/1319 [00:00<00:01, 744.79it/s] 23%|██▎       | 300/1319 [00:00<00:01, 746.16it/s] 28%|██▊       | 375/1319 [00:00<00:01, 745.95it/s] 34%|███▍      | 450/1319 [00:00<00:01, 746.05it/s] 40%|███▉      | 525/1319 [00:00<00:01, 745.69it/s] 45%|████▌     | 600/1319 [00:00<00:00, 745.88it/s] 51%|█████     | 675/1319 [00:00<00:00, 745.57it/s] 57%|█████▋    | 750/1319 [00:01<00:00, 745.24it/s] 63%|██████▎   | 825/1319 [00:01<00:00, 745.11it/s] 68%|██████▊   | 900/1319 [00:01<00:00, 744.60it/s] 74%|███████▍  | 975/1319 [00:01<00:00, 744.14it/s] 80%|███████▉  | 1050/1319 [00:01<00:00, 744.11it/s] 85%|████████▌ | 1125/1319 [00:01<00:00, 743.47it/s] 91%|█████████ | 1200/1319 [00:01<00:00, 743.40it/s] 97%|█████████▋| 1276/1319 [00:01<00:00, 746.27it/s]100%|██████████| 1319/1319 [00:01<00:00, 748.50it/s]
+2026-09-13:23:20:40 INFO     [evaluator:585] Running generate_until requests
+2026-09-13:23:20:43 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+2026-09-13:23:20:43 INFO     [loggers.evaluation_tracker:119] Saving per-task samples to benchmark_mockup/lm_eval_logs/qdpv68r5/*.jsonl
+[YUKAI][DEBUG][_write_csv:145] saved 1319/1319 docs (1319 rows, 1 task(s)) to benchmark_mockup/mockup_gsm8k_5shot_p100.csv [FILE] /home/exx/Workspace/dllm-meta/save_benchmark_mockup.py
+mockup ({'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '5shot'}), gen_kwargs: ({}), limit: None, num_fewshot: 5, batch_size: 1
+|Tasks|Version|     Filter     |n-shot|Metric|   |Value|   |Stderr|
+|-----|------:|----------------|-----:|------|---|----:|---|------|
+|gsm8k|      3|flexible-extract|     5|bypass|↑  |  999|±  |   N/A|
+|     |       |strict-match    |     5|bypass|↑  |  999|±  |   N/A|
+
+[mockup] gsm8k (num_fewshot=0)
+2026-09-13:23:20:47 INFO     [_cli.run:388] Selected Tasks: ['gsm8k']
+2026-09-13:23:20:47 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-13:23:20:47 INFO     [evaluator:239] Initializing mockup model, with arguments: {'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '0shot'}
+2026-09-13:23:20:48 INFO     [evaluator_utils:446] Selected tasks:
+2026-09-13:23:20:48 INFO     [evaluator_utils:480] Task: gsm8k (gsm8k/gsm8k.yaml)
+2026-09-13:23:20:48 INFO     [evaluator:314] gsm8k: Using gen_kwargs: {'until': ['Question:', '</s>', '<|im_end|>'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:20:48 INFO     [evaluator:319] Processing gsm8k in output-only mode. Metrics will not be calculated!
+2026-09-13:23:20:48 WARNING  [evaluator:333] Overwriting default num_fewshot of gsm8k from 5 to 0
+2026-09-13:23:20:48 INFO     [api.task:312] Building contexts for gsm8k on rank 0...
+  0%|          | 0/1319 [00:00<?, ?it/s] 33%|███▎      | 433/1319 [00:00<00:00, 4326.95it/s] 66%|██████▌   | 872/1319 [00:00<00:00, 4363.96it/s] 99%|█████████▉| 1312/1319 [00:00<00:00, 4378.26it/s]100%|██████████| 1319/1319 [00:00<00:00, 4369.08it/s]
+2026-09-13:23:20:48 INFO     [evaluator:585] Running generate_until requests
+2026-09-13:23:20:52 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+2026-09-13:23:20:52 INFO     [loggers.evaluation_tracker:119] Saving per-task samples to benchmark_mockup/lm_eval_logs/qdpv68r5/*.jsonl
+[YUKAI][DEBUG][_write_csv:145] saved 1319/1319 docs (1319 rows, 1 task(s)) to benchmark_mockup/mockup_gsm8k_0shot_p100.csv [FILE] /home/exx/Workspace/dllm-meta/save_benchmark_mockup.py
+mockup ({'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '0shot'}), gen_kwargs: ({}), limit: None, num_fewshot: 0, batch_size: 1
+|Tasks|Version|     Filter     |n-shot|Metric|   |Value|   |Stderr|
+|-----|------:|----------------|-----:|------|---|----:|---|------|
+|gsm8k|      3|flexible-extract|     0|bypass|↑  |  999|±  |   N/A|
+|     |       |strict-match    |     0|bypass|↑  |  999|±  |   N/A|
+
+[mockup] minerva_math (num_fewshot=4)
+2026-09-13:23:20:55 INFO     [_cli.run:388] Selected Tasks: ['minerva_math']
+2026-09-13:23:20:55 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-13:23:20:55 INFO     [evaluator:239] Initializing mockup model, with arguments: {'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '4shot', 'merge': 'minerva_math'}
+2026-09-13:23:20:59 INFO     [evaluator_utils:446] Selected tasks:
+2026-09-13:23:20:59 INFO     [evaluator_utils:462] Group: minerva_math
+2026-09-13:23:20:59 INFO     [evaluator_utils:470]   Task: minerva_math_algebra (minerva_math/minerva_math_algebra.yaml)
+2026-09-13:23:20:59 INFO     [evaluator_utils:470]   Task: minerva_math_counting_and_prob (minerva_math/minerva_math_counting_and_prob.yaml)
+2026-09-13:23:20:59 INFO     [evaluator_utils:470]   Task: minerva_math_geometry (minerva_math/minerva_math_geometry.yaml)
+2026-09-13:23:20:59 INFO     [evaluator_utils:470]   Task: minerva_math_intermediate_algebra (minerva_math/minerva_math_intermediate_algebra.yaml)
+2026-09-13:23:20:59 INFO     [evaluator_utils:470]   Task: minerva_math_num_theory (minerva_math/minerva_math_num_theory.yaml)
+2026-09-13:23:20:59 INFO     [evaluator_utils:470]   Task: minerva_math_prealgebra (minerva_math/minerva_math_prealgebra.yaml)
+2026-09-13:23:20:59 INFO     [evaluator_utils:470]   Task: minerva_math_precalc (minerva_math/minerva_math_precalc.yaml)
+2026-09-13:23:20:59 INFO     [evaluator:314] minerva_math_algebra: Using gen_kwargs: {'until': ['Problem:'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:20:59 INFO     [evaluator:319] Processing minerva_math_algebra in output-only mode. Metrics will not be calculated!
+2026-09-13:23:20:59 WARNING  [evaluator:333] Overwriting default num_fewshot of minerva_math_algebra from 4 to 4
+2026-09-13:23:20:59 INFO     [evaluator:314] minerva_math_counting_and_prob: Using gen_kwargs: {'until': ['Problem:'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:20:59 INFO     [evaluator:319] Processing minerva_math_counting_and_prob in output-only mode. Metrics will not be calculated!
+2026-09-13:23:20:59 WARNING  [evaluator:333] Overwriting default num_fewshot of minerva_math_counting_and_prob from 4 to 4
+2026-09-13:23:20:59 INFO     [evaluator:314] minerva_math_geometry: Using gen_kwargs: {'until': ['Problem:'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:20:59 INFO     [evaluator:319] Processing minerva_math_geometry in output-only mode. Metrics will not be calculated!
+2026-09-13:23:20:59 WARNING  [evaluator:333] Overwriting default num_fewshot of minerva_math_geometry from 4 to 4
+2026-09-13:23:20:59 INFO     [evaluator:314] minerva_math_intermediate_algebra: Using gen_kwargs: {'until': ['Problem:'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:20:59 INFO     [evaluator:319] Processing minerva_math_intermediate_algebra in output-only mode. Metrics will not be calculated!
+2026-09-13:23:20:59 WARNING  [evaluator:333] Overwriting default num_fewshot of minerva_math_intermediate_algebra from 4 to 4
+2026-09-13:23:20:59 INFO     [evaluator:314] minerva_math_num_theory: Using gen_kwargs: {'until': ['Problem:'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:20:59 INFO     [evaluator:319] Processing minerva_math_num_theory in output-only mode. Metrics will not be calculated!
+2026-09-13:23:20:59 WARNING  [evaluator:333] Overwriting default num_fewshot of minerva_math_num_theory from 4 to 4
+2026-09-13:23:20:59 INFO     [evaluator:314] minerva_math_prealgebra: Using gen_kwargs: {'until': ['Problem:'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:20:59 INFO     [evaluator:319] Processing minerva_math_prealgebra in output-only mode. Metrics will not be calculated!
+2026-09-13:23:20:59 WARNING  [evaluator:333] Overwriting default num_fewshot of minerva_math_prealgebra from 4 to 4
+2026-09-13:23:20:59 INFO     [evaluator:314] minerva_math_precalc: Using gen_kwargs: {'until': ['Problem:'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:20:59 INFO     [evaluator:319] Processing minerva_math_precalc in output-only mode. Metrics will not be calculated!
+2026-09-13:23:20:59 WARNING  [evaluator:333] Overwriting default num_fewshot of minerva_math_precalc from 4 to 4
+2026-09-13:23:20:59 INFO     [api.task:312] Building contexts for minerva_math_algebra on rank 0...
+  0%|          | 0/1187 [00:00<?, ?it/s]  7%|▋         | 83/1187 [00:00<00:01, 828.32it/s] 14%|█▍        | 168/1187 [00:00<00:01, 839.55it/s] 21%|██▏       | 253/1187 [00:00<00:01, 842.12it/s] 28%|██▊       | 338/1187 [00:00<00:01, 842.13it/s] 36%|███▌      | 423/1187 [00:00<00:00, 844.30it/s] 43%|████▎     | 508/1187 [00:00<00:00, 843.46it/s] 50%|████▉     | 593/1187 [00:00<00:00, 844.18it/s] 57%|█████▋    | 678/1187 [00:00<00:00, 843.95it/s] 64%|██████▍   | 763/1187 [00:00<00:00, 843.66it/s] 71%|███████▏  | 848/1187 [00:01<00:00, 842.93it/s] 79%|███████▊  | 933/1187 [00:01<00:00, 842.89it/s] 86%|████████▌ | 1018/1187 [00:01<00:00, 841.47it/s] 93%|█████████▎| 1103/1187 [00:01<00:00, 842.40it/s]100%|██████████| 1187/1187 [00:01<00:00, 842.42it/s]
+2026-09-13:23:21:00 INFO     [api.task:312] Building contexts for minerva_math_counting_and_prob on rank 0...
+  0%|          | 0/474 [00:00<?, ?it/s] 18%|█▊        | 84/474 [00:00<00:00, 831.36it/s] 36%|███▌      | 169/474 [00:00<00:00, 838.84it/s] 54%|█████▍    | 255/474 [00:00<00:00, 844.47it/s] 72%|███████▏  | 340/474 [00:00<00:00, 845.13it/s] 90%|████████▉ | 426/474 [00:00<00:00, 848.25it/s]100%|██████████| 474/474 [00:00<00:00, 846.05it/s]
+2026-09-13:23:21:01 INFO     [api.task:312] Building contexts for minerva_math_geometry on rank 0...
+  0%|          | 0/479 [00:00<?, ?it/s] 18%|█▊        | 85/479 [00:00<00:00, 849.95it/s] 37%|███▋      | 175/479 [00:00<00:00, 875.67it/s] 58%|█████▊    | 277/479 [00:00<00:00, 937.87it/s] 79%|███████▉  | 379/479 [00:00<00:00, 968.91it/s]100%|██████████| 479/479 [00:00<00:00, 956.16it/s]
+2026-09-13:23:21:02 INFO     [api.task:312] Building contexts for minerva_math_intermediate_algebra on rank 0...
+  0%|          | 0/903 [00:00<?, ?it/s] 11%|█         | 101/903 [00:00<00:00, 1000.50it/s] 22%|██▏       | 203/903 [00:00<00:00, 1009.14it/s] 34%|███▍      | 305/903 [00:00<00:00, 1009.74it/s] 45%|████▌     | 407/903 [00:00<00:00, 1011.02it/s] 56%|█████▋    | 509/903 [00:00<00:00, 1010.51it/s] 68%|██████▊   | 611/903 [00:00<00:00, 1013.15it/s] 79%|███████▉  | 713/903 [00:00<00:00, 1015.20it/s] 90%|█████████ | 815/903 [00:00<00:00, 1015.66it/s]100%|██████████| 903/903 [00:00<00:00, 1012.25it/s]
+2026-09-13:23:21:02 INFO     [api.task:312] Building contexts for minerva_math_num_theory on rank 0...
+  0%|          | 0/540 [00:00<?, ?it/s] 19%|█▊        | 100/540 [00:00<00:00, 999.14it/s] 37%|███▋      | 201/540 [00:00<00:00, 1002.01it/s] 56%|█████▌    | 303/540 [00:00<00:00, 1006.14it/s] 75%|███████▍  | 404/540 [00:00<00:00, 1005.73it/s] 94%|█████████▎| 506/540 [00:00<00:00, 1008.39it/s]100%|██████████| 540/540 [00:00<00:00, 1007.29it/s]
+2026-09-13:23:21:03 INFO     [api.task:312] Building contexts for minerva_math_prealgebra on rank 0...
+  0%|          | 0/871 [00:00<?, ?it/s] 12%|█▏        | 102/871 [00:00<00:00, 1010.26it/s] 23%|██▎       | 204/871 [00:00<00:00, 1014.01it/s] 35%|███▌      | 306/871 [00:00<00:00, 1016.26it/s] 47%|████▋     | 408/871 [00:00<00:00, 1016.79it/s] 59%|█████▊    | 510/871 [00:00<00:00, 1015.03it/s] 70%|███████   | 612/871 [00:00<00:00, 1013.34it/s] 82%|████████▏ | 714/871 [00:00<00:00, 1012.10it/s] 94%|█████████▎| 816/871 [00:00<00:00, 1011.51it/s]100%|██████████| 871/871 [00:00<00:00, 1012.89it/s]
+2026-09-13:23:21:04 INFO     [api.task:312] Building contexts for minerva_math_precalc on rank 0...
+  0%|          | 0/546 [00:00<?, ?it/s] 18%|█▊        | 100/546 [00:00<00:00, 999.23it/s] 37%|███▋      | 201/546 [00:00<00:00, 1005.10it/s] 55%|█████▌    | 303/546 [00:00<00:00, 1008.36it/s] 74%|███████▍  | 405/546 [00:00<00:00, 1011.63it/s] 93%|█████████▎| 507/546 [00:00<00:00, 620.41it/s] 100%|██████████| 546/546 [00:00<00:00, 760.20it/s]
+2026-09-13:23:21:05 INFO     [evaluator:585] Running generate_until requests
+2026-09-13:23:21:10 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+2026-09-13:23:21:10 INFO     [loggers.evaluation_tracker:119] Saving per-task samples to benchmark_mockup/lm_eval_logs/za3tdex5/*.jsonl
+[YUKAI][DEBUG][_write_csv:145] saved 5000/5000 docs (5000 rows, 7 task(s)) to benchmark_mockup/mockup_minerva_math_4shot_p100.csv [FILE] /home/exx/Workspace/dllm-meta/save_benchmark_mockup.py
+mockup ({'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '4shot', 'merge': 'minerva_math'}), gen_kwargs: ({}), limit: None, num_fewshot: 4, batch_size: 1
+|               Tasks                |Version|Filter|n-shot|Metric|   |Value|   |Stderr|
+|------------------------------------|------:|------|-----:|------|---|----:|---|------|
+| - minerva_math_algebra             |      3|none  |     4|bypass|↑  |  999|±  |   N/A|
+| - minerva_math_counting_and_prob   |      3|none  |     4|bypass|↑  |  999|±  |   N/A|
+| - minerva_math_geometry            |      3|none  |     4|bypass|↑  |  999|±  |   N/A|
+| - minerva_math_intermediate_algebra|      3|none  |     4|bypass|↑  |  999|±  |   N/A|
+| - minerva_math_num_theory          |      3|none  |     4|bypass|↑  |  999|±  |   N/A|
+| - minerva_math_prealgebra          |      3|none  |     4|bypass|↑  |  999|±  |   N/A|
+| - minerva_math_precalc             |      3|none  |     4|bypass|↑  |  999|±  |   N/A|
+
+|Groups|Version|Filter|n-shot|Metric|   |Value|   |Stderr|
+|------|-------|------|------|------|---|-----|---|------|
+
+[mockup] bbh (num_fewshot=3)
+2026-09-13:23:21:14 INFO     [_cli.run:388] Selected Tasks: ['bbh']
+2026-09-13:23:21:14 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-13:23:21:14 INFO     [evaluator:239] Initializing mockup model, with arguments: {'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '3shot', 'merge': 'bbh'}
+2026-09-13:23:21:26 INFO     [evaluator_utils:446] Selected tasks:
+2026-09-13:23:21:26 INFO     [evaluator_utils:462] Group: bbh
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_boolean_expressions (bbh/cot_fewshot/boolean_expressions.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_causal_judgement (bbh/cot_fewshot/causal_judgement.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_date_understanding (bbh/cot_fewshot/date_understanding.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_disambiguation_qa (bbh/cot_fewshot/disambiguation_qa.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_dyck_languages (bbh/cot_fewshot/dyck_languages.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_formal_fallacies (bbh/cot_fewshot/formal_fallacies.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_geometric_shapes (bbh/cot_fewshot/geometric_shapes.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_hyperbaton (bbh/cot_fewshot/hyperbaton.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_logical_deduction_five_objects (bbh/cot_fewshot/logical_deduction_five_objects.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_logical_deduction_seven_objects (bbh/cot_fewshot/logical_deduction_seven_objects.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_logical_deduction_three_objects (bbh/cot_fewshot/logical_deduction_three_objects.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_movie_recommendation (bbh/cot_fewshot/movie_recommendation.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_multistep_arithmetic_two (bbh/cot_fewshot/multistep_arithmetic_two.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_navigate (bbh/cot_fewshot/navigate.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_object_counting (bbh/cot_fewshot/object_counting.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_penguins_in_a_table (bbh/cot_fewshot/penguins_in_a_table.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_reasoning_about_colored_objects (bbh/cot_fewshot/reasoning_about_colored_objects.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_ruin_names (bbh/cot_fewshot/ruin_names.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_salient_translation_error_detection (bbh/cot_fewshot/salient_translation_error_detection.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_snarks (bbh/cot_fewshot/snarks.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_sports_understanding (bbh/cot_fewshot/sports_understanding.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_temporal_sequences (bbh/cot_fewshot/temporal_sequences.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_tracking_shuffled_objects_five_objects (bbh/cot_fewshot/tracking_shuffled_objects_five_objects.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_tracking_shuffled_objects_seven_objects (bbh/cot_fewshot/tracking_shuffled_objects_seven_objects.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_tracking_shuffled_objects_three_objects (bbh/cot_fewshot/tracking_shuffled_objects_three_objects.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_web_of_lies (bbh/cot_fewshot/web_of_lies.yaml)
+2026-09-13:23:21:26 INFO     [evaluator_utils:470]   Task: bbh_cot_fewshot_word_sorting (bbh/cot_fewshot/word_sorting.yaml)
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_boolean_expressions: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_boolean_expressions in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_boolean_expressions from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_causal_judgement: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_causal_judgement in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_causal_judgement from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_date_understanding: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_date_understanding in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_date_understanding from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_disambiguation_qa: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_disambiguation_qa in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_disambiguation_qa from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_dyck_languages: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_dyck_languages in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_dyck_languages from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_formal_fallacies: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_formal_fallacies in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_formal_fallacies from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_geometric_shapes: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_geometric_shapes in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_geometric_shapes from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_hyperbaton: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_hyperbaton in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_hyperbaton from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_five_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_logical_deduction_five_objects in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_five_objects from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_seven_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_logical_deduction_seven_objects in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_seven_objects from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_three_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_logical_deduction_three_objects in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_three_objects from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_movie_recommendation: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_movie_recommendation in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_movie_recommendation from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_multistep_arithmetic_two: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_multistep_arithmetic_two in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_multistep_arithmetic_two from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_navigate: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_navigate in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_navigate from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_object_counting: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_object_counting in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_object_counting from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_penguins_in_a_table: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_penguins_in_a_table in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_penguins_in_a_table from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_reasoning_about_colored_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_reasoning_about_colored_objects in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_reasoning_about_colored_objects from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_ruin_names: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_ruin_names in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_ruin_names from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_salient_translation_error_detection: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_salient_translation_error_detection in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_salient_translation_error_detection from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_snarks: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_snarks in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_snarks from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_sports_understanding: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_sports_understanding in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_sports_understanding from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_temporal_sequences: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_temporal_sequences in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_temporal_sequences from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_five_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_tracking_shuffled_objects_five_objects in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_five_objects from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_seven_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_tracking_shuffled_objects_seven_objects in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_seven_objects from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_three_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_tracking_shuffled_objects_three_objects in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_three_objects from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_web_of_lies: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_web_of_lies in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_web_of_lies from 3 to 3
+2026-09-13:23:21:26 INFO     [evaluator:314] bbh_cot_fewshot_word_sorting: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-13:23:21:26 INFO     [evaluator:319] Processing bbh_cot_fewshot_word_sorting in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:26 WARNING  [evaluator:333] Overwriting default num_fewshot of bbh_cot_fewshot_word_sorting from 3 to 3
+2026-09-13:23:21:26 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_boolean_expressions on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 42%|████▏     | 104/250 [00:00<00:00, 1034.66it/s] 83%|████████▎ | 208/250 [00:00<00:00, 1034.18it/s]100%|██████████| 250/250 [00:00<00:00, 1033.62it/s]
+2026-09-13:23:21:26 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_causal_judgement on rank 0...
+  0%|          | 0/187 [00:00<?, ?it/s] 56%|█████▌    | 104/187 [00:00<00:00, 1037.83it/s]100%|██████████| 187/187 [00:00<00:00, 1037.22it/s]
+2026-09-13:23:21:26 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_date_understanding on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 42%|████▏     | 104/250 [00:00<00:00, 1034.90it/s] 83%|████████▎ | 208/250 [00:00<00:00, 1033.97it/s]100%|██████████| 250/250 [00:00<00:00, 1034.28it/s]
+2026-09-13:23:21:26 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_disambiguation_qa on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 41%|████      | 103/250 [00:00<00:00, 1028.41it/s] 83%|████████▎ | 207/250 [00:00<00:00, 1031.81it/s]100%|██████████| 250/250 [00:00<00:00, 1031.53it/s]
+2026-09-13:23:21:27 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_dyck_languages on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 42%|████▏     | 104/250 [00:00<00:00, 1033.77it/s] 83%|████████▎ | 208/250 [00:00<00:00, 1037.22it/s]100%|██████████| 250/250 [00:00<00:00, 1036.93it/s]
+2026-09-13:23:21:27 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_formal_fallacies on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 41%|████      | 102/250 [00:00<00:00, 1019.52it/s] 82%|████████▏ | 205/250 [00:00<00:00, 1024.96it/s]100%|██████████| 250/250 [00:00<00:00, 1024.55it/s]
+2026-09-13:23:21:27 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_geometric_shapes on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 42%|████▏     | 104/250 [00:00<00:00, 1030.36it/s] 83%|████████▎ | 208/250 [00:00<00:00, 1035.85it/s]100%|██████████| 250/250 [00:00<00:00, 1036.89it/s]
+2026-09-13:23:21:27 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_hyperbaton on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 42%|████▏     | 104/250 [00:00<00:00, 1034.41it/s] 84%|████████▎ | 209/250 [00:00<00:00, 1038.20it/s]100%|██████████| 250/250 [00:00<00:00, 1037.23it/s]
+2026-09-13:23:21:28 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_five_objects on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 42%|████▏     | 105/250 [00:00<00:00, 1042.10it/s] 84%|████████▍ | 210/250 [00:00<00:00, 1043.77it/s]100%|██████████| 250/250 [00:00<00:00, 1044.17it/s]
+2026-09-13:23:21:28 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_seven_objects on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 42%|████▏     | 105/250 [00:00<00:00, 1046.81it/s] 91%|█████████ | 228/250 [00:00<00:00, 1153.57it/s]100%|██████████| 250/250 [00:00<00:00, 1143.66it/s]
+2026-09-13:23:21:28 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_three_objects on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 48%|████▊     | 121/250 [00:00<00:00, 1209.60it/s] 98%|█████████▊| 244/250 [00:00<00:00, 1217.94it/s]100%|██████████| 250/250 [00:00<00:00, 1216.33it/s]
+2026-09-13:23:21:28 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_movie_recommendation on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 49%|████▉     | 123/250 [00:00<00:00, 1221.61it/s] 98%|█████████▊| 246/250 [00:00<00:00, 1221.44it/s]100%|██████████| 250/250 [00:00<00:00, 1221.02it/s]
+2026-09-13:23:21:28 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_multistep_arithmetic_two on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 49%|████▉     | 122/250 [00:00<00:00, 1217.54it/s] 98%|█████████▊| 244/250 [00:00<00:00, 1217.23it/s]100%|██████████| 250/250 [00:00<00:00, 1217.08it/s]
+2026-09-13:23:21:29 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_navigate on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 49%|████▉     | 122/250 [00:00<00:00, 1212.16it/s] 98%|█████████▊| 244/250 [00:00<00:00, 1210.46it/s]100%|██████████| 250/250 [00:00<00:00, 1208.93it/s]
+2026-09-13:23:21:29 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_object_counting on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 49%|████▉     | 122/250 [00:00<00:00, 1217.69it/s] 98%|█████████▊| 245/250 [00:00<00:00, 1220.42it/s]100%|██████████| 250/250 [00:00<00:00, 1219.67it/s]
+2026-09-13:23:21:29 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_penguins_in_a_table on rank 0...
+  0%|          | 0/146 [00:00<?, ?it/s] 84%|████████▍ | 123/146 [00:00<00:00, 1220.14it/s]100%|██████████| 146/146 [00:00<00:00, 1218.69it/s]
+2026-09-13:23:21:29 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_reasoning_about_colored_objects on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 49%|████▉     | 123/250 [00:00<00:00, 1223.28it/s] 98%|█████████▊| 246/250 [00:00<00:00, 1221.95it/s]100%|██████████| 250/250 [00:00<00:00, 1221.65it/s]
+2026-09-13:23:21:29 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_ruin_names on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 48%|████▊     | 121/250 [00:00<00:00, 1202.08it/s] 97%|█████████▋| 243/250 [00:00<00:00, 1208.07it/s]100%|██████████| 250/250 [00:00<00:00, 1206.80it/s]
+2026-09-13:23:21:30 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_salient_translation_error_detection on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 48%|████▊     | 120/250 [00:00<00:00, 1194.54it/s] 96%|█████████▋| 241/250 [00:00<00:00, 1198.17it/s]100%|██████████| 250/250 [00:00<00:00, 1197.47it/s]
+2026-09-13:23:21:30 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_snarks on rank 0...
+  0%|          | 0/178 [00:00<?, ?it/s] 67%|██████▋   | 120/178 [00:00<00:00, 1197.10it/s]100%|██████████| 178/178 [00:00<00:00, 1197.41it/s]
+2026-09-13:23:21:30 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_sports_understanding on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 49%|████▉     | 122/250 [00:00<00:00, 1219.08it/s] 98%|█████████▊| 244/250 [00:00<00:00, 1219.06it/s]100%|██████████| 250/250 [00:00<00:00, 1218.40it/s]
+2026-09-13:23:21:30 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_temporal_sequences on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 48%|████▊     | 121/250 [00:00<00:00, 1203.49it/s] 97%|█████████▋| 243/250 [00:00<00:00, 1209.01it/s]100%|██████████| 250/250 [00:00<00:00, 1207.72it/s]
+2026-09-13:23:21:30 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_five_objects on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 49%|████▉     | 122/250 [00:00<00:00, 1207.78it/s] 98%|█████████▊| 244/250 [00:00<00:00, 1210.65it/s]100%|██████████| 250/250 [00:00<00:00, 1210.00it/s]
+2026-09-13:23:21:31 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_seven_objects on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 49%|████▉     | 122/250 [00:00<00:00, 1210.77it/s] 98%|█████████▊| 244/250 [00:00<00:00, 1210.34it/s]100%|██████████| 250/250 [00:00<00:00, 1210.30it/s]
+2026-09-13:23:21:31 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_three_objects on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 48%|████▊     | 121/250 [00:00<00:00, 1209.25it/s] 97%|█████████▋| 243/250 [00:00<00:00, 1210.71it/s]100%|██████████| 250/250 [00:00<00:00, 1209.07it/s]
+2026-09-13:23:21:31 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_web_of_lies on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 49%|████▉     | 123/250 [00:00<00:00, 1221.69it/s] 98%|█████████▊| 246/250 [00:00<00:00, 1220.20it/s]100%|██████████| 250/250 [00:00<00:00, 1220.22it/s]
+2026-09-13:23:21:31 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_word_sorting on rank 0...
+  0%|          | 0/250 [00:00<?, ?it/s] 49%|████▉     | 123/250 [00:00<00:00, 1222.67it/s] 98%|█████████▊| 246/250 [00:00<00:00, 1223.69it/s]100%|██████████| 250/250 [00:00<00:00, 1222.96it/s]
+2026-09-13:23:21:31 INFO     [evaluator:585] Running generate_until requests
+2026-09-13:23:21:33 WARNING  [api.group:263] Group 'bbh': no values found for metric 'exact_match,get-answer' across any tasks.
+2026-09-13:23:21:35 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+2026-09-13:23:21:35 INFO     [loggers.evaluation_tracker:119] Saving per-task samples to benchmark_mockup/lm_eval_logs/08mp0xjy/*.jsonl
+[YUKAI][DEBUG][_write_csv:145] saved 6511/6511 docs (6511 rows, 27 task(s)) to benchmark_mockup/mockup_bbh_3shot_p100.csv [FILE] /home/exx/Workspace/dllm-meta/save_benchmark_mockup.py
+mockup ({'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '3shot', 'merge': 'bbh'}), gen_kwargs: ({}), limit: None, num_fewshot: 3, batch_size: 1
+|                          Tasks                           |Version|  Filter  |n-shot|Metric|   |Value|   |Stderr|
+|----------------------------------------------------------|------:|----------|-----:|------|---|----:|---|------|
+| - bbh_cot_fewshot_boolean_expressions                    |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_causal_judgement                       |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_date_understanding                     |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_disambiguation_qa                      |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_dyck_languages                         |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_formal_fallacies                       |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_geometric_shapes                       |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_hyperbaton                             |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_logical_deduction_five_objects         |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_logical_deduction_seven_objects        |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_logical_deduction_three_objects        |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_movie_recommendation                   |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_multistep_arithmetic_two               |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_navigate                               |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_object_counting                        |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_penguins_in_a_table                    |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_reasoning_about_colored_objects        |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_ruin_names                             |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_salient_translation_error_detection    |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_snarks                                 |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_sports_understanding                   |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_temporal_sequences                     |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_tracking_shuffled_objects_five_objects |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_tracking_shuffled_objects_seven_objects|      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_tracking_shuffled_objects_three_objects|      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_web_of_lies                            |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+| - bbh_cot_fewshot_word_sorting                           |      4|get-answer|     3|bypass|↑  |  999|±  |   N/A|
+
+|Groups|Version|Filter|n-shot|Metric|   |Value|   |Stderr|
+|------|-------|------|------|------|---|-----|---|------|
+
+[mockup] mbpp (num_fewshot=3)
+2026-09-13:23:21:39 INFO     [_cli.run:388] Selected Tasks: ['mbpp']
+2026-09-13:23:21:39 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-13:23:21:39 INFO     [evaluator:239] Initializing mockup model, with arguments: {'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '3shot'}
+2026-09-13:23:21:41 INFO     [evaluator_utils:446] Selected tasks:
+2026-09-13:23:21:41 INFO     [evaluator_utils:480] Task: mbpp (mbpp/mbpp.yaml)
+2026-09-13:23:21:41 INFO     [evaluator:314] mbpp: Using gen_kwargs: {'until': ['[DONE]'], 'do_sample': False}
+2026-09-13:23:21:41 INFO     [evaluator:319] Processing mbpp in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:41 WARNING  [evaluator:333] Overwriting default num_fewshot of mbpp from 3 to 3
+2026-09-13:23:21:41 INFO     [api.task:312] Building contexts for mbpp on rank 0...
+  0%|          | 0/500 [00:00<?, ?it/s]  6%|▌         | 30/500 [00:00<00:01, 295.81it/s] 12%|█▏        | 61/500 [00:00<00:01, 298.48it/s] 18%|█▊        | 92/500 [00:00<00:01, 300.30it/s] 25%|██▍       | 123/500 [00:00<00:01, 300.29it/s] 31%|███       | 154/500 [00:00<00:01, 300.47it/s] 37%|███▋      | 185/500 [00:00<00:01, 301.04it/s] 43%|████▎     | 216/500 [00:00<00:00, 301.27it/s] 49%|████▉     | 247/500 [00:00<00:00, 301.49it/s] 56%|█████▌    | 278/500 [00:00<00:00, 301.38it/s] 62%|██████▏   | 309/500 [00:01<00:00, 300.97it/s] 68%|██████▊   | 340/500 [00:01<00:00, 300.87it/s] 74%|███████▍  | 371/500 [00:01<00:00, 300.94it/s] 80%|████████  | 402/500 [00:01<00:00, 300.86it/s] 87%|████████▋ | 433/500 [00:01<00:00, 301.16it/s] 93%|█████████▎| 464/500 [00:01<00:00, 301.44it/s] 99%|█████████▉| 495/500 [00:01<00:00, 301.58it/s]100%|██████████| 500/500 [00:01<00:00, 266.11it/s]
+2026-09-13:23:21:43 INFO     [evaluator:585] Running generate_until requests
+2026-09-13:23:21:46 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+2026-09-13:23:21:46 INFO     [loggers.evaluation_tracker:119] Saving per-task samples to benchmark_mockup/lm_eval_logs/qdpv68r5/*.jsonl
+[YUKAI][DEBUG][_write_csv:145] saved 500/500 docs (500 rows, 1 task(s)) to benchmark_mockup/mockup_mbpp_3shot_p100.csv [FILE] /home/exx/Workspace/dllm-meta/save_benchmark_mockup.py
+mockup ({'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '3shot'}), gen_kwargs: ({}), limit: None, num_fewshot: 3, batch_size: 1
+|Tasks|Version|Filter|n-shot|Metric|   |Value|   |Stderr|
+|-----|------:|------|-----:|------|---|----:|---|------|
+|mbpp |      1|none  |     3|bypass|↑  |  999|±  |   N/A|
+
+[mockup] humaneval (num_fewshot=0)
+2026-09-13:23:21:50 INFO     [_cli.run:388] Selected Tasks: ['humaneval']
+2026-09-13:23:21:50 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-13:23:21:50 INFO     [evaluator:239] Initializing mockup model, with arguments: {'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '0shot'}
+2026-09-13:23:21:52 INFO     [evaluator_utils:446] Selected tasks:
+2026-09-13:23:21:52 INFO     [evaluator_utils:480] Task: humaneval (humaneval/humaneval.yaml)
+2026-09-13:23:21:52 INFO     [evaluator:314] humaneval: Using gen_kwargs: {'until': ['\nclass', '\ndef', '\n#', '\nif', '\nprint'], 'max_gen_toks': 1024, 'do_sample': False}
+2026-09-13:23:21:52 INFO     [evaluator:319] Processing humaneval in output-only mode. Metrics will not be calculated!
+2026-09-13:23:21:52 INFO     [evaluator:329] num_fewshot has been set to 0 for humaneval in its config. Manual configuration will be ignored.
+2026-09-13:23:21:52 INFO     [api.task:312] Building contexts for humaneval on rank 0...
+  0%|          | 0/164 [00:00<?, ?it/s]100%|██████████| 164/164 [00:00<00:00, 3638.29it/s]
+2026-09-13:23:21:52 INFO     [evaluator:585] Running generate_until requests
+2026-09-13:23:21:55 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+2026-09-13:23:21:55 INFO     [loggers.evaluation_tracker:119] Saving per-task samples to benchmark_mockup/lm_eval_logs/qdpv68r5/*.jsonl
+[YUKAI][DEBUG][_write_csv:145] saved 164/164 docs (164 rows, 1 task(s)) to benchmark_mockup/mockup_humaneval_0shot_p100.csv [FILE] /home/exx/Workspace/dllm-meta/save_benchmark_mockup.py
+mockup ({'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '0shot'}), gen_kwargs: ({}), limit: None, num_fewshot: 0, batch_size: 1
+|  Tasks  |Version|  Filter   |n-shot|Metric|   |Value|   |Stderr|
+|---------|------:|-----------|-----:|------|---|----:|---|------|
+|humaneval|      1|create_test|     0|bypass|↑  |  999|±  |   N/A|
+
+[mockup] truthfulqa_gen (num_fewshot=0)
+2026-09-13:23:21:59 INFO     [_cli.run:388] Selected Tasks: ['truthfulqa_gen']
+2026-09-13:23:21:59 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-13:23:21:59 INFO     [evaluator:239] Initializing mockup model, with arguments: {'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '0shot'}
+2026-09-13:23:22:00 WARNING  [config.task:151] truthfulqa_gen: No `generation_kwargs` specified in task config, defaulting to {'temperature': 0.0, 'do_sample': False, 'max_gen_toks': 256, 'until': ['\n\n']}
+2026-09-13:23:22:01 INFO     [evaluator_utils:446] Selected tasks:
+2026-09-13:23:22:01 INFO     [evaluator_utils:480] Task: truthfulqa_gen (truthfulqa/truthfulqa_gen.yaml)
+2026-09-13:23:22:01 INFO     [evaluator:314] truthfulqa_gen: Using gen_kwargs: {'temperature': 0.0, 'do_sample': False, 'max_gen_toks': 256, 'until': ['\n\n']}
+2026-09-13:23:22:01 INFO     [evaluator:319] Processing truthfulqa_gen in output-only mode. Metrics will not be calculated!
+2026-09-13:23:22:01 INFO     [evaluator:329] num_fewshot has been set to 0 for truthfulqa_gen in its config. Manual configuration will be ignored.
+2026-09-13:23:22:01 INFO     [api.task:312] Building contexts for truthfulqa_gen on rank 0...
+  0%|          | 0/817 [00:00<?, ?it/s] 34%|███▍      | 279/817 [00:00<00:00, 2784.02it/s] 69%|██████▊   | 560/817 [00:00<00:00, 2798.86it/s]100%|██████████| 817/817 [00:00<00:00, 2811.89it/s]
+2026-09-13:23:22:01 INFO     [evaluator:585] Running generate_until requests
+2026-09-13:23:22:04 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+2026-09-13:23:22:04 INFO     [loggers.evaluation_tracker:119] Saving per-task samples to benchmark_mockup/lm_eval_logs/qdpv68r5/*.jsonl
+[YUKAI][DEBUG][_write_csv:145] saved 817/817 docs (817 rows, 1 task(s)) to benchmark_mockup/mockup_truthfulqa_gen_0shot_p100.csv [FILE] /home/exx/Workspace/dllm-meta/save_benchmark_mockup.py
+mockup ({'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '0shot'}), gen_kwargs: ({}), limit: None, num_fewshot: 0, batch_size: 1
+|    Tasks     |Version|Filter|n-shot|Metric|   |Value|   |Stderr|
+|--------------|------:|------|-----:|------|---|----:|---|------|
+|truthfulqa_gen|      3|none  |     0|bypass|↑  |  999|±  |   N/A|
+
+[mockup] ifeval (num_fewshot=0)
+2026-09-13:23:22:08 INFO     [_cli.run:388] Selected Tasks: ['ifeval']
+2026-09-13:23:22:08 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-13:23:22:08 INFO     [evaluator:239] Initializing mockup model, with arguments: {'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '0shot'}
+2026-09-13:23:22:09 INFO     [evaluator_utils:446] Selected tasks:
+2026-09-13:23:22:09 INFO     [evaluator_utils:480] Task: ifeval (ifeval/ifeval.yaml)
+2026-09-13:23:22:09 INFO     [evaluator:314] ifeval: Using gen_kwargs: {'until': [], 'do_sample': False, 'temperature': 0.0, 'max_gen_toks': 1280}
+2026-09-13:23:22:09 INFO     [evaluator:319] Processing ifeval in output-only mode. Metrics will not be calculated!
+2026-09-13:23:22:09 INFO     [evaluator:329] num_fewshot has been set to 0 for ifeval in its config. Manual configuration will be ignored.
+2026-09-13:23:22:09 INFO     [api.task:312] Building contexts for ifeval on rank 0...
+  0%|          | 0/541 [00:00<?, ?it/s]100%|██████████| 541/541 [00:00<00:00, 233280.40it/s]
+2026-09-13:23:22:09 INFO     [evaluator:585] Running generate_until requests
+2026-09-13:23:22:12 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+2026-09-13:23:22:12 INFO     [loggers.evaluation_tracker:119] Saving per-task samples to benchmark_mockup/lm_eval_logs/qdpv68r5/*.jsonl
+[YUKAI][DEBUG][_write_csv:145] saved 541/541 docs (541 rows, 1 task(s)) to benchmark_mockup/mockup_ifeval_0shot_p100.csv [FILE] /home/exx/Workspace/dllm-meta/save_benchmark_mockup.py
+mockup ({'percent': 1, 'folder_output': 'benchmark_mockup', 'tag': '0shot'}), gen_kwargs: ({}), limit: None, num_fewshot: 0, batch_size: 1
+|Tasks |Version|Filter|n-shot|Metric|   |Value|   |Stderr|
+|------|------:|------|-----:|------|---|----:|---|------|
+|ifeval|      4|none  |     0|bypass|↑  |  999|±  |   N/A|
+

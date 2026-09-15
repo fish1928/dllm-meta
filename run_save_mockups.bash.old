@@ -20,7 +20,7 @@
 
 set -u
 
-PERCENT=${PERCENT:-0.1}
+PERCENT=${PERCENT:-1}
 FOLDER_OUTPUT=${FOLDER_OUTPUT:-benchmark_mockup}
 FILTER_TASK=${FILTER_TASK:-}
 PCT=$(awk "BEGIN{printf \"%d\", ${PERCENT}*100}")
@@ -37,7 +37,6 @@ SPECS=(
     "humaneval:0:"
     "truthfulqa_gen:0:"
     "ifeval:0:"
-    "followbench:0:"
 )
 
 mkdir -p "$FOLDER_OUTPUT"
