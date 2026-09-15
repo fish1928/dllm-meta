@@ -58,7 +58,6 @@ SPECS=(
     "humaneval:512:0shot"
     "truthfulqa_gen:256:0shot"
     "ifeval:256:0shot"
-    "followbench:256:0shot"
 )
 
 for spec in "${SPECS[@]}"; do
