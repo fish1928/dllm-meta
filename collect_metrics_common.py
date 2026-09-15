@@ -276,6 +276,27 @@ class OracleCollectorBase:
         records_summary = []
 
         for id_row, row in enumerate(tqdm(rows)):
+            folder_stats = os.path.join(args.folder_output, str(id_row))
+            path_generated = os.path.join(folder_stats, 'generated.json')
+
+            # per-sample resume: a folder with generated.json is complete
+            # (generated.json is written last); a killed run leaves the
+            # in-flight sample without it, so that sample is recollected.
+            # Rows are keyed by position in the mockup CSV, so resuming
+            # requires the same CSV and ordering (always true here).
+            if os.path.exists(path_generated):
+                with open(path_generated, 'r') as file:
+                    record = json.load(file)
+                # end
+                records_summary.append({
+                    'task_name': record['task_name'],
+                    'result': record['result'],
+                    'has_done': record['has_done'],
+                    'result_detail': record.get('result_detail'),
+                })
+                continue
+            # end
+
             processed = self.preprocessor({'prompt': row['prompt'], 'until': row['until']})
             ids_prompt = processed['ids_prompt']
             len_prompt = len(ids_prompt)
@@ -287,7 +308,6 @@ class OracleCollectorBase:
             CacheAttnPlugin_Enabled.set_len_prompt(len_prompt).set_size_block(self.size_block)
             self.plugin_cache_attn.clear(self.model)
 
-            folder_stats = os.path.join(args.folder_output, str(id_row))
             position_end = self.collect_one(x, len_prompt, folder_stats)
 
             text_generated = self.tokenizer.batch_decode(x[:, len_prompt:position_end], skip_special_tokens=False)[0]

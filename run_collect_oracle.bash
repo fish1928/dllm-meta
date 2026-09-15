@@ -76,9 +76,15 @@ for spec in "${SPECS[@]}"; do
 
     for num_blocks in $NUM_BLOCKS_LIST; do
         folder_out="$FOLDER_OUTPUT/${THREAD}_${task}_b${num_blocks}"
-        if [ -d "$folder_out" ]; then
-            echo "[skip] $folder_out exists"
+        # eval_summary.json is written only when a collection finishes; a
+        # folder without it is a killed/partial run and gets RESUMED (the
+        # collector skips samples that already have generated.json)
+        if [ -f "$folder_out/eval_summary.json" ]; then
+            echo "[skip] $folder_out complete"
             continue
+        fi
+        if [ -d "$folder_out" ]; then
+            echo "[resume] $folder_out is partial, continuing collection"
         fi
 
         flags_extra=""
