@@ -181,7 +181,7 @@ class RefreshIdxHelper:
         list_step_list_idx_sorted = self.dict_filename_to_list_idx_sorted[filename]
 
         assert list_step_list_idx_sorted[id_step_global]['step'] == id_step,\
-            f'{list_step_list_idx_sorted[id_step_global]['step']} == {id_step}'
+            f'{list_step_list_idx_sorted[id_step_global]["step"]} == {id_step}'
 
         list_idx_sorted = list_step_list_idx_sorted[id_step_global]['idx']
 
