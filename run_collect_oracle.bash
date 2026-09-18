@@ -33,9 +33,22 @@ LIMIT=${LIMIT:-}
 FILTER_TASK=${FILTER_TASK:-}
 NUM_BLOCKS_LIST=${NUM_BLOCKS_LIST:-1}
 PERCENT=${PERCENT:-0.1}
+TAIL_PERCENT=${TAIL_PERCENT:-}    # REQUIRED with PERCENT=1 (full-benchmark mockups):
+                                  # set 0.1 so the collector takes each category's
+                                  # TAIL, keeping training docs disjoint from the
+                                  # eval subsets (lm_eval --limit uses the FIRST docs)
 FOLDER_MOCKUP=${FOLDER_MOCKUP:-benchmark_mockup}
 FOLDER_OUTPUT=${FOLDER_OUTPUT:-stats_oracle}
 OFFICIAL_GSM8K=${OFFICIAL_GSM8K:-1}
+
+if [ "$PERCENT" = "1" ] && [ -z "$TAIL_PERCENT" ]; then
+    echo "[note] PERCENT=1 mockups hold the FULL benchmark and this run collects the"
+    echo "       HEAD docs -- the same docs lm_eval evaluates. That is only valid under"
+    echo "       the head-split scheme: train the router ONLY on the collection's last"
+    echo "       10% of sample folders (make_train_split.py) and run e2e evals at 90%"
+    echo "       of the baseline LIMIT (e.g. baselines 500 -> e2e 450). Otherwise set"
+    echo "       TAIL_PERCENT=0.1 to collect per-category tails instead."
+fi
 
 PCT=$(awk "BEGIN{printf \"%d\", ${PERCENT}*100}")
 
@@ -100,6 +113,7 @@ for spec in "${SPECS[@]}"; do
             --num_blocks "$num_blocks" \
             --device "$DEVICE" \
             ${LIMIT:+--limit "$LIMIT"} \
+            ${TAIL_PERCENT:+--tail_percent "$TAIL_PERCENT"} \
             $flags_extra \
             || echo "[warn] collection failed: $THREAD/$task/b$num_blocks -- continuing"
     done

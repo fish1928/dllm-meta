@@ -62,6 +62,13 @@ def build_parser(id_model, id_mask, len_target=256, num_blocks=1):
     parser.add_argument('--id_mask', type=int, default=id_mask)
     parser.add_argument('--device', type=str, default='cuda:0')
     parser.add_argument('--limit', type=int, default=None, help='cap on mockup rows')
+    parser.add_argument('--tail_percent', type=float, default=None,
+                        help='keep only the LAST fraction of each task_name group before '
+                             'applying --limit. REQUIRED when the mockup was collected with '
+                             'percent=1 (full benchmark): recreates the held-out-tail design '
+                             'so oracle/training docs stay disjoint from eval docs (lm_eval '
+                             '--limit evaluates the FIRST docs). Use 0.1 for p100 mockups; '
+                             'leave unset for tail mockups (p10), which are already tails.')
     parser.add_argument('--filter_task', type=str, default=None,
                         help='keep only this subtask from a merged mockup CSV (e.g. one bbh subtask)')
     parser.add_argument('--seed', type=int, default=233)
@@ -368,6 +375,27 @@ def main_collect(klass_collector, klass_model, parser):
     torch.manual_seed(args.seed)
 
     rows = load_benchmark_mockup(args.path_mockup, filter_task=args.filter_task)
+
+    if args.tail_percent is not None:
+        # per-category tail: group by task_name (rows are grouped and doc-ordered
+        # in the CSV), keep the LAST fraction of each group. This both restores
+        # the train/eval disjointness of the original tail design and prevents a
+        # later --limit from being eaten entirely by the first (largest) category.
+        assert 0.0 < args.tail_percent <= 1.0
+        groups = {}
+        for row in rows:
+            groups.setdefault(row['task_name'], []).append(row)
+        # end
+        rows = []
+        for name_task in sorted(groups):
+            rows_group = groups[name_task]
+            n_keep = max(1, int(len(rows_group) * args.tail_percent))
+            rows.extend(rows_group[-n_keep:])
+        # end
+        jprint('tail_percent={}: kept {} rows across {} task groups'.format(
+            args.tail_percent, len(rows), len(groups)))
+    # end
+
     if args.limit is not None:
         rows = rows[:args.limit]
     # end

@@ -120,9 +120,21 @@ for name in "${ROUTERS[@]}"; do
         echo "=== $tag (len_target=$len_target, nshot=$nshot, limit=$LIMIT) ==="
         num_run=$((num_run + 1))
 
+        # LIMIT is a per-TASK budget; lm_eval applies --limit per SUBTASK, so
+        # divide (ceil) for group tasks (minerva_math x7, bbh x27) -- matches
+        # the baseline suites' eval_common.sh so all runs share identical subsets
+        limit_task="$LIMIT"
+        case "$task" in
+            minerva_math) limit_task=$(( (LIMIT + 6) / 7 )) ;;
+            bbh)          limit_task=$(( (LIMIT + 26) / 27 )) ;;
+            # head-split scheme: humaneval has 164 docs and the router trains on
+            # docs 148..163 (the tail 10%), so e2e must never evaluate past 148
+            humaneval)    [ "$LIMIT" -gt 148 ] && limit_task=148 ;;
+        esac
+
         HF_ALLOW_CODE_EVAL="$allow_code_eval" \
         accelerate launch --num_processes=1 run_benchmark_main.py \
-            --tasks "$task" --limit "$LIMIT" --model test --batch_size 1 \
+            --tasks "$task" --limit "$limit_task" --model test --batch_size 1 \
             --num_fewshot "$nshot" --device "$DEVICE" $flag_unsafe \
             --output_path "$FOLDER_RESULTS/$tag" \
             --model_args "id_model=$ID_MODEL,size_batch=1,len_target=$len_target,num_blocks=$NUM_BLOCKS,num_unmask_per_step=$NUM_UNMASK,id_mask=$ID_MASK,step_refresh_remainder=$REFRESH,select_only_in_h=True,runner=run_llada_semi_mlp,h=$H,path_router=$path_pt,path_report=$path_runner" \

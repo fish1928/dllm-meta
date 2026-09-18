@@ -252,6 +252,93 @@ def truncate_text_at_stop(tokenizer, ids_generated, ids_stop, words_stop):
 # end
 
 
+'''---------------- d2Cache scoring helpers ----------------
+Ported near-verbatim from the official d2Cache repo (src/utils/common.py,
+arXiv 2509.23094) so the in-framework reimplementation scores candidates
+bit-comparably. certainty_density: Gaussian-smoothed fraction of KNOWN tokens
+around each position (their boundary rule: left of the canvas counts as known;
+right counts as known only if the last position is known). nucleus_select:
+smallest score-mass set exceeding top_p, at least min_k.'''
+
+
+def certainty_density(mask, sigma):
+    # mask: (B, L) bool, True = known (decoded) token in the GEN region
+    assert sigma > 0
+    B, L = mask.shape
+    device = mask.device
+    float_mask = mask.float()
+
+    padded_mask = F.pad(float_mask, (L, L), 'constant', 1.0)
+    padded_mask[mask[:, -1] == False, 2 * L:] = 0.0
+
+    extended_L = 3 * L
+    padded_len = 2 * extended_L
+
+    dist = torch.cat((
+        torch.arange(extended_L, device=device),
+        torch.arange(-extended_L, 0, device=device),
+    ))
+    kernel_fft = torch.fft.fft(torch.exp(-(dist ** 2) / (2 * sigma ** 2)), n=padded_len)
+
+    weighted_sum_ext = torch.fft.ifft(
+        torch.fft.fft(F.pad(padded_mask, (0, extended_L)), n=padded_len) * kernel_fft,
+        n=padded_len).real
+    kernel_sum_ext = torch.fft.ifft(
+        torch.fft.fft(torch.ones(B, extended_L * 2, device=device), n=padded_len) * kernel_fft,
+        n=padded_len).real
+
+    weighted_sum = weighted_sum_ext[..., L:2 * L]
+    kernel_sum_at_pos = kernel_sum_ext[..., L:2 * L].clamp_min(1e-8)
+    return weighted_sum / kernel_sum_at_pos
+# end
+
+
+def nucleus_select(scores, top_p, min_k=1, mask=None):
+    # scores: (B, L) non-negative; returns (B, L) bool selection
+    scores = torch.where(mask, scores, torch.zeros_like(scores)) if mask is not None else scores
+
+    probs = scores / (scores.sum(dim=-1, keepdim=True) + 1e-9)
+    sorted_probs, sorted_indices = torch.sort(probs, dim=-1, descending=True)
+
+    cumulative_probs = torch.cumsum(sorted_probs, dim=-1)
+    nucleus_mask = cumulative_probs <= top_p
+
+    k = min(min_k, scores.shape[-1])
+    top_k_mask = torch.arange(nucleus_mask.shape[-1], device=nucleus_mask.device) < k
+
+    combined_mask = nucleus_mask | top_k_mask
+    if mask is not None:
+        combined_mask &= torch.gather(mask, 1, sorted_indices)
+    # end
+
+    return torch.zeros_like(scores, dtype=torch.bool).scatter_(
+        dim=1, index=sorted_indices, src=combined_mask)
+# end
+
+
+def inflate_selection(q_mask, inflate_w):
+    # d2Cache gap inflation: if two selected positions are within inflate_w of
+    # each other, select everything between them (their eval default is 0=off)
+    if inflate_w <= 0:
+        return q_mask
+    # end
+    B, T = q_mask.shape
+    device = q_mask.device
+    arange_t = torch.arange(T, device=device).expand(B, -1)
+
+    masked_next = torch.where(q_mask, arange_t, T)
+    next_sel = torch.flip(torch.cummin(torch.flip(masked_next, dims=[-1]), dim=-1).values, dims=[-1])
+    dist_next = next_sel - arange_t
+
+    masked_prev = torch.where(q_mask, arange_t, -1)
+    prev_sel = torch.cummax(masked_prev, dim=-1).values
+    dist_prev = arange_t - prev_sel
+
+    gap_len = dist_next + dist_prev
+    return q_mask | ((gap_len <= inflate_w) & (prev_sel >= 0) & (next_sel < T))
+# end
+
+
 class RunnerReport:
     # per-sample wall-clock report shared by all runners, so baseline and router
     # runs produce directly comparable json artifacts; rewritten per sample

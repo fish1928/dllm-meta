@@ -53,6 +53,15 @@ class DiffusionConfig_Eval:
                                                 # (run_llada_instruct[_mlp]/run_dream_instruct[_mlp])
                                                 # hard-enable EOS truncation instead
 
+    '''d2cache reimplementation (run_llada_d2cache / run_dream_d2cache)'''
+    d2c_k: Optional[int] = None            # masked candidates per step (paper: 32)
+    d2c_sigma: Optional[float] = None      # certainty-density gaussian sigma (paper: 10.0)
+    d2c_rollout_p: Optional[float] = None  # attention-rollout nucleus threshold (paper: 0.1; 0 disables)
+    d2c_conf_mode: Optional[str] = None    # 'live' (their intended design) | 'frozen'
+                                           # (their RELEASED code: conf never updated after prefill)
+    d2c_inflate_w: Optional[int] = None    # gap inflation window (their eval default: 0)
+    '''d2cache'''
+
     '''with mlp'''
     step_refresh_remainder: Optional[int] = None
     h: Optional[int] = None

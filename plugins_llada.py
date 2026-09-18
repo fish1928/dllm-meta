@@ -303,6 +303,59 @@ class CacheVOPlugin_Disabled(InspectorPlugin):
 # end
 
 
+class CacheAttnRolloutPlugin_Enabled(InspectorPlugin):
+    '''d2Cache-style attention rollout (arXiv 2509.23094), for the in-framework
+    d2cache runners. Fills the plugin_cache_attn slot: per FORWARD the rollout
+    matrix is reset at layer 0 and accumulated across layers; non-queried rows
+    are identity (exactly their accumulate_attn_rollout). Unlike their eager-
+    attention requirement, scores come from the rotated q/k the plugin frame
+    already exposes, so the model keeps its efficient attention path.
+    Batch size 1 pipeline; state is class-level like the other attn plugin.'''
+
+    _ROLLOUT = None    # (B, T, T)
+
+    def get_plugin_name(self):
+        return 'plugin_cache_attn'
+    # end
+
+    def save(self):
+        layer_id = self.load_attrs('layer_id')[0]
+        q_current_rotated, k_final_rotated = self.load_vars('q_current_rotated', 'k_final_rotated')
+        idx_current = self.load_vars('idx_current')[0]
+        get_attn_score_avg = self.load_func('get_attn_score_avg')
+
+        scores = get_attn_score_avg(q_current_rotated, k_final_rotated)    # (B, q, T) row-stochastic
+        B, num_q, T = scores.shape
+        device, dtype = scores.device, scores.dtype
+        eye = torch.eye(T, device=device, dtype=dtype)
+
+        if layer_id == 0:
+            CacheAttnRolloutPlugin_Enabled._ROLLOUT = eye.expand(B, -1, -1).clone()
+        # end
+        rollout = CacheAttnRolloutPlugin_Enabled._ROLLOUT
+        if rollout is None or rollout.shape[-1] != T:
+            # a forward outside the canvas loop (defensive); restart from identity
+            rollout = eye.expand(B, -1, -1).clone()
+        # end
+
+        effective = eye.repeat(B, 1, 1)
+        effective[:, idx_current, :] = scores    # only queried rows carry real attention
+        residual = effective + eye
+        residual = residual / residual.sum(dim=-1, keepdim=True)
+        CacheAttnRolloutPlugin_Enabled._ROLLOUT = residual @ rollout
+    # end
+
+    def get_global_importance(self):
+        rollout = CacheAttnRolloutPlugin_Enabled._ROLLOUT
+        return None if rollout is None else rollout.sum(dim=1)    # (B, T): end-to-end influence of column j
+    # end
+
+    def clear(self, model):
+        CacheAttnRolloutPlugin_Enabled._ROLLOUT = None
+    # end
+# end
+
+
 class CacheAttnPlugin_Disabled(InspectorPlugin):
     def get_plugin_name(self):
         return 'plugin_cache_attn'
