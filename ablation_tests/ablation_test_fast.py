@@ -66,12 +66,17 @@ H_DEFAULT = int(os.environ.get('H', 5))
 MAX_CONF_AGE = int(os.environ.get('MAX_CONF_AGE', 16))
 FOLDER_BUNDLES = os.environ.get('FOLDER_BUNDLES', 'routers_final')
 
+# TRAINING-data versions (final stage trains one bundle per group); the mix
+# deliberately excludes ifeval. EVALUATION is always on GROUP_EVAL -- every
+# task except ifeval -- so the three bundles are scored on identical holdout
+# samples (and the ifeval-trained bundle's number IS the cross-domain result).
 DATASET_GROUPS = {
-    'mix5': ['gsm8k', 'minerva_math', 'bbh', 'humaneval', 'truthfulqa_gen'],
+    'mix_no_ifeval': ['gsm8k', 'minerva_math', 'bbh', 'humaneval', 'truthfulqa_gen'],
     'gsm8k': ['gsm8k'],
-    'ifeval_followbench': ['ifeval', 'followbench'],
+    'ifeval': ['ifeval'],
 }
-GROUP_SEARCH = 'mix5'    # coordinate descent runs here; final trains all groups
+GROUP_SEARCH = 'mix_no_ifeval'    # coordinate descent trains+evaluates here
+GROUP_EVAL = 'mix_no_ifeval'      # final bundles all evaluate on this group's holdouts
 
 INCUMBENT = {
     'features': ['attn_last', 'pos_delta', 'mask_density'],
@@ -268,11 +273,20 @@ def main():
             # end
         # end
         router.eval()
+        # EVALUATION: always on the common no-ifeval eval set (each eval
+        # folder's holdout ids), regardless of which group trained the bundle.
+        # Identical eval samples across bundles -> directly comparable, and
+        # ifeval-trained scores here are the cross-domain generalization row.
+        datasets_eval = resolve_datasets(DATASET_GROUPS[GROUP_EVAL], FOLDER_TRAIN, THREAD, NUM_BLOCKS)
         recalls = {}
         with torch.no_grad():
-            for (name_task, _, _), trainer, features in zip(datasets, trainers, feature_lists):
-                router.features = features
-                recalls[name_task] = trainer.evaluate(hs=[winner['h']])[f'recall@{winner["h"]}']
+            for name_task, folder_eval, sb_eval in datasets_eval:
+                trainer_eval = RouterTrainer(folder_eval, h=winner['h'], size_block=sb_eval,
+                                             device=DEVICE, seed=233)
+                trainer_eval.router = router
+                router.features = build_features(winner['features'], folder_eval,
+                                                 winner['normalization'], NUM_LAYERS, MAX_CONF_AGE)
+                recalls[name_task] = trainer_eval.evaluate(hs=[winner['h']])[f'recall@{winner["h"]}']
             # end
         # end
 
@@ -291,15 +305,15 @@ def main():
             'max_conf_age': MAX_CONF_AGE,
             'seed': 233,
             'num_epochs': EPOCHS_FINAL,
-            'recall_holdout': recalls,
+            'recall_eval_no_ifeval': recalls,
             'thread': THREAD,
         }
         spec['dim_in'] = spec_dim_in(spec)
         router.features = feature_lists[0]
         path_pt = os.path.join(FOLDER_BUNDLES, f'{THREAD}__{name_group}.pt')
         save_router_bundle(router, spec, path_pt)
-        summary['bundles'][name_group] = {'path': path_pt, 'recall_holdout': recalls}
-        print(f'[final] {name_group}: saved {path_pt} recall_holdout={recalls}')
+        summary['bundles'][name_group] = {'path': path_pt, 'recall_eval_no_ifeval': recalls}
+        print(f'[final] {name_group}: saved {path_pt} recall_eval_no_ifeval={recalls}')
     # end
 
     path_summary = os.path.join(FOLDER_BUNDLES, f'{THREAD}__ablation_summary.json')
