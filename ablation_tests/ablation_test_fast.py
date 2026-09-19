@@ -321,7 +321,9 @@ def main():
             loss = build_loss(winner['loss'], pos_weight=winner.get('loss_pos_weight'))
             optimizer = torch.optim.AdamW(router.parameters(), lr=1e-3, weight_decay=1e-4)
             router.train()
-            for id_epoch in range(EPOCHS_FINAL):
+            bar_epochs = tqdm(range(EPOCHS_FINAL), desc=f'  train {name_group}{suffix}', leave=False)
+            for id_epoch in bar_epochs:
+                losses_epoch = []
                 for trainer, features in zip(trainers, feature_lists):
                     router.features = features
                     for x, order in trainer._iter_blocks(trainer.ids_train):
@@ -330,8 +332,10 @@ def main():
                         loss_value = loss(router(x), gap.to(DEVICE), cand_mask.to(DEVICE), winner['h'])
                         loss_value.backward()
                         optimizer.step()
+                        losses_epoch.append(float(loss_value.item()))
                     # end
                 # end
+                bar_epochs.set_postfix(loss=f'{sum(losses_epoch) / len(losses_epoch):.4f}')
             # end
             router.eval()
             datasets_eval = resolve_datasets(DATASET_GROUPS[GROUP_EVAL], FOLDER_TRAIN, THREAD, NUM_BLOCKS)
