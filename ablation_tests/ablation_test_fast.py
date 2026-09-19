@@ -94,6 +94,7 @@ FEATURE_ANCHORS = {
     'attn_all_geo':               ['attn_all', 'pos_delta', 'mask_density'],
     'attn_last_geo_conf':         ['attn_last', 'pos_delta', 'mask_density', 'conf'],
     'attn_last_geo_conf_aged':    ['attn_last', 'pos_delta', 'mask_density', 'conf_aged'],
+    'attn_last_geo_conf_policy':  ['attn_last', 'pos_delta', 'mask_density', 'conf_policy'],
     'attn_last_geo_margin':       ['attn_last', 'pos_delta', 'mask_density', 'margin'],
     'attn_last_conf_aged_margin': ['attn_last', 'conf_aged', 'margin'],
     'no_attn_aged':               ['conf_aged', 'margin', 'pos_delta', 'mask_density'],
@@ -164,9 +165,32 @@ def main():
             router_name=winner['router_name'], router_kwargs=winner['router_kwargs'],
             h=winner['h'], **common)
     # end
-    best_feat, r5 = pick_best('fast_feat', FEATURE_ANCHORS,
+    # CONF POLICY: offline recall is only trustworthy between recipes of equal
+    # deployment fidelity. Fresh conf is banned outright (leak). conf_aged /
+    # conf_policy anchors may win ONLY if they beat the best conf-FREE anchor
+    # by CONF_MARGIN (default 0.02) -- offline gains smaller than that have
+    # historically NOT survived e2e. Whenever the winner carries a conf
+    # variant, the final stage ALSO trains the best conf-free recipe so a
+    # cheap e2e run makes the actual call.
+    conf_margin = float(os.environ.get('CONF_MARGIN', 0.02))
+    best_free, r5_free = pick_best('fast_feat', FEATURE_ANCHORS,
+        eligible=lambda n, feats: not any(f.startswith('conf') for f in feats))
+    best_any, r5_any = pick_best('fast_feat', FEATURE_ANCHORS,
         eligible=lambda n, feats: 'conf' not in feats)    # fresh conf = leak
+    if best_any != best_free and r5_any is not None and r5_free is not None \
+            and r5_any >= r5_free + conf_margin:
+        best_feat, r5 = best_any, r5_any
+        print(f'[conf] {best_any} beats conf-free {best_free} by >= {conf_margin} offline '
+              f'({r5_any} vs {r5_free}); e2e must confirm -- dual bundles will be saved')
+    else:
+        best_feat, r5 = best_free, r5_free
+        if best_any != best_free:
+            print(f'[conf] {best_any} offline gain over {best_free} < {conf_margin} '
+                  f'({r5_any} vs {r5_free}): not trusted, conf-free recipe carried forward')
+        # end
+    # end
     winner['features'] = FEATURE_ANCHORS[best_feat]
+    winner_features_free = FEATURE_ANCHORS[best_free]
     print(f'--> features: {best_feat} {winner["features"]} (recall@5 {r5})')
 
     '''stage B: normalization'''
@@ -221,99 +245,107 @@ def main():
     winner['h'] = int(best_h[1:])
     print(f'--> horizon: h={winner["h"]} (recall@5 {r5})')
 
-    '''stage F: retrain winner per dataset group, save deployable bundles'''
+    '''stage F: retrain per dataset group, save deployable bundles. If the
+    winner carries a conf variant, ALSO train the best conf-free recipe --
+    offline recall cannot settle the conf axis, so both bundle sets are saved
+    and a cheap e2e run makes the final call (command printed at the end).'''
     os.makedirs(FOLDER_BUNDLES, exist_ok=True)
     summary = {'thread': THREAD, 'winner': {k: v for k, v in winner.items()}, 'bundles': {}}
 
-    features_spec = ['conf' if f == 'conf_aged' else f for f in winner['features']]
-    conf_mode = 'aged' if 'conf_aged' in winner['features'] else \
-                ('fresh' if 'conf' in winner['features'] else 'none')
-    if not set(winner['features']) <= DEPLOYABLE_ONLINE_FEATURES:
-        print('[WARNING] winning features include ones build_online_x cannot compute '
-              f'online yet: {set(winner["features"]) - DEPLOYABLE_ONLINE_FEATURES} '
-              '-- extend router_deploy before e2e with this bundle')
+    variants = [('', winner['features'])]
+    has_conf_variant = any(f.startswith('conf') for f in winner['features'])
+    if has_conf_variant:
+        variants.append(('__noconf', winner_features_free))
     # end
 
-    for name_group, names_task in DATASET_GROUPS.items():
-        datasets = resolve_datasets(names_task, FOLDER_TRAIN, THREAD, NUM_BLOCKS)
-        if not datasets:
-            print(f'[warn] final: group {name_group} has no folders, skipped')
-            continue
+    for suffix, features_variant in variants:
+        features_spec = ['conf' if f in ('conf_aged', 'conf_policy') else f for f in features_variant]
+        conf_mode = 'aged' if any(f in ('conf_aged', 'conf_policy') for f in features_variant) else \
+                    ('fresh' if 'conf' in features_variant else 'none')
+        if not set(features_variant) <= DEPLOYABLE_ONLINE_FEATURES:
+            print('[WARNING] features not computable online yet: '
+                  f'{set(features_variant) - DEPLOYABLE_ONLINE_FEATURES} '
+                  '-- extend router_deploy before e2e with this bundle')
         # end
 
-        torch.manual_seed(233)
-        trainers = [RouterTrainer(folder, h=winner['h'], size_block=sb, device=DEVICE, seed=233)
-                    for _, folder, sb in datasets]
-        feature_lists = [build_features(winner['features'], folder, winner['normalization'],
-                                        NUM_LAYERS, MAX_CONF_AGE) for _, folder, _ in datasets]
-        router = FactoryRouter.create(winner['router_name'], **winner['router_kwargs'])
-        router.register_features(*feature_lists[0])
-        router = router.to(DEVICE)
-        for trainer, features in zip(trainers, feature_lists):
-            trainer.router = router
-            for feature in features:
-                if hasattr(feature, 'fit') and hasattr(feature, 'fitted') and not feature.fitted():
-                    feature.fit(list(trainer._list_blocks(trainer.ids_train)), trainer.size_block)
-                # end
+        for name_group, names_task in DATASET_GROUPS.items():
+            datasets = resolve_datasets(names_task, FOLDER_TRAIN, THREAD, NUM_BLOCKS)
+            if not datasets:
+                print(f'[warn] final: group {name_group} has no folders, skipped')
+                continue
             # end
-        # end
-        loss = build_loss(winner['loss'], pos_weight=winner.get('loss_pos_weight'))
-        optimizer = torch.optim.AdamW(router.parameters(), lr=1e-3, weight_decay=1e-4)
-        router.train()
-        for id_epoch in range(EPOCHS_FINAL):
+
+            torch.manual_seed(233)
+            trainers = [RouterTrainer(folder, h=winner['h'], size_block=sb, device=DEVICE, seed=233)
+                        for _, folder, sb in datasets]
+            feature_lists = [build_features(features_variant, folder, winner['normalization'],
+                                            NUM_LAYERS, MAX_CONF_AGE) for _, folder, _ in datasets]
+            router = FactoryRouter.create(winner['router_name'], **winner['router_kwargs'])
+            router.register_features(*feature_lists[0])
+            router = router.to(DEVICE)
             for trainer, features in zip(trainers, feature_lists):
-                router.features = features
-                for x, order in trainer._iter_blocks(trainer.ids_train):
-                    gap, cand_mask = build_geometry(order.cpu(), trainer.size_block)
-                    optimizer.zero_grad(set_to_none=True)
-                    loss_value = loss(router(x), gap.to(DEVICE), cand_mask.to(DEVICE), winner['h'])
-                    loss_value.backward()
-                    optimizer.step()
+                trainer.router = router
+                for feature in features:
+                    if hasattr(feature, 'fit') and hasattr(feature, 'fitted') and not feature.fitted():
+                        feature.fit(list(trainer._list_blocks(trainer.ids_train)), trainer.size_block)
+                    # end
                 # end
             # end
-        # end
-        router.eval()
-        # EVALUATION: always on the common no-ifeval eval set (each eval
-        # folder's holdout ids), regardless of which group trained the bundle.
-        # Identical eval samples across bundles -> directly comparable, and
-        # ifeval-trained scores here are the cross-domain generalization row.
-        datasets_eval = resolve_datasets(DATASET_GROUPS[GROUP_EVAL], FOLDER_TRAIN, THREAD, NUM_BLOCKS)
-        recalls = {}
-        with torch.no_grad():
-            for name_task, folder_eval, sb_eval in datasets_eval:
-                trainer_eval = RouterTrainer(folder_eval, h=winner['h'], size_block=sb_eval,
-                                             device=DEVICE, seed=233)
-                trainer_eval.router = router
-                router.features = build_features(winner['features'], folder_eval,
-                                                 winner['normalization'], NUM_LAYERS, MAX_CONF_AGE)
-                recalls[name_task] = trainer_eval.evaluate(hs=[winner['h']])[f'recall@{winner["h"]}']
+            loss = build_loss(winner['loss'], pos_weight=winner.get('loss_pos_weight'))
+            optimizer = torch.optim.AdamW(router.parameters(), lr=1e-3, weight_decay=1e-4)
+            router.train()
+            for id_epoch in range(EPOCHS_FINAL):
+                for trainer, features in zip(trainers, feature_lists):
+                    router.features = features
+                    for x, order in trainer._iter_blocks(trainer.ids_train):
+                        gap, cand_mask = build_geometry(order.cpu(), trainer.size_block)
+                        optimizer.zero_grad(set_to_none=True)
+                        loss_value = loss(router(x), gap.to(DEVICE), cand_mask.to(DEVICE), winner['h'])
+                        loss_value.backward()
+                        optimizer.step()
+                    # end
+                # end
             # end
-        # end
+            router.eval()
+            datasets_eval = resolve_datasets(DATASET_GROUPS[GROUP_EVAL], FOLDER_TRAIN, THREAD, NUM_BLOCKS)
+            recalls = {}
+            with torch.no_grad():
+                for name_task, folder_eval, sb_eval in datasets_eval:
+                    trainer_eval = RouterTrainer(folder_eval, h=winner['h'], size_block=sb_eval,
+                                                 device=DEVICE, seed=233)
+                    trainer_eval.router = router
+                    router.features = build_features(features_variant, folder_eval,
+                                                     winner['normalization'], NUM_LAYERS, MAX_CONF_AGE)
+                    recalls[name_task] = trainer_eval.evaluate(hs=[winner['h']])[f'recall@{winner["h"]}']
+                # end
+            # end
 
-        spec = {
-            'features': features_spec,
-            'conf_mode': conf_mode,
-            'normalization': winner['normalization'],
-            'softmax_temperature': 1.0,
-            'mask_density_window': 3,
-            'loss': winner['loss'],
-            'dataset': name_group,
-            'router_name': winner['router_name'],
-            'router_kwargs': dict(winner['router_kwargs']),
-            'num_layers': NUM_LAYERS,
-            'h': winner['h'],
-            'max_conf_age': MAX_CONF_AGE,
-            'seed': 233,
-            'num_epochs': EPOCHS_FINAL,
-            'recall_eval_no_ifeval': recalls,
-            'thread': THREAD,
-        }
-        spec['dim_in'] = spec_dim_in(spec)
-        router.features = feature_lists[0]
-        path_pt = os.path.join(FOLDER_BUNDLES, f'{THREAD}__{name_group}.pt')
-        save_router_bundle(router, spec, path_pt)
-        summary['bundles'][name_group] = {'path': path_pt, 'recall_eval_no_ifeval': recalls}
-        print(f'[final] {name_group}: saved {path_pt} recall_eval_no_ifeval={recalls}')
+            spec = {
+                'features': features_spec,
+                'conf_mode': conf_mode,
+                'normalization': winner['normalization'],
+                'softmax_temperature': 1.0,
+                'mask_density_window': 3,
+                'loss': winner['loss'],
+                'dataset': name_group,
+                'router_name': winner['router_name'],
+                'router_kwargs': dict(winner['router_kwargs']),
+                'num_layers': NUM_LAYERS,
+                'h': winner['h'],
+                'max_conf_age': MAX_CONF_AGE,
+                'seed': 233,
+                'num_epochs': EPOCHS_FINAL,
+                'recall_eval_no_ifeval': recalls,
+                'thread': THREAD,
+            }
+            spec['dim_in'] = spec_dim_in(spec)
+            router.features = feature_lists[0]
+            path_pt = os.path.join(FOLDER_BUNDLES, f'{THREAD}__{name_group}{suffix}.pt')
+            save_router_bundle(router, spec, path_pt)
+            summary['bundles'][name_group + suffix] = {
+                'path': path_pt, 'features': features_variant, 'recall_eval_no_ifeval': recalls}
+            print(f'[final] {name_group}{suffix}: saved {path_pt} recall_eval_no_ifeval={recalls}')
+        # end
     # end
 
     path_summary = os.path.join(FOLDER_BUNDLES, f'{THREAD}__ablation_summary.json')
@@ -322,6 +354,12 @@ def main():
     # end
     print(f'\n=== DONE. Winner chain and bundles in {path_summary} ===')
     print(json.dumps(summary['winner'], indent=2))
+    if has_conf_variant:
+        print('\n[conf] offline could not settle the conf axis: run the deciding e2e pair, e.g.')
+        print(f'  ...run_benchmark_main.py --tasks gsm8k --limit 200 ... '
+              f'path_router={FOLDER_BUNDLES}/{THREAD}__mix_no_ifeval.pt')
+        print(f'  ...same command with path_router={FOLDER_BUNDLES}/{THREAD}__mix_no_ifeval__noconf.pt')
+    # end
 # end
 
 

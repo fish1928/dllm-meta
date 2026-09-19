@@ -76,6 +76,30 @@ LOSSES_ALL = ('uniform_within_h', 'decay_within_h', 'bce_within_h',
               'bce_balanced', 'plackett_luce')
 
 
+class Feature_conf_policy_aged(FeatureBase):
+    # conf[t - (t mod kr), p]: the DETERMINISTIC staleness of deployment under
+    # a gen-refresh clock of kr steps (age = steps since the last full block
+    # refresh) -- unlike random-age augmentation, this replays the exact age
+    # structure the deployed conf table has, making offline recall honest for
+    # the conf axis.
+    def __init__(self, folder_data, kr=16):
+        super().__init__(folder_data)
+        self.kr = int(kr)
+    # end
+
+    def dim(self):
+        return 1
+    # end
+
+    def load_block(self, id_sample, pos_base, size_block):
+        conf = sanitize(load_stat(self._folder_base(id_sample), 'conf', pos_base, size_block))
+        T = conf.shape[0]
+        source_row = (torch.arange(T) // self.kr) * self.kr    # last refresh step
+        return conf.gather(dim=0, index=source_row.unsqueeze(-1).expand(T, conf.shape[1])).unsqueeze(-1)
+    # end
+# end
+
+
 class Feature_conf_random_aged(FeatureBase):
     # conf[t - age, p] with age ~ U{0..min(t, max_age)}, resampled every load
     # (each epoch re-iterates blocks -> fresh ages, i.e. random-age
@@ -199,6 +223,8 @@ def make_feature(name: str, folder_data: str, num_layers: int, max_conf_age: int
         return Feature_conf(folder_data)
     if name == 'conf_aged':
         return Feature_conf_random_aged(folder_data, max_age=max_conf_age)
+    if name == 'conf_policy':
+        return Feature_conf_policy_aged(folder_data, kr=max_conf_age)
     if name == 'margin':
         return Feature_margin(folder_data)
     if name == 'pos_delta':
