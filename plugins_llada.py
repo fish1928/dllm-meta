@@ -26,7 +26,11 @@ class InspectorPlugin(ABC):
     def _find_client_frame(self):
         frame = inspect.currentframe()
 
-        while type(frame.f_locals.get('self')).__bases__[0] == InspectorPlugin: 
+        # skip every frame whose self is a plugin (any inheritance depth --
+        # the old bases[0]==InspectorPlugin check broke for plugin SUBCLASSES
+        # like CacheAttnRouterRolloutPlugin_Enabled, stopping inside the
+        # plugin's own frame instead of the model's attention frame)
+        while isinstance(frame.f_locals.get('self'), InspectorPlugin):
             frame = frame.f_back
         # end
 
