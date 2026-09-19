@@ -178,7 +178,7 @@ def main():
     winner = dict(INCUMBENT)
 
     '''stage A: features (fixed: incumbent norm/loss/arch/h)'''
-    for name, feats in tqdm(list(FEATURE_ANCHORS.items()), desc='stage A features'):
+    for name, feats in tqdm(list(FEATURE_ANCHORS.items()), desc='stage A features', disable=None):
         run_experiment_multi(stage='fast_feat', name=name, feature_names=feats,
             normalization=winner['normalization'], loss_name=winner['loss'],
             router_name=winner['router_name'], router_kwargs=winner['router_kwargs'],
@@ -214,7 +214,7 @@ def main():
     print_remaining('fast_feat')
 
     '''stage B: normalization'''
-    for norm in tqdm(NORMALIZATIONS_ALL, desc='stage B norms'):
+    for norm in tqdm(NORMALIZATIONS_ALL, desc='stage B norms', disable=None):
         run_experiment_multi(stage='fast_norm', name=f'norm-{norm}',
             feature_names=winner['features'], normalization=norm, loss_name=winner['loss'],
             router_name=winner['router_name'], router_kwargs=winner['router_kwargs'],
@@ -228,7 +228,7 @@ def main():
 
     '''stage C: loss'''
     pos_weight = estimate_balanced_pos_weight_multi(datasets_search, h=winner['h'])
-    for loss in tqdm(LOSSES_ALL, desc='stage C losses'):
+    for loss in tqdm(LOSSES_ALL, desc='stage C losses', disable=None):
         run_experiment_multi(stage='fast_loss', name=f'loss-{loss}',
             feature_names=winner['features'], normalization=winner['normalization'],
             loss_name=loss, loss_pos_weight=pos_weight if loss == 'bce_balanced' else None,
@@ -243,7 +243,7 @@ def main():
     print_remaining('fast_loss')
 
     '''stage D: architecture'''
-    for name, (rname, rkw) in tqdm(list(ARCHITECTURES.items()), desc='stage D archs'):
+    for name, (rname, rkw) in tqdm(list(ARCHITECTURES.items()), desc='stage D archs', disable=None):
         run_experiment_multi(stage='fast_arch', name=f'arch-{name}',
             feature_names=winner['features'], normalization=winner['normalization'],
             loss_name=winner['loss'], loss_pos_weight=winner.get('loss_pos_weight'),
@@ -256,7 +256,7 @@ def main():
     print_remaining('fast_arch')
 
     '''stage E: horizon (recall@5 stays the comparison basis across h)'''
-    for h in tqdm(HORIZONS, desc='stage E horizons'):
+    for h in tqdm(HORIZONS, desc='stage E horizons', disable=None):
         run_experiment_multi(stage='fast_h', name=f'h{h}',
             feature_names=winner['features'], normalization=winner['normalization'],
             loss_name=winner['loss'], loss_pos_weight=winner.get('loss_pos_weight'),
@@ -283,7 +283,7 @@ def main():
     # end
 
     jobs_final = [(s, f) for s, f in variants]
-    bar_final = tqdm(total=len(jobs_final) * len(DATASET_GROUPS), desc='stage F final trainings')
+    bar_final = tqdm(total=len(jobs_final) * len(DATASET_GROUPS), desc='stage F final trainings', disable=None)
     for suffix, features_variant in jobs_final:
         features_spec = ['conf' if f in ('conf_aged', 'conf_policy') else f for f in features_variant]
         conf_mode = 'aged' if any(f in ('conf_aged', 'conf_policy') for f in features_variant) else \
@@ -321,7 +321,7 @@ def main():
             loss = build_loss(winner['loss'], pos_weight=winner.get('loss_pos_weight'))
             optimizer = torch.optim.AdamW(router.parameters(), lr=1e-3, weight_decay=1e-4)
             router.train()
-            bar_epochs = tqdm(range(EPOCHS_FINAL), desc=f'  train {name_group}{suffix}', leave=False)
+            bar_epochs = tqdm(range(EPOCHS_FINAL), desc=f'  train {name_group}{suffix}', leave=False, disable=None)
             for id_epoch in bar_epochs:
                 losses_epoch = []
                 for trainer, features in zip(trainers, feature_lists):
@@ -335,7 +335,10 @@ def main():
                         losses_epoch.append(float(loss_value.item()))
                     # end
                 # end
-                bar_epochs.set_postfix(loss=f'{sum(losses_epoch) / len(losses_epoch):.4f}')
+                loss_mean = sum(losses_epoch) / len(losses_epoch)
+                bar_epochs.set_postfix(loss=f'{loss_mean:.4f}')
+                print(f'  [final {name_group}{suffix}] epoch {id_epoch + 1}/{EPOCHS_FINAL}: '
+                      f'loss {loss_mean:.4f}', flush=True)
             # end
             router.eval()
             datasets_eval = resolve_datasets(DATASET_GROUPS[GROUP_EVAL], FOLDER_TRAIN, THREAD, NUM_BLOCKS)
