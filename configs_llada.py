@@ -64,6 +64,12 @@ class DiffusionConfig_Eval:
 
     '''with mlp'''
     step_refresh_remainder: Optional[int] = None
+    step_refresh_remainder_prompt: Optional[int] = None    # v2 runner: independent PROMPT
+                                                           # re-forward interval (their Kp
+                                                           # analog); None/0 = prompt KV is
+                                                           # never refreshed after init.
+                                                           # step_refresh_remainder stays the
+                                                           # GENERATION-area interval (Kr)
     h: Optional[int] = None
     select_only_in_h: Optional[bool] = None
     path_router: Optional[str] = None    # router bundle (.pt with .json sidecar); None -> legacy scalar MLP
