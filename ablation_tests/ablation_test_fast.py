@@ -38,6 +38,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import torch
+from tqdm import tqdm
 
 from ablation_test_common_new import (
     NORMALIZATIONS_ALL,
@@ -116,6 +117,24 @@ HORIZONS = [3, 5, 8, 12, 16]
 DEPLOYABLE_ONLINE_FEATURES = {'attn_last', 'attn_all', 'pos_delta', 'mask_density', 'conf', 'conf_aged'}
 
 
+STAGES = [
+    ('fast_feat',  'A features (12 runs)'),
+    ('fast_norm',  'B normalization (7 runs)'),
+    ('fast_loss',  'C loss (5 runs)'),
+    ('fast_arch',  'D architecture (6 runs)'),
+    ('fast_h',     'E horizon (5 runs)'),
+    ('fast_final', 'F final training + bundles (3-6 trainings)'),
+]
+
+
+def print_remaining(done_key):
+    idx = [k for k, _ in STAGES].index(done_key)
+    remaining = [label for _, label in STAGES[idx + 1:]]
+    print(f'[progress] finished {STAGES[idx][1]}; remaining: '
+          + (' -> '.join(remaining) if remaining else 'NONE, all done'))
+# end
+
+
 def recall5_of(stage, name):
     record = find_record(stage, name, REPORT_PATH)
     if not record or record.get('error') or not record.get('metrics'):
@@ -159,7 +178,7 @@ def main():
     winner = dict(INCUMBENT)
 
     '''stage A: features (fixed: incumbent norm/loss/arch/h)'''
-    for name, feats in FEATURE_ANCHORS.items():
+    for name, feats in tqdm(list(FEATURE_ANCHORS.items()), desc='stage A features'):
         run_experiment_multi(stage='fast_feat', name=name, feature_names=feats,
             normalization=winner['normalization'], loss_name=winner['loss'],
             router_name=winner['router_name'], router_kwargs=winner['router_kwargs'],
@@ -192,9 +211,10 @@ def main():
     winner['features'] = FEATURE_ANCHORS[best_feat]
     winner_features_free = FEATURE_ANCHORS[best_free]
     print(f'--> features: {best_feat} {winner["features"]} (recall@5 {r5})')
+    print_remaining('fast_feat')
 
     '''stage B: normalization'''
-    for norm in NORMALIZATIONS_ALL:
+    for norm in tqdm(NORMALIZATIONS_ALL, desc='stage B norms'):
         run_experiment_multi(stage='fast_norm', name=f'norm-{norm}',
             feature_names=winner['features'], normalization=norm, loss_name=winner['loss'],
             router_name=winner['router_name'], router_kwargs=winner['router_kwargs'],
@@ -204,10 +224,11 @@ def main():
         eligible=lambda name, norm: norm in NORMALIZATIONS_DEPLOYABLE)
     winner['normalization'] = best_norm.replace('norm-', '')
     print(f'--> normalization: {winner["normalization"]} (recall@5 {r5})')
+    print_remaining('fast_norm')
 
     '''stage C: loss'''
     pos_weight = estimate_balanced_pos_weight_multi(datasets_search, h=winner['h'])
-    for loss in LOSSES_ALL:
+    for loss in tqdm(LOSSES_ALL, desc='stage C losses'):
         run_experiment_multi(stage='fast_loss', name=f'loss-{loss}',
             feature_names=winner['features'], normalization=winner['normalization'],
             loss_name=loss, loss_pos_weight=pos_weight if loss == 'bce_balanced' else None,
@@ -219,9 +240,10 @@ def main():
     winner['loss'] = best_loss.replace('loss-', '')
     winner['loss_pos_weight'] = pos_weight if winner['loss'] == 'bce_balanced' else None
     print(f'--> loss: {winner["loss"]} (recall@5 {r5})')
+    print_remaining('fast_loss')
 
     '''stage D: architecture'''
-    for name, (rname, rkw) in ARCHITECTURES.items():
+    for name, (rname, rkw) in tqdm(list(ARCHITECTURES.items()), desc='stage D archs'):
         run_experiment_multi(stage='fast_arch', name=f'arch-{name}',
             feature_names=winner['features'], normalization=winner['normalization'],
             loss_name=winner['loss'], loss_pos_weight=winner.get('loss_pos_weight'),
@@ -231,9 +253,10 @@ def main():
         eligible=lambda name, arch: not arch.startswith('mockup'))
     winner['router_name'], winner['router_kwargs'] = ARCHITECTURES[best_arch.replace('arch-', '')]
     print(f'--> architecture: {best_arch} (recall@5 {r5})')
+    print_remaining('fast_arch')
 
     '''stage E: horizon (recall@5 stays the comparison basis across h)'''
-    for h in HORIZONS:
+    for h in tqdm(HORIZONS, desc='stage E horizons'):
         run_experiment_multi(stage='fast_h', name=f'h{h}',
             feature_names=winner['features'], normalization=winner['normalization'],
             loss_name=winner['loss'], loss_pos_weight=winner.get('loss_pos_weight'),
@@ -244,6 +267,7 @@ def main():
         eligible=lambda name, h: True)
     winner['h'] = int(best_h[1:])
     print(f'--> horizon: h={winner["h"]} (recall@5 {r5})')
+    print_remaining('fast_h')
 
     '''stage F: retrain per dataset group, save deployable bundles. If the
     winner carries a conf variant, ALSO train the best conf-free recipe --
@@ -258,7 +282,9 @@ def main():
         variants.append(('__noconf', winner_features_free))
     # end
 
-    for suffix, features_variant in variants:
+    jobs_final = [(s, f) for s, f in variants]
+    bar_final = tqdm(total=len(jobs_final) * len(DATASET_GROUPS), desc='stage F final trainings')
+    for suffix, features_variant in jobs_final:
         features_spec = ['conf' if f in ('conf_aged', 'conf_policy') else f for f in features_variant]
         conf_mode = 'aged' if any(f in ('conf_aged', 'conf_policy') for f in features_variant) else \
                     ('fresh' if 'conf' in features_variant else 'none')
@@ -272,6 +298,7 @@ def main():
             datasets = resolve_datasets(names_task, FOLDER_TRAIN, THREAD, NUM_BLOCKS)
             if not datasets:
                 print(f'[warn] final: group {name_group} has no folders, skipped')
+                bar_final.update(1)
                 continue
             # end
 
@@ -345,9 +372,12 @@ def main():
             summary['bundles'][name_group + suffix] = {
                 'path': path_pt, 'features': features_variant, 'recall_eval_no_ifeval': recalls}
             print(f'[final] {name_group}{suffix}: saved {path_pt} recall_eval_no_ifeval={recalls}')
+            bar_final.update(1)
         # end
     # end
 
+    bar_final.close()
+    print_remaining('fast_final')
     path_summary = os.path.join(FOLDER_BUNDLES, f'{THREAD}__ablation_summary.json')
     with open(path_summary, 'w') as file:
         json.dump(summary, file, indent=2)
