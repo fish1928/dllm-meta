@@ -521,6 +521,29 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
 
 
 
+class CacheAttnRouterRolloutPlugin_Enabled(CacheAttnPlugin_Enabled):
+    '''both consumers of the attention hook in ONE plugin slot: the block-local
+    attention rows the router features need (parent behavior) AND the d2Cache
+    attention rollout (for rollout-based refresh of unmasked/prompt tokens).
+    The per-layer scores are computed twice (once per consumer) -- negligible
+    for sparse query widths. Used by the router+rollout hybrid runner.'''
+
+    def save(self):
+        super().save()    # block-local rows -> router features
+        CacheAttnRolloutPlugin_Enabled.save(self)    # rollout accumulation
+    # end
+
+    def get_global_importance(self):
+        return CacheAttnRolloutPlugin_Enabled.get_global_importance(self)
+    # end
+
+    def clear(self, model):
+        super().clear(model)
+        CacheAttnRolloutPlugin_Enabled._ROLLOUT = None
+    # end
+# end
+
+
 class CachePastKVPlugin_Disabled(InspectorPlugin):
 
     def get_plugin_name(self):
