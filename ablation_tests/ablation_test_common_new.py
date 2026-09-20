@@ -57,9 +57,11 @@ from router_llada import (
     Feature_znormed_global,
     Feature_znormed_row,
     FeatureBase,
+    FeatureWrapperBase,
     RouterTrainer,
     build_geometry,
     load_stat,
+    percentile_rank_masked,
     sanitize,
 )
 
@@ -123,6 +125,53 @@ class Feature_conf_random_aged(FeatureBase):
         source_row = (torch.arange(T)[:, None] - ages).clamp(min=0)
 
         return value.gather(dim=0, index=source_row).unsqueeze(-1)
+
+
+class Feature_stat_random_aged_with_age(FeatureBase):
+    # (stat[t - age, p], age / max_age): randomly aged value PLUS the age that
+    # produced it, as a second channel. Deployment parity: the runner knows
+    # exactly how stale every conf/margin table entry is (steps since that
+    # position was last probed or refreshed), so online it feeds the true
+    # (value, age) pair -- the router learns how much to trust a value GIVEN
+    # its age instead of assuming uniform freshness.
+    def __init__(self, folder_data, max_age=16, stat='conf'):
+        super().__init__(folder_data)
+        self.max_age = int(max_age)
+        self.stat = stat
+
+    def dim(self):
+        return 2
+
+    def load_block(self, id_sample, pos_base, size_block):
+        value = sanitize(load_stat(self._folder_base(id_sample), self.stat, pos_base, size_block))
+        T = value.shape[0]
+
+        max_age_per_row = torch.arange(T).clamp(max=self.max_age)
+        ages = torch.floor(torch.rand(T, value.shape[1]) * (max_age_per_row[:, None].float() + 1.0)).long()
+        source_row = (torch.arange(T)[:, None] - ages).clamp(min=0)
+
+        aged = value.gather(dim=0, index=source_row)
+        age_norm = ages.float() / max(self.max_age, 1)
+        return torch.stack([aged, age_norm], dim=-1)    # (T, L, 2)
+
+
+class Feature_rank_value_raw_age(FeatureWrapperBase):
+    # normalization for (value, age) pair features: the VALUE channel gets the
+    # usual candidate percentile rank (scale-free, deploy convention), but the
+    # AGE channel passes through RAW (already in [0,1] as age/max_age).
+    # Ranking age would destroy its absolute level -- 'all candidates 15 steps
+    # stale' and 'all 1 step stale' rank identically, and that level is
+    # exactly what the router needs to discount stale values. Age has no
+    # train/deploy scale drift (both sides count steps, capped at max_age),
+    # so raw is safe where raw conf would not be.
+    def load_block(self, id_sample, pos_base, size_block):
+        x = self.feature_inner.load_block(id_sample, pos_base, size_block)    # (T, L, 2)
+        cand_mask = self._cand_mask_3d(id_sample, pos_base, size_block).squeeze(-1)    # (T, L)
+        value_ranked = percentile_rank_masked(x[..., :1], cand_mask)
+        age_raw = x[..., 1:].masked_fill(~cand_mask.unsqueeze(-1), 0.0)    # zero non-candidates, like rank
+        return torch.cat([value_ranked, age_raw], dim=-1)
+    # end
+# end
 
 
 # ---------------------------------------------------------------------------
@@ -234,6 +283,10 @@ def make_feature(name: str, folder_data: str, num_layers: int, max_conf_age: int
         return Feature_conf_random_aged(folder_data, max_age=max_conf_age, stat='margin')
     if name == 'margin_policy':
         return Feature_conf_policy_aged(folder_data, kr=max_conf_age, stat='margin')
+    if name == 'conf_aged_age':
+        return Feature_stat_random_aged_with_age(folder_data, max_age=max_conf_age, stat='conf')
+    if name == 'margin_aged_age':
+        return Feature_stat_random_aged_with_age(folder_data, max_age=max_conf_age, stat='margin')
     if name == 'pos_delta':
         return Feature_pos_delta(folder_data)
     if name == 'mask_density':
@@ -241,16 +294,24 @@ def make_feature(name: str, folder_data: str, num_layers: int, max_conf_age: int
     raise ValueError(f'Unknown feature: {name}')
 
 
+FEATURES_VALUE_AGE = {'conf_aged_age', 'margin_aged_age'}
+
+
 def normalize_feature(name: str, feature, normalization: str):
     """DEPLOY convention for rank/softmax_attn (matches run_train_mlp and
     router_deploy.build_online_x: non-attention features get percentile rank);
-    the other recipes are exploratory (offline only until build_online_x
-    learns them)."""
+    (value, age) pair features rank the value and pass age through raw; the
+    other recipes are exploratory (offline only until build_online_x learns
+    them)."""
     if normalization == 'rank':
+        if name in FEATURES_VALUE_AGE:
+            return Feature_rank_value_raw_age(feature)
         return Feature_rank_normed(feature)
     if normalization == 'softmax_attn':
         if name in FEATURES_ATTENTION:
             return Feature_softmax_row(feature, temperature=1.0)
+        if name in FEATURES_VALUE_AGE:
+            return Feature_rank_value_raw_age(feature)
         return Feature_rank_normed(feature)
     if normalization == 'raw':
         return feature
@@ -402,7 +463,13 @@ def run_experiment_multi(
         return None
 
     if skip_existing and os.environ.get('RERUN', '') != '1' and already_done(stage, name, report_path):
-        print(f'[{stage}] {name}: already done, skipping (RERUN=1 to force)')
+        epochs_cached = (find_record(stage, name, report_path) or {}).get('config', {}).get('num_epochs')
+        if epochs_cached is not None and int(epochs_cached) != int(num_epochs):
+            print(f'[{stage}] {name}: already done, skipping -- WARNING cached at '
+                  f'num_epochs={epochs_cached} but current setting is {num_epochs}; '
+                  'within-stage rankings mix epoch budgets (RERUN=1 to retrain)')
+        else:
+            print(f'[{stage}] {name}: already done, skipping (RERUN=1 to force)')
         return None
 
     print(f'\n[{stage}] {name}')

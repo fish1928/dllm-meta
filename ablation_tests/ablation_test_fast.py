@@ -34,8 +34,15 @@ Usage (llada-base):
       python ablation_tests/ablation_test_fast.py
 Env: FOLDER_TRAIN (stats_train root of head-split TRAIN folders), THREAD,
      NUM_BLOCKS (default 1), DEVICE, NUM_LAYERS (32; dream 28), NUM_EPOCHS
-     (10), EPOCHS_FINAL (20), H (5), MAX_CONF_AGE (16), REPORT_PATH,
+     (4 -- search stages only rank candidates and the loss has mostly
+     converged by epoch 3; the final candidate gets EPOCHS_FINAL anyway),
+     EPOCHS_FINAL (20), H (5), MAX_CONF_AGE (16), REPORT_PATH (default
+     ablation_test_report_fast_<THREAD>.json so threads never collide),
      FOLDER_BUNDLES (routers_final).
+Within one stage every candidate should be trained with the SAME NUM_EPOCHS
+-- resume prints a warning when a cached record was trained with a different
+epoch count than the current setting (RERUN=1 to retrain for consistency).
+View results: python ablation_tests/build_report_html.py --thread <THREAD>
 """
 
 import json
@@ -63,13 +70,21 @@ from ablation_test_common_new import (
 from router_llada import FactoryRouter, RouterTrainer, build_geometry
 from router_deploy import save_router_bundle, spec_dim_in
 
-REPORT_PATH = os.environ.get('REPORT_PATH', 'ablation_test_report_fast.json')
 FOLDER_TRAIN = os.environ.get('FOLDER_TRAIN', 'stats_train')
 THREAD = os.environ.get('THREAD', 'llada_base')
+
+# per-thread report so several threads can run from the same directory; the
+# pre-rename llada_base report keeps resuming under its legacy name
+_report_default = f'ablation_test_report_fast_{THREAD}.json'
+if THREAD == 'llada_base' and not os.path.exists(_report_default) \
+        and os.path.exists('ablation_test_report_fast.json'):
+    _report_default = 'ablation_test_report_fast.json'
+REPORT_PATH = os.environ.get('REPORT_PATH', _report_default)
+
 NUM_BLOCKS = int(os.environ.get('NUM_BLOCKS', 1))
 DEVICE = os.environ.get('DEVICE', 'cuda:0')
 NUM_LAYERS = int(os.environ.get('NUM_LAYERS', 32))
-NUM_EPOCHS = int(os.environ.get('NUM_EPOCHS', 10))
+NUM_EPOCHS = int(os.environ.get('NUM_EPOCHS', 4))    # ranking-only; final uses EPOCHS_FINAL
 EPOCHS_FINAL = int(os.environ.get('EPOCHS_FINAL', 20))
 H_DEFAULT = int(os.environ.get('H', 5))
 MAX_CONF_AGE = int(os.environ.get('MAX_CONF_AGE', 16))
@@ -114,6 +129,28 @@ FEATURE_ANCHORS = {
     'attn_last_geo_margin_aged':   ['attn_last', 'pos_delta', 'mask_density', 'margin_aged'],
     'attn_last_geo_margin_policy': ['attn_last', 'pos_delta', 'mask_density', 'margin_policy'],
     'full_all_aged':               ['attn_last', 'conf_aged', 'margin_aged', 'pos_delta', 'mask_density'],
+    'full_all_policy':             ['attn_last', 'conf_policy', 'margin_policy', 'pos_delta', 'mask_density'],
+}
+
+
+# staleness tracks: every stage-A anchor belongs to exactly one, by the LEAST
+# deployable conf/margin signal it carries (fresh > aged > policy > clean)
+def track_of(features):
+    if any(f in ('conf', 'margin') for f in features):
+        return 'fresh'
+    if any(f in ('conf_aged', 'margin_aged') for f in features):
+        return 'aged'
+    if any(f in ('conf_policy', 'margin_policy') for f in features):
+        return 'policy'
+    return 'clean'
+# end
+
+
+TRACK_LABELS = {
+    'fresh':  'with conf/margin (fresh -- offline ceiling, leaks at deployment)',
+    'aged':   'with aged conf/margin (random-age augmentation)',
+    'policy': 'with policy conf/margin (deterministic refresh-clock aging)',
+    'clean':  'no conf/margin',
 }
 
 ARCHITECTURES = {
@@ -131,7 +168,7 @@ DEPLOYABLE_ONLINE_FEATURES = {'attn_last', 'attn_all', 'pos_delta', 'mask_densit
 
 
 STAGES = [
-    ('fast_feat',  'A features (15 runs)'),
+    ('fast_feat',  'A features (16 runs)'),
     ('fast_norm',  'B normalization (7 runs)'),
     ('fast_loss',  'C loss (5 runs)'),
     ('fast_arch',  'D architecture (6 runs)'),
@@ -227,6 +264,23 @@ def main():
     winner['features'] = FEATURE_ANCHORS[best_feat]
     winner_features_free = FEATURE_ANCHORS[best_free]
     print(f'--> features: {best_feat} {winner["features"]} (recall@5 {r5})')
+
+    # per-track leaderboard: winner + runner-up inside each staleness track
+    # (pure reporting -- the guarded selection above is what carries forward)
+    tracks = {}
+    print('\n===== staleness tracks (winner / runner-up) =====')
+    for track in ('clean', 'policy', 'aged', 'fresh'):
+        ranked = sorted(
+            ((n, recall5_of('fast_feat', n)) for n, feats in FEATURE_ANCHORS.items()
+             if track_of(feats) == track),
+            key=lambda p: -1 if p[1] is None else p[1], reverse=True)
+        tracks[track] = [
+            {'rank': i + 1, 'name': n, 'recall@5': v, 'features': FEATURE_ANCHORS[n]}
+            for i, (n, v) in enumerate(ranked[:2])]
+        shown = ' / '.join(f'{n} ({v})' for n, v in ranked[:2])
+        print(f'  {TRACK_LABELS[track]}: {shown}')
+    # end
+    stage_winners = {'fast_feat': {'name': best_feat, 'recall@5': r5}}
     print_remaining('fast_feat')
 
     # cache-key chain: downstream record names carry the upstream winners, so
@@ -244,6 +298,7 @@ def main():
         eligible=lambda name, norm: norm in NORMALIZATIONS_DEPLOYABLE)
     winner['normalization'] = best_norm.replace('norm-', '').split('@')[0]
     print(f'--> normalization: {winner["normalization"]} (recall@5 {r5})')
+    stage_winners['fast_norm'] = {'name': winner['normalization'], 'recall@5': r5}
     print_remaining('fast_norm')
     tag += '+' + winner['normalization']
 
@@ -261,6 +316,7 @@ def main():
     winner['loss'] = best_loss.replace('loss-', '').split('@')[0]
     winner['loss_pos_weight'] = pos_weight if winner['loss'] == 'bce_balanced' else None
     print(f'--> loss: {winner["loss"]} (recall@5 {r5})')
+    stage_winners['fast_loss'] = {'name': winner['loss'], 'recall@5': r5}
     print_remaining('fast_loss')
     tag += '+' + winner['loss']
 
@@ -276,6 +332,7 @@ def main():
     name_arch = best_arch.replace('arch-', '').split('@')[0]
     winner['router_name'], winner['router_kwargs'] = ARCHITECTURES[name_arch]
     print(f'--> architecture: {best_arch} (recall@5 {r5})')
+    stage_winners['fast_arch'] = {'name': name_arch, 'recall@5': r5}
     print_remaining('fast_arch')
     tag += '+' + name_arch
 
@@ -291,6 +348,7 @@ def main():
         eligible=lambda name, h: True)
     winner['h'] = int(best_h[1:].split('@')[0])
     print(f'--> horizon: h={winner["h"]} (recall@5 {r5})')
+    stage_winners['fast_h'] = {'name': f'h{winner["h"]}', 'recall@5': r5}
     print_remaining('fast_h')
 
     '''stage F: retrain per dataset group, save deployable bundles. If the
@@ -298,7 +356,9 @@ def main():
     offline recall cannot settle the conf axis, so both bundle sets are saved
     and a cheap e2e run makes the final call (command printed at the end).'''
     os.makedirs(FOLDER_BUNDLES, exist_ok=True)
-    summary = {'thread': THREAD, 'winner': {k: v for k, v in winner.items()}, 'bundles': {}}
+    summary = {'thread': THREAD, 'winner': {k: v for k, v in winner.items()},
+               'stage_winners': stage_winners, 'tracks': tracks,
+               'num_epochs_search': NUM_EPOCHS, 'report_path': REPORT_PATH, 'bundles': {}}
 
     variants = [('', winner['features'])]
     has_conf_variant = any(is_suspect(f) for f in winner['features'])
