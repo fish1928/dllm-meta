@@ -192,8 +192,10 @@ def main():
     # variant, the final stage ALSO trains the best conf-free recipe so a
     # cheap e2e run makes the actual call.
     conf_margin = float(os.environ.get('CONF_MARGIN', 0.02))
+    def is_suspect(f):    # logits-derived signals: fresh offline, stale online
+        return f.startswith('conf') or f == 'margin'
     best_free, r5_free = pick_best('fast_feat', FEATURE_ANCHORS,
-        eligible=lambda n, feats: not any(f.startswith('conf') for f in feats))
+        eligible=lambda n, feats: not any(is_suspect(f) for f in feats))
     best_any, r5_any = pick_best('fast_feat', FEATURE_ANCHORS,
         eligible=lambda n, feats: 'conf' not in feats)    # fresh conf = leak
     if best_any != best_free and r5_any is not None and r5_free is not None \
@@ -277,9 +279,9 @@ def main():
     summary = {'thread': THREAD, 'winner': {k: v for k, v in winner.items()}, 'bundles': {}}
 
     variants = [('', winner['features'])]
-    has_conf_variant = any(f.startswith('conf') for f in winner['features'])
+    has_conf_variant = any(f.startswith('conf') or f == 'margin' for f in winner['features'])
     if has_conf_variant:
-        variants.append(('__noconf', winner_features_free))
+        variants.append(('__deployable', winner_features_free))
     # end
 
     jobs_final = [(s, f) for s, f in variants]
@@ -372,7 +374,7 @@ def main():
                 'recall_eval_no_ifeval': recalls,
                 'thread': THREAD,
             }
-            spec['dim_in'] = spec_dim_in(spec)
+            spec['dim_in'] = router.dim_in    # ground truth; registry-independent
             router.features = feature_lists[0]
             path_pt = os.path.join(FOLDER_BUNDLES, f'{THREAD}__{name_group}{suffix}.pt')
             save_router_bundle(router, spec, path_pt)
@@ -395,7 +397,7 @@ def main():
         print('\n[conf] offline could not settle the conf axis: run the deciding e2e pair, e.g.')
         print(f'  ...run_benchmark_main.py --tasks gsm8k --limit 200 ... '
               f'path_router={FOLDER_BUNDLES}/{THREAD}__mix_no_ifeval.pt')
-        print(f'  ...same command with path_router={FOLDER_BUNDLES}/{THREAD}__mix_no_ifeval__noconf.pt')
+        print(f'  ...same command with path_router={FOLDER_BUNDLES}/{THREAD}__mix_no_ifeval__deployable.pt')
     # end
 # end
 

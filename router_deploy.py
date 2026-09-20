@@ -42,6 +42,8 @@ def feature_dim(name, num_layers):
         'pos_delta': 2,
         'mask_density': 1,
         'conf': 1,
+        'margin': 1,    # dim known so bundles SAVE; build_online_x still
+                        # rejects it online (no deployed margin table yet)
     }[name]
 # end
 
