@@ -6,7 +6,7 @@ from tools_debug import jprint
 
 class SimpleLogitsSnapshot:
 
-    def __init__(self, x, y, id_mask, x0=None, conf=None):
+    def __init__(self, x, y, id_mask, x0=None, conf=None, margin=None):
         self.id_mask = id_mask
 
         self.x = x
@@ -14,6 +14,7 @@ class SimpleLogitsSnapshot:
 
         assert x0 is None or x0.shape[1] == self.x.shape[1]
         assert conf is None or conf.shape[1] == self.x.shape[1]
+        assert margin is None or margin.shape[1] == self.x.shape[1]
 
         if x0 is None:
             self.x0 = torch.zeros(self.x.shape, dtype=torch.long, device=self.x.device)
@@ -27,6 +28,15 @@ class SimpleLogitsSnapshot:
             self.conf = torch.zeros(self.x.shape, dtype=torch.float32, device=self.x.device)
         else:
             self.conf = conf
+        # end
+
+        # margin table: p(top1) - p(top2), same oracle definition as the
+        # collectors' 'margin' stat; updated alongside conf in
+        # transform_logits, stale by the same refresh policy
+        if margin is None:
+            self.margin = torch.zeros(self.x.shape, dtype=torch.float32, device=self.x.device)
+        else:
+            self.margin = margin
         # end
     # end
 
@@ -69,10 +79,16 @@ class SimpleLogitsSnapshot:
 
         x0_p_transformed = torch.gather(p_transformed, dim=-1, index=index_p_transform).squeeze(-1)
 
+        # margin from the SAME fresh probabilities: p(top1) - p(top2)
+        top2 = p_transformed.topk(2, dim=-1).values
+        margin_transformed = top2[..., 0] - top2[..., 1]
+
         if idx_transform is not None:
             self.conf.scatter_(1, idx_transform, x0_p_transformed)
+            self.margin.scatter_(1, idx_transform, margin_transformed)
         else:
             self.conf = x0_p_transformed
+            self.margin = margin_transformed
         # end
 
         neg_inf = torch.tensor(

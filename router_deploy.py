@@ -8,11 +8,14 @@
 # router travels as a BUNDLE = <name>.pt (weights) + <name>.json (spec).
 #
 # Spec fields:
-#   features: list of ['attn_last' | 'attn_all' | 'pos_delta' | 'mask_density' | 'conf']
+#   features: list of ['attn_last' | 'attn_all' | 'pos_delta' | 'mask_density'
+#                      | 'conf' | 'margin']
 #   normalization: 'rank' | 'softmax_attn'   (softmax_attn: attention features get
 #                  masked row-softmax, all other features get candidate rank)
 #   conf_mode: 'fresh' | 'aged' | 'none'     (training-side treatment; deployment
 #                  always feeds the live snapshot conf, stale by policy)
+#   margin_mode: same semantics for the margin table (snapshot.margin,
+#                  p(top1)-p(top2), updated alongside conf)
 #   router_name / router_kwargs / dim_in / num_layers / mask_density_window /
 #   softmax_temperature / h / loss / dataset ...
 #################################################
@@ -42,8 +45,7 @@ def feature_dim(name, num_layers):
         'pos_delta': 2,
         'mask_density': 1,
         'conf': 1,
-        'margin': 1,    # dim known so bundles SAVE; build_online_x still
-                        # rejects it online (no deployed margin table yet)
+        'margin': 1,
     }[name]
 # end
 
@@ -107,7 +109,7 @@ def masked_softmax_row(x, cand_3d, temperature):
 # end
 
 
-def build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last):
+def build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last, margin_block=None):
     """
     Build the router input for ONE sparse step, block-local.
 
@@ -116,6 +118,8 @@ def build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last):
     conf_block:    (L,) live snapshot confidence (stale by refresh policy)
     mask_still:    (L,) bool, still-masked positions (the candidates)
     pos_last:      0-dim long tensor, block-local position of the last unmask
+    margin_block:  (L,) live snapshot margin (p(top1)-p(top2), same staleness
+                   as conf); required only when spec['features'] has 'margin'
 
     Returns (1, L, dim_in), same layout as offline build_block_x row t.
     """
@@ -135,6 +139,11 @@ def build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last):
             raw = attn_rows_all.t().contiguous().view(1, L, -1)
         elif name == 'conf':
             raw = conf_block.view(1, L, 1)
+        elif name == 'margin':
+            assert margin_block is not None, \
+                'spec wants margin but the runner passed no margin_block ' \
+                '(pass snapshot.margin for the current block)'
+            raw = margin_block.view(1, L, 1)
         elif name == 'pos_delta':
             positions = torch.arange(L, device=device)
             delta = (positions - pos_last).float() / L
@@ -162,9 +171,10 @@ def build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last):
 
 
 @torch.no_grad()
-def select_topk_candidates(router, spec, attn_rows_all, conf_block, mask_still, pos_last, k):
+def select_topk_candidates(router, spec, attn_rows_all, conf_block, mask_still, pos_last, k,
+                           margin_block=None):
     """Score candidates online and return the block-local indices of the top k."""
-    x = build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last)
+    x = build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last, margin_block)
     scores = router(x).view(-1)
     scores = scores.masked_fill(~mask_still, NEG_INF)
     return scores.topk(k).indices

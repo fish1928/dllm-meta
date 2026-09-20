@@ -164,7 +164,12 @@ ARCHITECTURES = {
 
 HORIZONS = [3, 5, 8, 12, 16]
 
-DEPLOYABLE_ONLINE_FEATURES = {'attn_last', 'attn_all', 'pos_delta', 'mask_density', 'conf', 'conf_aged'}
+# margin joined once the snapshot gained its online margin table (fed to
+# build_online_x by the semi_mlp runners); *_aged/_policy deploy as the live
+# stale tables -- aging is a training-time treatment only
+DEPLOYABLE_ONLINE_FEATURES = {'attn_last', 'attn_all', 'pos_delta', 'mask_density',
+                              'conf', 'conf_aged', 'conf_policy',
+                              'margin', 'margin_aged', 'margin_policy'}
 
 
 STAGES = [
