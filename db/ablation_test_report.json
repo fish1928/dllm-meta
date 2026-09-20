@@ -1,0 +1,3660 @@
+{
+  "stage_a": [
+    {
+      "name": "random",
+      "config": {
+        "router": "Router_mockup_random",
+        "features": [
+          "attn_last_dummy_input"
+        ],
+        "h": 5,
+        "size_block": 128
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.094 (n=3250)",
+          "recall@5": "0.135 (n=3198)",
+          "recall@10": "0.219 (n=3068)",
+          "pr_auc@5": "0.190 (n=3172)",
+          "ndgc@5": "0.136 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mockup_random",
+            "features": [
+              "Feature_attn_last"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "raw_attn_last",
+      "config": {
+        "router": "Router_mockup_raw_feature",
+        "features": [
+          "attn_last"
+        ],
+        "h": 5,
+        "size_block": 128
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mockup_raw_feature",
+            "features": [
+              "Feature_attn_last"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "raw_conf",
+      "config": {
+        "router": "Router_mockup_raw_feature",
+        "features": [
+          "conf"
+        ],
+        "h": 5,
+        "size_block": 128
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.721 (n=3250)",
+          "recall@5": "0.737 (n=3198)",
+          "recall@10": "0.759 (n=3068)",
+          "pr_auc@5": "0.821 (n=3172)",
+          "ndgc@5": "0.818 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mockup_raw_feature",
+            "features": [
+              "Feature_conf"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "raw_margin",
+      "config": {
+        "router": "Router_mockup_raw_feature",
+        "features": [
+          "margin"
+        ],
+        "h": 5,
+        "size_block": 128
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.673 (n=3250)",
+          "recall@5": "0.694 (n=3198)",
+          "recall@10": "0.707 (n=3068)",
+          "pr_auc@5": "0.771 (n=3172)",
+          "ndgc@5": "0.774 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mockup_raw_feature",
+            "features": [
+              "Feature_margin"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "negative_raw_entropy",
+      "config": {
+        "router": "Router_mockup_raw_feature",
+        "features": [
+          "-entropy"
+        ],
+        "h": 5,
+        "size_block": 128
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.689 (n=3250)",
+          "recall@5": "0.712 (n=3198)",
+          "recall@10": "0.742 (n=3068)",
+          "pr_auc@5": "0.792 (n=3172)",
+          "ndgc@5": "0.786 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mockup_raw_feature",
+            "features": [
+              "negated(Feature_entropy)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "nearest_right",
+      "config": {
+        "router": "Router_mockup_nearest_right",
+        "features": [
+          "pos_delta"
+        ],
+        "h": 5,
+        "size_block": 128
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.498 (n=3250)",
+          "recall@5": "0.568 (n=3198)",
+          "recall@10": "0.656 (n=3068)",
+          "pr_auc@5": "0.608 (n=3172)",
+          "ndgc@5": "0.589 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mockup_nearest_right",
+            "features": [
+              "Feature_pos_delta"
+            ],
+            "dim_in": 2
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "linear_core_features",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "raw",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "linear",
+        "router_kwargs": {},
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 5,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.642 (n=3250)",
+          "recall@5": "0.691 (n=3198)",
+          "recall@10": "0.769 (n=3068)",
+          "pr_auc@5": "0.779 (n=3172)",
+          "ndgc@5": "0.748 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_linear",
+            "features": [
+              "Feature_attn_last",
+              "Feature_conf",
+              "Feature_margin",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    }
+  ],
+  "stage_b": [
+    {
+      "name": "attention_only__raw__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "raw",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.492 (n=3250)",
+          "recall@5": "0.556 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.642 (n=3172)",
+          "ndgc@5": "0.596 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "Feature_attn_last"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__raw__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "raw",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.557 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.599 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "Feature_attn_last"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__raw__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "raw",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "Feature_attn_last"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__raw__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "raw",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "Feature_attn_last"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__raw__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "raw",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.491 (n=3250)",
+          "recall@5": "0.555 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.641 (n=3172)",
+          "ndgc@5": "0.595 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "Feature_attn_last"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__znorm_row__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "znorm_row",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.492 (n=3250)",
+          "recall@5": "0.554 (n=3198)",
+          "recall@10": "0.640 (n=3068)",
+          "pr_auc@5": "0.637 (n=3172)",
+          "ndgc@5": "0.600 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__znorm_row__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "znorm_row",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.492 (n=3250)",
+          "recall@5": "0.554 (n=3198)",
+          "recall@10": "0.640 (n=3068)",
+          "pr_auc@5": "0.637 (n=3172)",
+          "ndgc@5": "0.600 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__znorm_row__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "znorm_row",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.482 (n=3250)",
+          "recall@5": "0.546 (n=3198)",
+          "recall@10": "0.641 (n=3068)",
+          "pr_auc@5": "0.633 (n=3172)",
+          "ndgc@5": "0.592 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__znorm_row__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "znorm_row",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.487 (n=3250)",
+          "recall@5": "0.550 (n=3198)",
+          "recall@10": "0.637 (n=3068)",
+          "pr_auc@5": "0.632 (n=3172)",
+          "ndgc@5": "0.595 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__znorm_row__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "znorm_row",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.493 (n=3250)",
+          "recall@5": "0.555 (n=3198)",
+          "recall@10": "0.641 (n=3068)",
+          "pr_auc@5": "0.638 (n=3172)",
+          "ndgc@5": "0.601 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__rank__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "rank",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "rank_normed(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__rank__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "rank",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "rank_normed(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__rank__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "rank",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.493 (n=3250)",
+          "recall@5": "0.557 (n=3198)",
+          "recall@10": "0.646 (n=3068)",
+          "pr_auc@5": "0.641 (n=3172)",
+          "ndgc@5": "0.602 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "rank_normed(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__rank__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "rank",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.557 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.642 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "rank_normed(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__rank__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "rank",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "rank_normed(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__minmax_row__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "minmax_row",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.482 (n=3250)",
+          "recall@5": "0.556 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.635 (n=3172)",
+          "ndgc@5": "0.586 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "minmax_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__minmax_row__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "minmax_row",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.493 (n=3250)",
+          "recall@5": "0.557 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.640 (n=3172)",
+          "ndgc@5": "0.597 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "minmax_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__minmax_row__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "minmax_row",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.484 (n=3250)",
+          "recall@5": "0.554 (n=3198)",
+          "recall@10": "0.646 (n=3068)",
+          "pr_auc@5": "0.639 (n=3172)",
+          "ndgc@5": "0.597 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "minmax_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__minmax_row__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "minmax_row",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.495 (n=3250)",
+          "recall@5": "0.557 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.642 (n=3172)",
+          "ndgc@5": "0.602 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "minmax_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__minmax_row__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "minmax_row",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.642 (n=3172)",
+          "ndgc@5": "0.602 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "minmax_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__znorm_global__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "znorm_global",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.491 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.642 (n=3172)",
+          "ndgc@5": "0.601 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_global(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__znorm_global__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "znorm_global",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_global(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__znorm_global__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "znorm_global",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.642 (n=3172)",
+          "ndgc@5": "0.602 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_global(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__znorm_global__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "znorm_global",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_global(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__znorm_global__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "znorm_global",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.485 (n=3250)",
+          "recall@5": "0.549 (n=3198)",
+          "recall@10": "0.645 (n=3068)",
+          "pr_auc@5": "0.637 (n=3172)",
+          "ndgc@5": "0.587 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_global(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__log_znorm__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "log_znorm",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(log_scaled(Feature_attn_last))"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__log_znorm__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "log_znorm",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(log_scaled(Feature_attn_last))"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__log_znorm__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "log_znorm",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.557 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.642 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(log_scaled(Feature_attn_last))"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__log_znorm__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "log_znorm",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.557 (n=3198)",
+          "recall@10": "0.646 (n=3068)",
+          "pr_auc@5": "0.642 (n=3172)",
+          "ndgc@5": "0.602 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(log_scaled(Feature_attn_last))"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__log_znorm__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "log_znorm",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(log_scaled(Feature_attn_last))"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__softmax_attn__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "softmax_attn",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "softmax_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__softmax_attn__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "softmax_attn",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "softmax_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__softmax_attn__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "softmax_attn",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.602 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "softmax_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__softmax_attn__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "softmax_attn",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "softmax_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "attention_only__softmax_attn__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last"
+        ],
+        "normalization": "softmax_attn",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.494 (n=3250)",
+          "recall@5": "0.558 (n=3198)",
+          "recall@10": "0.647 (n=3068)",
+          "pr_auc@5": "0.643 (n=3172)",
+          "ndgc@5": "0.603 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "softmax_row(Feature_attn_last)"
+            ],
+            "dim_in": 1
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__raw__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "raw",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.644 (n=3250)",
+          "recall@5": "0.708 (n=3198)",
+          "recall@10": "0.776 (n=3068)",
+          "pr_auc@5": "0.802 (n=3172)",
+          "ndgc@5": "0.756 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "Feature_attn_last",
+              "Feature_conf",
+              "Feature_margin",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__raw__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "raw",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.665 (n=3250)",
+          "recall@5": "0.713 (n=3198)",
+          "recall@10": "0.777 (n=3068)",
+          "pr_auc@5": "0.804 (n=3172)",
+          "ndgc@5": "0.774 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "Feature_attn_last",
+              "Feature_conf",
+              "Feature_margin",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__raw__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "raw",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.526 (n=3250)",
+          "recall@5": "0.606 (n=3198)",
+          "recall@10": "0.727 (n=3068)",
+          "pr_auc@5": "0.701 (n=3172)",
+          "ndgc@5": "0.645 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "Feature_attn_last",
+              "Feature_conf",
+              "Feature_margin",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__raw__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "raw",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.590 (n=3250)",
+          "recall@5": "0.640 (n=3198)",
+          "recall@10": "0.735 (n=3068)",
+          "pr_auc@5": "0.739 (n=3172)",
+          "ndgc@5": "0.702 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "Feature_attn_last",
+              "Feature_conf",
+              "Feature_margin",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__raw__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "raw",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.698 (n=3250)",
+          "recall@5": "0.735 (n=3198)",
+          "recall@10": "0.790 (n=3068)",
+          "pr_auc@5": "0.825 (n=3172)",
+          "ndgc@5": "0.800 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "Feature_attn_last",
+              "Feature_conf",
+              "Feature_margin",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__znorm_row__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "znorm_row",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.624 (n=3250)",
+          "recall@5": "0.695 (n=3198)",
+          "recall@10": "0.766 (n=3068)",
+          "pr_auc@5": "0.782 (n=3172)",
+          "ndgc@5": "0.738 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(Feature_attn_last)",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__znorm_row__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "znorm_row",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.630 (n=3250)",
+          "recall@5": "0.689 (n=3198)",
+          "recall@10": "0.761 (n=3068)",
+          "pr_auc@5": "0.775 (n=3172)",
+          "ndgc@5": "0.741 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(Feature_attn_last)",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__znorm_row__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "znorm_row",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.623 (n=3250)",
+          "recall@5": "0.660 (n=3198)",
+          "recall@10": "0.734 (n=3068)",
+          "pr_auc@5": "0.758 (n=3172)",
+          "ndgc@5": "0.731 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(Feature_attn_last)",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__znorm_row__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "znorm_row",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.615 (n=3250)",
+          "recall@5": "0.656 (n=3198)",
+          "recall@10": "0.731 (n=3068)",
+          "pr_auc@5": "0.756 (n=3172)",
+          "ndgc@5": "0.726 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(Feature_attn_last)",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__znorm_row__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "znorm_row",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.647 (n=3250)",
+          "recall@5": "0.699 (n=3198)",
+          "recall@10": "0.772 (n=3068)",
+          "pr_auc@5": "0.789 (n=3172)",
+          "ndgc@5": "0.759 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(Feature_attn_last)",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__rank__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "rank",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.653 (n=3250)",
+          "recall@5": "0.703 (n=3198)",
+          "recall@10": "0.761 (n=3068)",
+          "pr_auc@5": "0.802 (n=3172)",
+          "ndgc@5": "0.768 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "rank_normed(Feature_attn_last)",
+              "rank_normed(Feature_conf)",
+              "rank_normed(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__rank__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "rank",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.684 (n=3250)",
+          "recall@5": "0.713 (n=3198)",
+          "recall@10": "0.759 (n=3068)",
+          "pr_auc@5": "0.810 (n=3172)",
+          "ndgc@5": "0.792 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "rank_normed(Feature_attn_last)",
+              "rank_normed(Feature_conf)",
+              "rank_normed(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__rank__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "rank",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.630 (n=3250)",
+          "recall@5": "0.662 (n=3198)",
+          "recall@10": "0.733 (n=3068)",
+          "pr_auc@5": "0.760 (n=3172)",
+          "ndgc@5": "0.741 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "rank_normed(Feature_attn_last)",
+              "rank_normed(Feature_conf)",
+              "rank_normed(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__rank__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "rank",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.677 (n=3250)",
+          "recall@5": "0.696 (n=3198)",
+          "recall@10": "0.742 (n=3068)",
+          "pr_auc@5": "0.795 (n=3172)",
+          "ndgc@5": "0.781 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "rank_normed(Feature_attn_last)",
+              "rank_normed(Feature_conf)",
+              "rank_normed(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__rank__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "rank",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.697 (n=3250)",
+          "recall@5": "0.724 (n=3198)",
+          "recall@10": "0.771 (n=3068)",
+          "pr_auc@5": "0.816 (n=3172)",
+          "ndgc@5": "0.802 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "rank_normed(Feature_attn_last)",
+              "rank_normed(Feature_conf)",
+              "rank_normed(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__minmax_row__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "minmax_row",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.628 (n=3250)",
+          "recall@5": "0.693 (n=3198)",
+          "recall@10": "0.766 (n=3068)",
+          "pr_auc@5": "0.789 (n=3172)",
+          "ndgc@5": "0.739 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "minmax_row(Feature_attn_last)",
+              "minmax_row(Feature_conf)",
+              "minmax_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__minmax_row__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "minmax_row",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.656 (n=3250)",
+          "recall@5": "0.697 (n=3198)",
+          "recall@10": "0.763 (n=3068)",
+          "pr_auc@5": "0.792 (n=3172)",
+          "ndgc@5": "0.761 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "minmax_row(Feature_attn_last)",
+              "minmax_row(Feature_conf)",
+              "minmax_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__minmax_row__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "minmax_row",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.595 (n=3250)",
+          "recall@5": "0.650 (n=3198)",
+          "recall@10": "0.739 (n=3068)",
+          "pr_auc@5": "0.743 (n=3172)",
+          "ndgc@5": "0.709 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "minmax_row(Feature_attn_last)",
+              "minmax_row(Feature_conf)",
+              "minmax_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__minmax_row__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "minmax_row",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.596 (n=3250)",
+          "recall@5": "0.652 (n=3198)",
+          "recall@10": "0.738 (n=3068)",
+          "pr_auc@5": "0.748 (n=3172)",
+          "ndgc@5": "0.714 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "minmax_row(Feature_attn_last)",
+              "minmax_row(Feature_conf)",
+              "minmax_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__minmax_row__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "minmax_row",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.678 (n=3250)",
+          "recall@5": "0.717 (n=3198)",
+          "recall@10": "0.781 (n=3068)",
+          "pr_auc@5": "0.807 (n=3172)",
+          "ndgc@5": "0.781 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "minmax_row(Feature_attn_last)",
+              "minmax_row(Feature_conf)",
+              "minmax_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__znorm_global__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "znorm_global",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.654 (n=3250)",
+          "recall@5": "0.713 (n=3198)",
+          "recall@10": "0.770 (n=3068)",
+          "pr_auc@5": "0.802 (n=3172)",
+          "ndgc@5": "0.764 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_global(Feature_attn_last)",
+              "znormed_global(Feature_conf)",
+              "znormed_global(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__znorm_global__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "znorm_global",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.668 (n=3250)",
+          "recall@5": "0.714 (n=3198)",
+          "recall@10": "0.770 (n=3068)",
+          "pr_auc@5": "0.802 (n=3172)",
+          "ndgc@5": "0.775 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_global(Feature_attn_last)",
+              "znormed_global(Feature_conf)",
+              "znormed_global(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__znorm_global__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "znorm_global",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.572 (n=3250)",
+          "recall@5": "0.625 (n=3198)",
+          "recall@10": "0.712 (n=3068)",
+          "pr_auc@5": "0.719 (n=3172)",
+          "ndgc@5": "0.683 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_global(Feature_attn_last)",
+              "znormed_global(Feature_conf)",
+              "znormed_global(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__znorm_global__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "znorm_global",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.569 (n=3250)",
+          "recall@5": "0.628 (n=3198)",
+          "recall@10": "0.718 (n=3068)",
+          "pr_auc@5": "0.719 (n=3172)",
+          "ndgc@5": "0.680 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_global(Feature_attn_last)",
+              "znormed_global(Feature_conf)",
+              "znormed_global(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__znorm_global__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "znorm_global",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.709 (n=3250)",
+          "recall@5": "0.739 (n=3198)",
+          "recall@10": "0.781 (n=3068)",
+          "pr_auc@5": "0.828 (n=3172)",
+          "ndgc@5": "0.810 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_global(Feature_attn_last)",
+              "znormed_global(Feature_conf)",
+              "znormed_global(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__log_znorm__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "log_znorm",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.616 (n=3250)",
+          "recall@5": "0.694 (n=3198)",
+          "recall@10": "0.764 (n=3068)",
+          "pr_auc@5": "0.784 (n=3172)",
+          "ndgc@5": "0.728 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(log_scaled(Feature_attn_last))",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__log_znorm__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "log_znorm",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.642 (n=3250)",
+          "recall@5": "0.693 (n=3198)",
+          "recall@10": "0.764 (n=3068)",
+          "pr_auc@5": "0.782 (n=3172)",
+          "ndgc@5": "0.752 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(log_scaled(Feature_attn_last))",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__log_znorm__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "log_znorm",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.621 (n=3250)",
+          "recall@5": "0.657 (n=3198)",
+          "recall@10": "0.730 (n=3068)",
+          "pr_auc@5": "0.756 (n=3172)",
+          "ndgc@5": "0.729 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(log_scaled(Feature_attn_last))",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__log_znorm__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "log_znorm",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.624 (n=3250)",
+          "recall@5": "0.659 (n=3198)",
+          "recall@10": "0.732 (n=3068)",
+          "pr_auc@5": "0.758 (n=3172)",
+          "ndgc@5": "0.732 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(log_scaled(Feature_attn_last))",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__log_znorm__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "log_znorm",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.650 (n=3250)",
+          "recall@5": "0.700 (n=3198)",
+          "recall@10": "0.768 (n=3068)",
+          "pr_auc@5": "0.788 (n=3172)",
+          "ndgc@5": "0.759 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "znormed_row(log_scaled(Feature_attn_last))",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__softmax_attn__uniform_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "softmax_attn",
+        "loss": "uniform_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.628 (n=3250)",
+          "recall@5": "0.706 (n=3198)",
+          "recall@10": "0.777 (n=3068)",
+          "pr_auc@5": "0.794 (n=3172)",
+          "ndgc@5": "0.738 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "softmax_row(Feature_attn_last)",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__softmax_attn__decay_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "softmax_attn",
+        "loss": "decay_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.672 (n=3250)",
+          "recall@5": "0.711 (n=3198)",
+          "recall@10": "0.775 (n=3068)",
+          "pr_auc@5": "0.798 (n=3172)",
+          "ndgc@5": "0.774 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "softmax_row(Feature_attn_last)",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__softmax_attn__bce_within_h",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "softmax_attn",
+        "loss": "bce_within_h",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.628 (n=3250)",
+          "recall@5": "0.662 (n=3198)",
+          "recall@10": "0.739 (n=3068)",
+          "pr_auc@5": "0.761 (n=3172)",
+          "ndgc@5": "0.735 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "softmax_row(Feature_attn_last)",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__softmax_attn__bce_balanced",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "softmax_attn",
+        "loss": "bce_balanced",
+        "loss_pos_weight": 12.0048,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.630 (n=3250)",
+          "recall@5": "0.666 (n=3198)",
+          "recall@10": "0.742 (n=3068)",
+          "pr_auc@5": "0.763 (n=3172)",
+          "ndgc@5": "0.737 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "softmax_row(Feature_attn_last)",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "name": "core_mixed__softmax_attn__plackett_luce",
+      "config": {
+        "folder_data": "stats_gsm8k",
+        "features": [
+          "attn_last",
+          "conf",
+          "margin",
+          "pos_delta",
+          "mask_density"
+        ],
+        "normalization": "softmax_attn",
+        "loss": "plackett_luce",
+        "loss_pos_weight": null,
+        "router": "mlp",
+        "router_kwargs": {
+          "dim_hidden": 64,
+          "num_blocks_mlp": 2
+        },
+        "h": 5,
+        "size_block": 128,
+        "device": "cuda:0",
+        "num_layers": 32,
+        "num_epochs": 3,
+        "lr": 0.001,
+        "weight_decay": 0.0001,
+        "holdout": 0.2,
+        "filter_result": "all",
+        "seed": 233
+      },
+      "metrics": {
+        "all": {
+          "recall@3": "0.669 (n=3250)",
+          "recall@5": "0.711 (n=3198)",
+          "recall@10": "0.778 (n=3068)",
+          "pr_auc@5": "0.799 (n=3172)",
+          "ndgc@5": "0.774 (n=3276)",
+          "n_blocks": 26,
+          "router": {
+            "router": "Router_mlp",
+            "features": [
+              "softmax_row(Feature_attn_last)",
+              "znormed_row(Feature_conf)",
+              "znormed_row(Feature_margin)",
+              "Feature_pos_delta",
+              "Feature_mask_density"
+            ],
+            "dim_in": 6
+          }
+        }
+      },
+      "error": null
+    }
+  ]
+}

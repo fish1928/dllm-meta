@@ -11,13 +11,21 @@ grid: attn_last+geo / softmax_attn / plackett_luce / mlp d64 / h=5) and sweep
 ONE dimension per stage on the MIX dataset group, carrying winners forward:
   fast_feat -> fast_norm -> fast_loss -> fast_arch -> fast_h -> fast_final
 Leak guards baked into winner selection (everything is still MEASURED):
-  - anchors containing fresh 'conf' are recorded but ineligible to win
+  - anchors containing fresh 'conf' OR fresh 'margin' are recorded but
+    ineligible to win: both are logits-derived tables that are FRESH in the
+    oracle stats but STALE at deployment (only re-synced at refresh). Only
+    their aged variants (conf_aged/conf_policy, margin_aged/margin_policy)
+    may win, and only past the CONF_MARGIN edge over the best clean anchor.
   - non-deployable normalizations (anything but rank/softmax_attn) are
     recorded but ineligible (router_deploy.build_online_x cannot run them)
   - mockup routers are floors, never winners
-  - 'margin' may win offline but is NOT deployable online (no online margin
-    in build_online_x) -- a winning set containing margin trains and saves,
-    with a loud warning to extend build_online_x before e2e
+  - aged margin is honest at TRAINING time but still not computable online
+    (no online margin table in build_online_x) -- a winning set containing a
+    margin variant trains and saves, with a loud warning to extend
+    build_online_x before e2e
+Stage B-E record names embed the upstream winner chain, so a change in an
+earlier stage's winner automatically invalidates (reruns) the downstream
+cached records instead of silently reusing results from the wrong recipe.
 Final bundles: conf_aged maps to spec feature 'conf' with conf_mode='aged'
 (the run_train_mlp convention -- deployment feeds the live stale conf).
 
@@ -101,6 +109,11 @@ FEATURE_ANCHORS = {
     'no_attn_aged':               ['conf_aged', 'margin', 'pos_delta', 'mask_density'],
     'full_fresh':                 ['attn_last', 'conf', 'margin', 'pos_delta', 'mask_density'],
     'full_aged':                  ['attn_last', 'conf_aged', 'margin', 'pos_delta', 'mask_density'],
+    # honest-margin arms: margin aged the way deployment would see it (fresh
+    # margin above stays measured as the ceiling but can no longer win)
+    'attn_last_geo_margin_aged':   ['attn_last', 'pos_delta', 'mask_density', 'margin_aged'],
+    'attn_last_geo_margin_policy': ['attn_last', 'pos_delta', 'mask_density', 'margin_policy'],
+    'full_all_aged':               ['attn_last', 'conf_aged', 'margin_aged', 'pos_delta', 'mask_density'],
 }
 
 ARCHITECTURES = {
@@ -118,7 +131,7 @@ DEPLOYABLE_ONLINE_FEATURES = {'attn_last', 'attn_all', 'pos_delta', 'mask_densit
 
 
 STAGES = [
-    ('fast_feat',  'A features (12 runs)'),
+    ('fast_feat',  'A features (15 runs)'),
     ('fast_norm',  'B normalization (7 runs)'),
     ('fast_loss',  'C loss (5 runs)'),
     ('fast_arch',  'D architecture (6 runs)'),
@@ -185,19 +198,20 @@ def main():
             h=winner['h'], **common)
     # end
     # CONF POLICY: offline recall is only trustworthy between recipes of equal
-    # deployment fidelity. Fresh conf is banned outright (leak). conf_aged /
-    # conf_policy anchors may win ONLY if they beat the best conf-FREE anchor
-    # by CONF_MARGIN (default 0.02) -- offline gains smaller than that have
-    # historically NOT survived e2e. Whenever the winner carries a conf
-    # variant, the final stage ALSO trains the best conf-free recipe so a
-    # cheap e2e run makes the actual call.
+    # deployment fidelity. Fresh conf AND fresh margin are banned outright
+    # (both are fresh-logit tables in the oracle stats but stale-at-refresh
+    # tables at deployment). Their aged variants may win ONLY if they beat the
+    # best clean anchor by CONF_MARGIN (default 0.02) -- offline gains smaller
+    # than that have historically NOT survived e2e. Whenever the winner
+    # carries a suspect variant, the final stage ALSO trains the best clean
+    # recipe so a cheap e2e run makes the actual call.
     conf_margin = float(os.environ.get('CONF_MARGIN', 0.02))
     def is_suspect(f):    # logits-derived signals: fresh offline, stale online
-        return f.startswith('conf') or f == 'margin'
+        return f.startswith('conf') or f.startswith('margin')
     best_free, r5_free = pick_best('fast_feat', FEATURE_ANCHORS,
         eligible=lambda n, feats: not any(is_suspect(f) for f in feats))
     best_any, r5_any = pick_best('fast_feat', FEATURE_ANCHORS,
-        eligible=lambda n, feats: 'conf' not in feats)    # fresh conf = leak
+        eligible=lambda n, feats: 'conf' not in feats and 'margin' not in feats)    # fresh = leak
     if best_any != best_free and r5_any is not None and r5_free is not None \
             and r5_any >= r5_free + conf_margin:
         best_feat, r5 = best_any, r5_any
@@ -215,59 +229,67 @@ def main():
     print(f'--> features: {best_feat} {winner["features"]} (recall@5 {r5})')
     print_remaining('fast_feat')
 
+    # cache-key chain: downstream record names carry the upstream winners, so
+    # cached results are reused ONLY when computed under the same recipe
+    tag = best_feat
+
     '''stage B: normalization'''
     for norm in tqdm(NORMALIZATIONS_ALL, desc='stage B norms', disable=None):
-        run_experiment_multi(stage='fast_norm', name=f'norm-{norm}',
+        run_experiment_multi(stage='fast_norm', name=f'norm-{norm}@{tag}',
             feature_names=winner['features'], normalization=norm, loss_name=winner['loss'],
             router_name=winner['router_name'], router_kwargs=winner['router_kwargs'],
             h=winner['h'], **common)
     # end
-    best_norm, r5 = pick_best('fast_norm', {f'norm-{n}': n for n in NORMALIZATIONS_ALL},
+    best_norm, r5 = pick_best('fast_norm', {f'norm-{n}@{tag}': n for n in NORMALIZATIONS_ALL},
         eligible=lambda name, norm: norm in NORMALIZATIONS_DEPLOYABLE)
-    winner['normalization'] = best_norm.replace('norm-', '')
+    winner['normalization'] = best_norm.replace('norm-', '').split('@')[0]
     print(f'--> normalization: {winner["normalization"]} (recall@5 {r5})')
     print_remaining('fast_norm')
+    tag += '+' + winner['normalization']
 
     '''stage C: loss'''
     pos_weight = estimate_balanced_pos_weight_multi(datasets_search, h=winner['h'])
     for loss in tqdm(LOSSES_ALL, desc='stage C losses', disable=None):
-        run_experiment_multi(stage='fast_loss', name=f'loss-{loss}',
+        run_experiment_multi(stage='fast_loss', name=f'loss-{loss}@{tag}',
             feature_names=winner['features'], normalization=winner['normalization'],
             loss_name=loss, loss_pos_weight=pos_weight if loss == 'bce_balanced' else None,
             router_name=winner['router_name'], router_kwargs=winner['router_kwargs'],
             h=winner['h'], **common)
     # end
-    best_loss, r5 = pick_best('fast_loss', {f'loss-{l}': l for l in LOSSES_ALL},
+    best_loss, r5 = pick_best('fast_loss', {f'loss-{l}@{tag}': l for l in LOSSES_ALL},
         eligible=lambda name, loss: True)
-    winner['loss'] = best_loss.replace('loss-', '')
+    winner['loss'] = best_loss.replace('loss-', '').split('@')[0]
     winner['loss_pos_weight'] = pos_weight if winner['loss'] == 'bce_balanced' else None
     print(f'--> loss: {winner["loss"]} (recall@5 {r5})')
     print_remaining('fast_loss')
+    tag += '+' + winner['loss']
 
     '''stage D: architecture'''
     for name, (rname, rkw) in tqdm(list(ARCHITECTURES.items()), desc='stage D archs', disable=None):
-        run_experiment_multi(stage='fast_arch', name=f'arch-{name}',
+        run_experiment_multi(stage='fast_arch', name=f'arch-{name}@{tag}',
             feature_names=winner['features'], normalization=winner['normalization'],
             loss_name=winner['loss'], loss_pos_weight=winner.get('loss_pos_weight'),
             router_name=rname, router_kwargs=rkw, h=winner['h'], **common)
     # end
-    best_arch, r5 = pick_best('fast_arch', {f'arch-{n}': n for n in ARCHITECTURES},
+    best_arch, r5 = pick_best('fast_arch', {f'arch-{n}@{tag}': n for n in ARCHITECTURES},
         eligible=lambda name, arch: not arch.startswith('mockup'))
-    winner['router_name'], winner['router_kwargs'] = ARCHITECTURES[best_arch.replace('arch-', '')]
+    name_arch = best_arch.replace('arch-', '').split('@')[0]
+    winner['router_name'], winner['router_kwargs'] = ARCHITECTURES[name_arch]
     print(f'--> architecture: {best_arch} (recall@5 {r5})')
     print_remaining('fast_arch')
+    tag += '+' + name_arch
 
     '''stage E: horizon (recall@5 stays the comparison basis across h)'''
     for h in tqdm(HORIZONS, desc='stage E horizons', disable=None):
-        run_experiment_multi(stage='fast_h', name=f'h{h}',
+        run_experiment_multi(stage='fast_h', name=f'h{h}@{tag}',
             feature_names=winner['features'], normalization=winner['normalization'],
             loss_name=winner['loss'], loss_pos_weight=winner.get('loss_pos_weight'),
             router_name=winner['router_name'], router_kwargs=winner['router_kwargs'],
             h=h, **common)
     # end
-    best_h, r5 = pick_best('fast_h', {f'h{h}': h for h in HORIZONS},
+    best_h, r5 = pick_best('fast_h', {f'h{h}@{tag}': h for h in HORIZONS},
         eligible=lambda name, h: True)
-    winner['h'] = int(best_h[1:])
+    winner['h'] = int(best_h[1:].split('@')[0])
     print(f'--> horizon: h={winner["h"]} (recall@5 {r5})')
     print_remaining('fast_h')
 
@@ -279,7 +301,7 @@ def main():
     summary = {'thread': THREAD, 'winner': {k: v for k, v in winner.items()}, 'bundles': {}}
 
     variants = [('', winner['features'])]
-    has_conf_variant = any(f.startswith('conf') or f == 'margin' for f in winner['features'])
+    has_conf_variant = any(is_suspect(f) for f in winner['features'])
     if has_conf_variant:
         variants.append(('__deployable', winner_features_free))
     # end
@@ -287,9 +309,13 @@ def main():
     jobs_final = [(s, f) for s, f in variants]
     bar_final = tqdm(total=len(jobs_final) * len(DATASET_GROUPS), desc='stage F final trainings', disable=None)
     for suffix, features_variant in jobs_final:
-        features_spec = ['conf' if f in ('conf_aged', 'conf_policy') else f for f in features_variant]
+        features_spec = ['conf' if f in ('conf_aged', 'conf_policy') else
+                         'margin' if f in ('margin_aged', 'margin_policy') else f
+                         for f in features_variant]
         conf_mode = 'aged' if any(f in ('conf_aged', 'conf_policy') for f in features_variant) else \
                     ('fresh' if 'conf' in features_variant else 'none')
+        margin_mode = 'aged' if any(f in ('margin_aged', 'margin_policy') for f in features_variant) else \
+                      ('fresh' if 'margin' in features_variant else 'none')
         if not set(features_variant) <= DEPLOYABLE_ONLINE_FEATURES:
             print('[WARNING] features not computable online yet: '
                   f'{set(features_variant) - DEPLOYABLE_ONLINE_FEATURES} '
@@ -359,6 +385,7 @@ def main():
             spec = {
                 'features': features_spec,
                 'conf_mode': conf_mode,
+                'margin_mode': margin_mode,
                 'normalization': winner['normalization'],
                 'softmax_temperature': 1.0,
                 'mask_density_window': 3,

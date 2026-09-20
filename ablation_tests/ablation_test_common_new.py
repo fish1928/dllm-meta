@@ -77,14 +77,15 @@ LOSSES_ALL = ('uniform_within_h', 'decay_within_h', 'bce_within_h',
 
 
 class Feature_conf_policy_aged(FeatureBase):
-    # conf[t - (t mod kr), p]: the DETERMINISTIC staleness of deployment under
+    # stat[t - (t mod kr), p]: the DETERMINISTIC staleness of deployment under
     # a gen-refresh clock of kr steps (age = steps since the last full block
     # refresh) -- unlike random-age augmentation, this replays the exact age
-    # structure the deployed conf table has, making offline recall honest for
-    # the conf axis.
-    def __init__(self, folder_data, kr=16):
+    # structure the deployed table has, making offline recall honest for that
+    # axis. Works for any per-step (T, L) stat table: conf, margin.
+    def __init__(self, folder_data, kr=16, stat='conf'):
         super().__init__(folder_data)
         self.kr = int(kr)
+        self.stat = stat
     # end
 
     def dim(self):
@@ -92,34 +93,36 @@ class Feature_conf_policy_aged(FeatureBase):
     # end
 
     def load_block(self, id_sample, pos_base, size_block):
-        conf = sanitize(load_stat(self._folder_base(id_sample), 'conf', pos_base, size_block))
-        T = conf.shape[0]
+        value = sanitize(load_stat(self._folder_base(id_sample), self.stat, pos_base, size_block))
+        T = value.shape[0]
         source_row = (torch.arange(T) // self.kr) * self.kr    # last refresh step
-        return conf.gather(dim=0, index=source_row.unsqueeze(-1).expand(T, conf.shape[1])).unsqueeze(-1)
+        return value.gather(dim=0, index=source_row.unsqueeze(-1).expand(T, value.shape[1])).unsqueeze(-1)
     # end
 # end
 
 
 class Feature_conf_random_aged(FeatureBase):
-    # conf[t - age, p] with age ~ U{0..min(t, max_age)}, resampled every load
+    # stat[t - age, p] with age ~ U{0..min(t, max_age)}, resampled every load
     # (each epoch re-iterates blocks -> fresh ages, i.e. random-age
-    # augmentation). Mirrors run_train_mlp.Feature_conf_random_aged.
-    def __init__(self, folder_data, max_age=16):
+    # augmentation). Mirrors run_train_mlp.Feature_conf_random_aged; works for
+    # any per-step (T, L) stat table: conf, margin.
+    def __init__(self, folder_data, max_age=16, stat='conf'):
         super().__init__(folder_data)
         self.max_age = int(max_age)
+        self.stat = stat
 
     def dim(self):
         return 1
 
     def load_block(self, id_sample, pos_base, size_block):
-        conf = sanitize(load_stat(self._folder_base(id_sample), 'conf', pos_base, size_block))
-        T = conf.shape[0]
+        value = sanitize(load_stat(self._folder_base(id_sample), self.stat, pos_base, size_block))
+        T = value.shape[0]
 
         max_age_per_row = torch.arange(T).clamp(max=self.max_age)
-        ages = torch.floor(torch.rand(T, conf.shape[1]) * (max_age_per_row[:, None].float() + 1.0)).long()
+        ages = torch.floor(torch.rand(T, value.shape[1]) * (max_age_per_row[:, None].float() + 1.0)).long()
         source_row = (torch.arange(T)[:, None] - ages).clamp(min=0)
 
-        return conf.gather(dim=0, index=source_row).unsqueeze(-1)
+        return value.gather(dim=0, index=source_row).unsqueeze(-1)
 
 
 # ---------------------------------------------------------------------------
@@ -227,6 +230,10 @@ def make_feature(name: str, folder_data: str, num_layers: int, max_conf_age: int
         return Feature_conf_policy_aged(folder_data, kr=max_conf_age)
     if name == 'margin':
         return Feature_margin(folder_data)
+    if name == 'margin_aged':
+        return Feature_conf_random_aged(folder_data, max_age=max_conf_age, stat='margin')
+    if name == 'margin_policy':
+        return Feature_conf_policy_aged(folder_data, kr=max_conf_age, stat='margin')
     if name == 'pos_delta':
         return Feature_pos_delta(folder_data)
     if name == 'mask_density':
