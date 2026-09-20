@@ -1,0 +1,260 @@
+nohup: ignoring input
+search group mix_no_ifeval: [('gsm8k', 256), ('minerva_math', 512), ('bbh', 256), ('humaneval', 512), ('truthfulqa_gen', 256)]
+[fast_feat] attn_last: already done, skipping (RERUN=1 to force)
+[fast_feat] attn_all: already done, skipping (RERUN=1 to force)
+[fast_feat] attn_last_geo: already done, skipping (RERUN=1 to force)
+[fast_feat] attn_all_geo: already done, skipping (RERUN=1 to force)
+[fast_feat] attn_last_geo_conf: already done, skipping (RERUN=1 to force)
+[fast_feat] attn_last_geo_conf_aged: already done, skipping (RERUN=1 to force)
+[fast_feat] attn_last_geo_conf_policy: already done, skipping (RERUN=1 to force)
+[fast_feat] attn_last_geo_margin: already done, skipping (RERUN=1 to force)
+[fast_feat] attn_last_conf_aged_margin: already done, skipping (RERUN=1 to force)
+[fast_feat] no_attn_aged: already done, skipping (RERUN=1 to force)
+[fast_feat] full_fresh: already done, skipping (RERUN=1 to force)
+[fast_feat] full_aged: already done, skipping (RERUN=1 to force)
+
+===== fast_feat results =====
+  attn_last_geo_conf               recall@5=0.779  [ineligible]
+  full_fresh                       recall@5=0.777  [ineligible]
+  full_aged                        recall@5=0.759  [ineligible]
+  attn_last_geo_margin             recall@5=0.758  [ineligible]
+  no_attn_aged                     recall@5=0.757  [ineligible]
+  attn_last_conf_aged_margin       recall@5=0.734  [ineligible]
+  attn_last_geo_conf_policy        recall@5=0.674  [ineligible]
+  attn_last_geo_conf_aged          recall@5=0.648  [ineligible]
+  attn_all_geo                     recall@5=0.612  
+  attn_last_geo                    recall@5=0.61  
+  attn_all                         recall@5=0.6  
+  attn_last                        recall@5=0.511  
+
+===== fast_feat results =====
+  attn_last_geo_conf               recall@5=0.779  [ineligible]
+  full_fresh                       recall@5=0.777  [ineligible]
+  full_aged                        recall@5=0.759  
+  attn_last_geo_margin             recall@5=0.758  
+  no_attn_aged                     recall@5=0.757  
+  attn_last_conf_aged_margin       recall@5=0.734  
+  attn_last_geo_conf_policy        recall@5=0.674  
+  attn_last_geo_conf_aged          recall@5=0.648  
+  attn_all_geo                     recall@5=0.612  
+  attn_last_geo                    recall@5=0.61  
+  attn_all                         recall@5=0.6  
+  attn_last                        recall@5=0.511  
+[conf] full_aged beats conf-free attn_all_geo by >= 0.02 offline (0.759 vs 0.612); e2e must confirm -- dual bundles will be saved
+--> features: full_aged ['attn_last', 'conf_aged', 'margin', 'pos_delta', 'mask_density'] (recall@5 0.759)
+[progress] finished A features (12 runs); remaining: B normalization (7 runs) -> C loss (5 runs) -> D architecture (6 runs) -> E horizon (5 runs) -> F final training + bundles (3-6 trainings)
+[fast_norm] norm-raw: already done, skipping (RERUN=1 to force)
+[fast_norm] norm-znorm_row: already done, skipping (RERUN=1 to force)
+[fast_norm] norm-rank: already done, skipping (RERUN=1 to force)
+[fast_norm] norm-minmax_row: already done, skipping (RERUN=1 to force)
+[fast_norm] norm-znorm_global: already done, skipping (RERUN=1 to force)
+[fast_norm] norm-log_znorm: already done, skipping (RERUN=1 to force)
+[fast_norm] norm-softmax_attn: already done, skipping (RERUN=1 to force)
+
+===== fast_norm results =====
+  norm-softmax_attn                recall@5=0.758  
+  norm-rank                        recall@5=0.756  
+  norm-raw                         recall@5=0.743  [ineligible]
+  norm-minmax_row                  recall@5=0.73  [ineligible]
+  norm-znorm_global                recall@5=0.725  [ineligible]
+  norm-log_znorm                   recall@5=0.693  [ineligible]
+  norm-znorm_row                   recall@5=0.692  [ineligible]
+--> normalization: softmax_attn (recall@5 0.758)
+[progress] finished B normalization (7 runs); remaining: C loss (5 runs) -> D architecture (6 runs) -> E horizon (5 runs) -> F final training + bundles (3-6 trainings)
+[fast_loss] loss-uniform_within_h: already done, skipping (RERUN=1 to force)
+[fast_loss] loss-decay_within_h: already done, skipping (RERUN=1 to force)
+[fast_loss] loss-bce_within_h: already done, skipping (RERUN=1 to force)
+[fast_loss] loss-bce_balanced: already done, skipping (RERUN=1 to force)
+[fast_loss] loss-plackett_luce: already done, skipping (RERUN=1 to force)
+
+===== fast_loss results =====
+  loss-plackett_luce               recall@5=0.758  
+  loss-decay_within_h              recall@5=0.757  
+  loss-bce_balanced                recall@5=0.743  
+  loss-bce_within_h                recall@5=0.739  
+  loss-uniform_within_h            recall@5=0.737  
+--> loss: plackett_luce (recall@5 0.758)
+[progress] finished C loss (5 runs); remaining: D architecture (6 runs) -> E horizon (5 runs) -> F final training + bundles (3-6 trainings)
+[fast_arch] arch-linear: already done, skipping (RERUN=1 to force)
+[fast_arch] arch-mlp_d32_b2: already done, skipping (RERUN=1 to force)
+[fast_arch] arch-mlp_d64_b2: already done, skipping (RERUN=1 to force)
+[fast_arch] arch-mlp_d128_b3: already done, skipping (RERUN=1 to force)
+[fast_arch] arch-set_attention: already done, skipping (RERUN=1 to force)
+[fast_arch] arch-mockup_random: already done, skipping (RERUN=1 to force)
+
+===== fast_arch results =====
+  arch-set_attention               recall@5=0.759  
+  arch-mlp_d64_b2                  recall@5=0.758  
+  arch-mlp_d128_b3                 recall@5=0.753  
+  arch-mlp_d32_b2                  recall@5=0.749  
+  arch-linear                      recall@5=0.648  
+  arch-mockup_random               recall@5=0.061  [ineligible]
+--> architecture: arch-set_attention (recall@5 0.759)
+[progress] finished D architecture (6 runs); remaining: E horizon (5 runs) -> F final training + bundles (3-6 trainings)
+[fast_h] h3: already done, skipping (RERUN=1 to force)
+[fast_h] h5: already done, skipping (RERUN=1 to force)
+[fast_h] h8: already done, skipping (RERUN=1 to force)
+[fast_h] h12: already done, skipping (RERUN=1 to force)
+[fast_h] h16: already done, skipping (RERUN=1 to force)
+
+===== fast_h results =====
+  h3                               recall@5=0.759  
+  h5                               recall@5=0.759  
+  h8                               recall@5=0.756  
+  h12                              recall@5=0.754  
+  h16                              recall@5=0.733  
+--> horizon: h=3 (recall@5 0.759)
+[progress] finished E horizon (5 runs); remaining: F final training + bundles (3-6 trainings)
+[WARNING] features not computable online yet: {'margin'} -- extend router_deploy before e2e with this bundle
+  [final mix_no_ifeval] epoch 1/20: loss 2.1246
+  [final mix_no_ifeval] epoch 2/20: loss 1.6132
+  [final mix_no_ifeval] epoch 3/20: loss 1.5622
+  [final mix_no_ifeval] epoch 4/20: loss 1.5270
+  [final mix_no_ifeval] epoch 5/20: loss 1.5079
+  [final mix_no_ifeval] epoch 6/20: loss 1.4933
+  [final mix_no_ifeval] epoch 7/20: loss 1.4832
+  [final mix_no_ifeval] epoch 8/20: loss 1.4747
+  [final mix_no_ifeval] epoch 9/20: loss 1.4717
+  [final mix_no_ifeval] epoch 10/20: loss 1.4650
+  [final mix_no_ifeval] epoch 11/20: loss 1.4614
+  [final mix_no_ifeval] epoch 12/20: loss 1.4582
+  [final mix_no_ifeval] epoch 13/20: loss 1.4559
+  [final mix_no_ifeval] epoch 14/20: loss 1.4517
+  [final mix_no_ifeval] epoch 15/20: loss 1.4494
+  [final mix_no_ifeval] epoch 16/20: loss 1.4478
+  [final mix_no_ifeval] epoch 17/20: loss 1.4445
+  [final mix_no_ifeval] epoch 18/20: loss 1.4418
+  [final mix_no_ifeval] epoch 19/20: loss 1.4401
+  [final mix_no_ifeval] epoch 20/20: loss 1.4374
+[final] mix_no_ifeval: saved routers_final/llada_base__mix_no_ifeval.pt recall_eval_no_ifeval={'gsm8k': '0.696 (n=2530)', 'minerva_math': '0.753 (n=5090)', 'bbh': '0.714 (n=2530)', 'humaneval': '0.723 (n=5090)', 'truthfulqa_gen': '0.778 (n=2530)'}
+  [final gsm8k] epoch 1/20: loss 3.5601
+  [final gsm8k] epoch 2/20: loss 2.0078
+  [final gsm8k] epoch 3/20: loss 1.8191
+  [final gsm8k] epoch 4/20: loss 1.7655
+  [final gsm8k] epoch 5/20: loss 1.7299
+  [final gsm8k] epoch 6/20: loss 1.7149
+  [final gsm8k] epoch 7/20: loss 1.6947
+  [final gsm8k] epoch 8/20: loss 1.6848
+  [final gsm8k] epoch 9/20: loss 1.6741
+  [final gsm8k] epoch 10/20: loss 1.6627
+  [final gsm8k] epoch 11/20: loss 1.6511
+  [final gsm8k] epoch 12/20: loss 1.6424
+  [final gsm8k] epoch 13/20: loss 1.6415
+  [final gsm8k] epoch 14/20: loss 1.6286
+  [final gsm8k] epoch 15/20: loss 1.6209
+  [final gsm8k] epoch 16/20: loss 1.6150
+  [final gsm8k] epoch 17/20: loss 1.6108
+  [final gsm8k] epoch 18/20: loss 1.6089
+  [final gsm8k] epoch 19/20: loss 1.6014
+  [final gsm8k] epoch 20/20: loss 1.5969
+[final] gsm8k: saved routers_final/llada_base__gsm8k.pt recall_eval_no_ifeval={'gsm8k': '0.696 (n=2530)', 'minerva_math': '0.751 (n=5090)', 'bbh': '0.688 (n=2530)', 'humaneval': '0.706 (n=5090)', 'truthfulqa_gen': '0.762 (n=2530)'}
+  [final ifeval] epoch 1/20: loss 3.5935
+  [final ifeval] epoch 2/20: loss 1.7974
+  [final ifeval] epoch 3/20: loss 1.6388
+  [final ifeval] epoch 4/20: loss 1.6049
+  [final ifeval] epoch 5/20: loss 1.5836
+  [final ifeval] epoch 6/20: loss 1.5669
+  [final ifeval] epoch 7/20: loss 1.5514
+  [final ifeval] epoch 8/20: loss 1.5375
+  [final ifeval] epoch 9/20: loss 1.5259
+  [final ifeval] epoch 10/20: loss 1.5138
+  [final ifeval] epoch 11/20: loss 1.5029
+  [final ifeval] epoch 12/20: loss 1.4946
+  [final ifeval] epoch 13/20: loss 1.4844
+  [final ifeval] epoch 14/20: loss 1.4798
+  [final ifeval] epoch 15/20: loss 1.4717
+  [final ifeval] epoch 16/20: loss 1.4647
+  [final ifeval] epoch 17/20: loss 1.4584
+  [final ifeval] epoch 18/20: loss 1.4545
+  [final ifeval] epoch 19/20: loss 1.4448
+  [final ifeval] epoch 20/20: loss 1.4400
+[final] ifeval: saved routers_final/llada_base__ifeval.pt recall_eval_no_ifeval={'gsm8k': '0.657 (n=2530)', 'minerva_math': '0.718 (n=5090)', 'bbh': '0.643 (n=2530)', 'humaneval': '0.666 (n=5090)', 'truthfulqa_gen': '0.736 (n=2530)'}
+  [final mix_no_ifeval__deployable] epoch 1/20: loss 2.5298
+  [final mix_no_ifeval__deployable] epoch 2/20: loss 2.3155
+  [final mix_no_ifeval__deployable] epoch 3/20: loss 2.3113
+  [final mix_no_ifeval__deployable] epoch 4/20: loss 2.3086
+  [final mix_no_ifeval__deployable] epoch 5/20: loss 2.3057
+  [final mix_no_ifeval__deployable] epoch 6/20: loss 2.3023
+  [final mix_no_ifeval__deployable] epoch 7/20: loss 2.2987
+  [final mix_no_ifeval__deployable] epoch 8/20: loss 2.2955
+  [final mix_no_ifeval__deployable] epoch 9/20: loss 2.2932
+  [final mix_no_ifeval__deployable] epoch 10/20: loss 2.2919
+  [final mix_no_ifeval__deployable] epoch 11/20: loss 2.2906
+  [final mix_no_ifeval__deployable] epoch 12/20: loss 2.2887
+  [final mix_no_ifeval__deployable] epoch 13/20: loss 2.2868
+  [final mix_no_ifeval__deployable] epoch 14/20: loss 2.2856
+  [final mix_no_ifeval__deployable] epoch 15/20: loss 2.2843
+  [final mix_no_ifeval__deployable] epoch 16/20: loss 2.2828
+  [final mix_no_ifeval__deployable] epoch 17/20: loss 2.2815
+  [final mix_no_ifeval__deployable] epoch 18/20: loss 2.2804
+  [final mix_no_ifeval__deployable] epoch 19/20: loss 2.2797
+  [final mix_no_ifeval__deployable] epoch 20/20: loss 2.2786
+[final] mix_no_ifeval__deployable: saved routers_final/llada_base__mix_no_ifeval__deployable.pt recall_eval_no_ifeval={'gsm8k': '0.555 (n=2530)', 'minerva_math': '0.619 (n=5090)', 'bbh': '0.347 (n=2530)', 'humaneval': '0.515 (n=5090)', 'truthfulqa_gen': '0.601 (n=2530)'}
+  [final gsm8k__deployable] epoch 1/20: loss 3.0615
+  [final gsm8k__deployable] epoch 2/20: loss 2.1389
+  [final gsm8k__deployable] epoch 3/20: loss 2.1108
+  [final gsm8k__deployable] epoch 4/20: loss 2.1037
+  [final gsm8k__deployable] epoch 5/20: loss 2.0996
+  [final gsm8k__deployable] epoch 6/20: loss 2.0963
+  [final gsm8k__deployable] epoch 7/20: loss 2.0937
+  [final gsm8k__deployable] epoch 8/20: loss 2.0922
+  [final gsm8k__deployable] epoch 9/20: loss 2.0910
+  [final gsm8k__deployable] epoch 10/20: loss 2.0898
+  [final gsm8k__deployable] epoch 11/20: loss 2.0888
+  [final gsm8k__deployable] epoch 12/20: loss 2.0878
+  [final gsm8k__deployable] epoch 13/20: loss 2.0870
+  [final gsm8k__deployable] epoch 14/20: loss 2.0863
+  [final gsm8k__deployable] epoch 15/20: loss 2.0857
+  [final gsm8k__deployable] epoch 16/20: loss 2.0851
+  [final gsm8k__deployable] epoch 17/20: loss 2.0846
+  [final gsm8k__deployable] epoch 18/20: loss 2.0840
+  [final gsm8k__deployable] epoch 19/20: loss 2.0833
+  [final gsm8k__deployable] epoch 20/20: loss 2.0827
+[final] gsm8k__deployable: saved routers_final/llada_base__gsm8k__deployable.pt recall_eval_no_ifeval={'gsm8k': '0.553 (n=2530)', 'minerva_math': '0.633 (n=5090)', 'bbh': '0.346 (n=2530)', 'humaneval': '0.520 (n=5090)', 'truthfulqa_gen': '0.581 (n=2530)'}
+  [final ifeval__deployable] epoch 1/20: loss 3.0359
+  [final ifeval__deployable] epoch 2/20: loss 1.9831
+  [final ifeval__deployable] epoch 3/20: loss 1.9228
+  [final ifeval__deployable] epoch 4/20: loss 1.9022
+  [final ifeval__deployable] epoch 5/20: loss 1.8959
+  [final ifeval__deployable] epoch 6/20: loss 1.8941
+  [final ifeval__deployable] epoch 7/20: loss 1.8942
+  [final ifeval__deployable] epoch 8/20: loss 1.8939
+  [final ifeval__deployable] epoch 9/20: loss 1.8922
+  [final ifeval__deployable] epoch 10/20: loss 1.8904
+  [final ifeval__deployable] epoch 11/20: loss 1.8887
+  [final ifeval__deployable] epoch 12/20: loss 1.8871
+  [final ifeval__deployable] epoch 13/20: loss 1.8858
+  [final ifeval__deployable] epoch 14/20: loss 1.8846
+  [final ifeval__deployable] epoch 15/20: loss 1.8836
+  [final ifeval__deployable] epoch 16/20: loss 1.8826
+  [final ifeval__deployable] epoch 17/20: loss 1.8817
+  [final ifeval__deployable] epoch 18/20: loss 1.8809
+  [final ifeval__deployable] epoch 19/20: loss 1.8802
+  [final ifeval__deployable] epoch 20/20: loss 1.8795
+[final] ifeval__deployable: saved routers_final/llada_base__ifeval__deployable.pt recall_eval_no_ifeval={'gsm8k': '0.551 (n=2530)', 'minerva_math': '0.631 (n=5090)', 'bbh': '0.343 (n=2530)', 'humaneval': '0.520 (n=5090)', 'truthfulqa_gen': '0.578 (n=2530)'}
+[progress] finished F final training + bundles (3-6 trainings); remaining: NONE, all done
+
+=== DONE. Winner chain and bundles in routers_final/llada_base__ablation_summary.json ===
+{
+  "features": [
+    "attn_last",
+    "conf_aged",
+    "margin",
+    "pos_delta",
+    "mask_density"
+  ],
+  "normalization": "softmax_attn",
+  "loss": "plackett_luce",
+  "router_name": "set_attention",
+  "router_kwargs": {
+    "dim_model": 32,
+    "num_heads": 1,
+    "dim_hidden": 64
+  },
+  "h": 3,
+  "loss_pos_weight": null
+}
+
+[conf] offline could not settle the conf axis: run the deciding e2e pair, e.g.
+  ...run_benchmark_main.py --tasks gsm8k --limit 200 ... path_router=routers_final/llada_base__mix_no_ifeval.pt
+  ...same command with path_router=routers_final/llada_base__mix_no_ifeval__deployable.pt

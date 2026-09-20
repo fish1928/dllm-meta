@@ -1,0 +1,1039 @@
+nohup: ignoring input
+search group mix_no_ifeval: [('gsm8k', 256), ('minerva_math', 512), ('bbh', 256), ('humaneval', 512), ('truthfulqa_gen', 256)]
+[fast_feat] attn_last: already done, skipping (RERUN=1 to force)
+[fast_feat] attn_all: already done, skipping (RERUN=1 to force)
+[fast_feat] attn_last_geo: already done, skipping (RERUN=1 to force)
+
+[fast_feat] attn_all_geo
+  epoch 0: loss 3.6587 over 200 blocks
+  epoch 1: loss 2.6783 over 200 blocks
+  epoch 2: loss 2.5363 over 200 blocks
+  epoch 3: loss 2.5112 over 200 blocks
+  epoch 4: loss 2.4946 over 200 blocks
+  epoch 5: loss 2.4822 over 200 blocks
+  epoch 6: loss 2.4728 over 200 blocks
+  epoch 7: loss 2.4659 over 200 blocks
+  epoch 8: loss 2.4611 over 200 blocks
+  epoch 9: loss 2.4576 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.642 (n=17820)",
+  "pr_auc@5": "0.693 (n=17620)",
+  "recall@10": "0.704 (n=17420)",
+  "recall@3": "0.525 (n=17770)",
+  "recall@5": "0.612 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_all)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)"
+    ],
+    "dim_in": 35
+  }
+}
+
+[fast_feat] attn_last_geo_conf
+  epoch 0: loss 2.5068 over 200 blocks
+  epoch 1: loss 1.8206 over 200 blocks
+  epoch 2: loss 1.7729 over 200 blocks
+  epoch 3: loss 1.7406 over 200 blocks
+  epoch 4: loss 1.7088 over 200 blocks
+  epoch 5: loss 1.6849 over 200 blocks
+  epoch 6: loss 1.6697 over 200 blocks
+  epoch 7: loss 1.6557 over 200 blocks
+  epoch 8: loss 1.6429 over 200 blocks
+  epoch 9: loss 1.6325 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.851 (n=17820)",
+  "pr_auc@5": "0.864 (n=17620)",
+  "recall@10": "0.801 (n=17420)",
+  "recall@3": "0.755 (n=17770)",
+  "recall@5": "0.779 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_conf)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_feat] attn_last_geo_conf_aged
+  epoch 0: loss 3.0092 over 200 blocks
+  epoch 1: loss 2.4476 over 200 blocks
+  epoch 2: loss 2.3457 over 200 blocks
+  epoch 3: loss 2.3052 over 200 blocks
+  epoch 4: loss 2.2858 over 200 blocks
+  epoch 5: loss 2.2709 over 200 blocks
+  epoch 6: loss 2.2593 over 200 blocks
+  epoch 7: loss 2.2487 over 200 blocks
+  epoch 8: loss 2.2419 over 200 blocks
+  epoch 9: loss 2.2324 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.682 (n=17820)",
+  "pr_auc@5": "0.737 (n=17620)",
+  "recall@10": "0.739 (n=17420)",
+  "recall@3": "0.561 (n=17770)",
+  "recall@5": "0.648 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_conf_random_aged)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_feat] attn_last_geo_conf_policy
+  epoch 0: loss 2.9013 over 200 blocks
+  epoch 1: loss 2.3753 over 200 blocks
+  epoch 2: loss 2.2796 over 200 blocks
+  epoch 3: loss 2.1999 over 200 blocks
+  epoch 4: loss 2.1797 over 200 blocks
+  epoch 5: loss 2.1689 over 200 blocks
+  epoch 6: loss 2.1609 over 200 blocks
+  epoch 7: loss 2.1541 over 200 blocks
+  epoch 8: loss 2.1482 over 200 blocks
+  epoch 9: loss 2.1430 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.713 (n=17820)",
+  "pr_auc@5": "0.762 (n=17620)",
+  "recall@10": "0.754 (n=17420)",
+  "recall@3": "0.593 (n=17770)",
+  "recall@5": "0.674 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_conf_policy_aged)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_feat] attn_last_geo_margin
+  epoch 0: loss 2.6990 over 200 blocks
+  epoch 1: loss 2.0856 over 200 blocks
+  epoch 2: loss 1.9830 over 200 blocks
+  epoch 3: loss 1.8911 over 200 blocks
+  epoch 4: loss 1.8269 over 200 blocks
+  epoch 5: loss 1.7965 over 200 blocks
+  epoch 6: loss 1.7736 over 200 blocks
+  epoch 7: loss 1.7561 over 200 blocks
+  epoch 8: loss 1.7430 over 200 blocks
+  epoch 9: loss 1.7327 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.827 (n=17820)",
+  "pr_auc@5": "0.848 (n=17620)",
+  "recall@10": "0.794 (n=17420)",
+  "recall@3": "0.726 (n=17770)",
+  "recall@5": "0.758 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_feat] attn_last_conf_aged_margin
+  epoch 0: loss 2.8466 over 200 blocks
+  epoch 1: loss 2.2874 over 200 blocks
+  epoch 2: loss 2.2587 over 200 blocks
+  epoch 3: loss 2.2213 over 200 blocks
+  epoch 4: loss 2.1587 over 200 blocks
+  epoch 5: loss 2.1274 over 200 blocks
+  epoch 6: loss 2.1080 over 200 blocks
+  epoch 7: loss 2.0962 over 200 blocks
+  epoch 8: loss 2.0841 over 200 blocks
+  epoch 9: loss 2.0744 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.809 (n=17820)",
+  "pr_auc@5": "0.820 (n=17620)",
+  "recall@10": "0.753 (n=17420)",
+  "recall@3": "0.710 (n=17770)",
+  "recall@5": "0.734 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_conf_random_aged)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 3
+  }
+}
+
+[fast_feat] no_attn_aged
+  epoch 0: loss 2.6540 over 200 blocks
+  epoch 1: loss 2.0900 over 200 blocks
+  epoch 2: loss 1.9815 over 200 blocks
+  epoch 3: loss 1.8704 over 200 blocks
+  epoch 4: loss 1.8180 over 200 blocks
+  epoch 5: loss 1.7894 over 200 blocks
+  epoch 6: loss 1.7706 over 200 blocks
+  epoch 7: loss 1.7589 over 200 blocks
+  epoch 8: loss 1.7520 over 200 blocks
+  epoch 9: loss 1.7479 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.825 (n=17820)",
+  "pr_auc@5": "0.846 (n=17620)",
+  "recall@10": "0.795 (n=17420)",
+  "recall@3": "0.722 (n=17770)",
+  "recall@5": "0.757 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "rank_normed(Feature_conf_random_aged)",
+      "rank_normed(Feature_margin)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_feat] full_fresh
+  epoch 0: loss 2.4946 over 200 blocks
+  epoch 1: loss 1.7980 over 200 blocks
+  epoch 2: loss 1.7449 over 200 blocks
+  epoch 3: loss 1.7151 over 200 blocks
+  epoch 4: loss 1.6863 over 200 blocks
+  epoch 5: loss 1.6687 over 200 blocks
+  epoch 6: loss 1.6592 over 200 blocks
+  epoch 7: loss 1.6506 over 200 blocks
+  epoch 8: loss 1.6397 over 200 blocks
+  epoch 9: loss 1.6284 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.849 (n=17820)",
+  "pr_auc@5": "0.863 (n=17620)",
+  "recall@10": "0.801 (n=17420)",
+  "recall@3": "0.751 (n=17770)",
+  "recall@5": "0.777 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_conf)",
+      "rank_normed(Feature_margin)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)"
+    ],
+    "dim_in": 6
+  }
+}
+
+[fast_feat] full_aged
+  epoch 0: loss 2.7590 over 200 blocks
+  epoch 1: loss 2.1069 over 200 blocks
+  epoch 2: loss 1.9865 over 200 blocks
+  epoch 3: loss 1.8732 over 200 blocks
+  epoch 4: loss 1.8082 over 200 blocks
+  epoch 5: loss 1.7798 over 200 blocks
+  epoch 6: loss 1.7621 over 200 blocks
+  epoch 7: loss 1.7473 over 200 blocks
+  epoch 8: loss 1.7342 over 200 blocks
+  epoch 9: loss 1.7227 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.826 (n=17820)",
+  "pr_auc@5": "0.848 (n=17620)",
+  "recall@10": "0.797 (n=17420)",
+  "recall@3": "0.724 (n=17770)",
+  "recall@5": "0.759 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_conf_random_aged)",
+      "rank_normed(Feature_margin)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)"
+    ],
+    "dim_in": 6
+  }
+}
+
+===== fast_feat results =====
+  attn_last_geo_conf               recall@5=0.779  [ineligible]
+  full_fresh                       recall@5=0.777  [ineligible]
+  full_aged                        recall@5=0.759  [ineligible]
+  attn_last_geo_margin             recall@5=0.758  
+  no_attn_aged                     recall@5=0.757  [ineligible]
+  attn_last_conf_aged_margin       recall@5=0.734  [ineligible]
+  attn_last_geo_conf_policy        recall@5=0.674  [ineligible]
+  attn_last_geo_conf_aged          recall@5=0.648  [ineligible]
+  attn_all_geo                     recall@5=0.612  
+  attn_last_geo                    recall@5=0.61  
+  attn_all                         recall@5=0.6  
+  attn_last                        recall@5=0.511  
+
+===== fast_feat results =====
+  attn_last_geo_conf               recall@5=0.779  [ineligible]
+  full_fresh                       recall@5=0.777  [ineligible]
+  full_aged                        recall@5=0.759  
+  attn_last_geo_margin             recall@5=0.758  
+  no_attn_aged                     recall@5=0.757  
+  attn_last_conf_aged_margin       recall@5=0.734  
+  attn_last_geo_conf_policy        recall@5=0.674  
+  attn_last_geo_conf_aged          recall@5=0.648  
+  attn_all_geo                     recall@5=0.612  
+  attn_last_geo                    recall@5=0.61  
+  attn_all                         recall@5=0.6  
+  attn_last                        recall@5=0.511  
+[conf] full_aged offline gain over attn_last_geo_margin < 0.02 (0.759 vs 0.758): not trusted, conf-free recipe carried forward
+--> features: attn_last_geo_margin ['attn_last', 'pos_delta', 'mask_density', 'margin'] (recall@5 0.758)
+[progress] finished A features (12 runs); remaining: B normalization (7 runs) -> C loss (5 runs) -> D architecture (6 runs) -> E horizon (5 runs) -> F final training + bundles (3-6 trainings)
+[fast_norm] norm-raw: already done, skipping (RERUN=1 to force)
+[fast_norm] norm-znorm_row: already done, skipping (RERUN=1 to force)
+
+[fast_norm] norm-rank
+  epoch 0: loss 2.5922 over 200 blocks
+  epoch 1: loss 2.0833 over 200 blocks
+  epoch 2: loss 2.0244 over 200 blocks
+  epoch 3: loss 1.9408 over 200 blocks
+  epoch 4: loss 1.8480 over 200 blocks
+  epoch 5: loss 1.8074 over 200 blocks
+  epoch 6: loss 1.7864 over 200 blocks
+  epoch 7: loss 1.7741 over 200 blocks
+  epoch 8: loss 1.7667 over 200 blocks
+  epoch 9: loss 1.7614 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.825 (n=17820)",
+  "pr_auc@5": "0.845 (n=17620)",
+  "recall@10": "0.790 (n=17420)",
+  "recall@3": "0.723 (n=17770)",
+  "recall@5": "0.756 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "rank_normed(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_norm] norm-minmax_row
+  epoch 0: loss 2.5968 over 200 blocks
+  epoch 1: loss 2.0346 over 200 blocks
+  epoch 2: loss 1.9732 over 200 blocks
+  epoch 3: loss 1.9391 over 200 blocks
+  epoch 4: loss 1.9208 over 200 blocks
+  epoch 5: loss 1.9075 over 200 blocks
+  epoch 6: loss 1.8961 over 200 blocks
+  epoch 7: loss 1.8860 over 200 blocks
+  epoch 8: loss 1.8777 over 200 blocks
+  epoch 9: loss 1.8707 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.780 (n=17820)",
+  "pr_auc@5": "0.815 (n=17620)",
+  "recall@10": "0.788 (n=17420)",
+  "recall@3": "0.669 (n=17770)",
+  "recall@5": "0.730 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "minmax_row(Feature_attn_last)",
+      "minmax_row(Feature_pos_delta)",
+      "minmax_row(Feature_mask_density)",
+      "minmax_row(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_norm] norm-znorm_global
+  epoch 0: loss 2.3976 over 200 blocks
+  epoch 1: loss 1.8603 over 200 blocks
+  epoch 2: loss 1.8065 over 200 blocks
+  epoch 3: loss 1.7879 over 200 blocks
+  epoch 4: loss 1.7758 over 200 blocks
+  epoch 5: loss 1.7670 over 200 blocks
+  epoch 6: loss 1.7688 over 200 blocks
+  epoch 7: loss 1.7688 over 200 blocks
+  epoch 8: loss 1.7616 over 200 blocks
+  epoch 9: loss 1.7587 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.772 (n=17820)",
+  "pr_auc@5": "0.810 (n=17620)",
+  "recall@10": "0.785 (n=17420)",
+  "recall@3": "0.667 (n=17770)",
+  "recall@5": "0.725 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "znormed_global(Feature_attn_last)",
+      "znormed_global(Feature_pos_delta)",
+      "znormed_global(Feature_mask_density)",
+      "znormed_global(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_norm] norm-log_znorm
+  epoch 0: loss 2.4958 over 200 blocks
+  epoch 1: loss 2.0696 over 200 blocks
+  epoch 2: loss 2.0311 over 200 blocks
+  epoch 3: loss 2.0159 over 200 blocks
+  epoch 4: loss 2.0077 over 200 blocks
+  epoch 5: loss 2.0022 over 200 blocks
+  epoch 6: loss 1.9961 over 200 blocks
+  epoch 7: loss 1.9928 over 200 blocks
+  epoch 8: loss 1.9876 over 200 blocks
+  epoch 9: loss 1.9839 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.741 (n=17820)",
+  "pr_auc@5": "0.782 (n=17620)",
+  "recall@10": "0.760 (n=17420)",
+  "recall@3": "0.634 (n=17770)",
+  "recall@5": "0.693 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "znormed_row(log_scaled(Feature_attn_last))",
+      "znormed_row(Feature_pos_delta)",
+      "znormed_row(Feature_mask_density)",
+      "znormed_row(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_norm] norm-softmax_attn
+  epoch 0: loss 2.6990 over 200 blocks
+  epoch 1: loss 2.0856 over 200 blocks
+  epoch 2: loss 1.9830 over 200 blocks
+  epoch 3: loss 1.8911 over 200 blocks
+  epoch 4: loss 1.8269 over 200 blocks
+  epoch 5: loss 1.7965 over 200 blocks
+  epoch 6: loss 1.7736 over 200 blocks
+  epoch 7: loss 1.7561 over 200 blocks
+  epoch 8: loss 1.7430 over 200 blocks
+  epoch 9: loss 1.7327 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.827 (n=17820)",
+  "pr_auc@5": "0.848 (n=17620)",
+  "recall@10": "0.794 (n=17420)",
+  "recall@3": "0.726 (n=17770)",
+  "recall@5": "0.758 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+===== fast_norm results =====
+  norm-softmax_attn                recall@5=0.758  
+  norm-rank                        recall@5=0.756  
+  norm-raw                         recall@5=0.743  [ineligible]
+  norm-minmax_row                  recall@5=0.73  [ineligible]
+  norm-znorm_global                recall@5=0.725  [ineligible]
+  norm-log_znorm                   recall@5=0.693  [ineligible]
+  norm-znorm_row                   recall@5=0.692  [ineligible]
+--> normalization: softmax_attn (recall@5 0.758)
+[progress] finished B normalization (7 runs); remaining: C loss (5 runs) -> D architecture (6 runs) -> E horizon (5 runs) -> F final training + bundles (3-6 trainings)
+
+[fast_loss] loss-uniform_within_h
+  epoch 0: loss 3.1240 over 200 blocks
+  epoch 1: loss 2.6816 over 200 blocks
+  epoch 2: loss 2.6301 over 200 blocks
+  epoch 3: loss 2.5323 over 200 blocks
+  epoch 4: loss 2.4697 over 200 blocks
+  epoch 5: loss 2.4518 over 200 blocks
+  epoch 6: loss 2.4372 over 200 blocks
+  epoch 7: loss 2.4241 over 200 blocks
+  epoch 8: loss 2.4127 over 200 blocks
+  epoch 9: loss 2.4022 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.789 (n=17820)",
+  "pr_auc@5": "0.828 (n=17620)",
+  "recall@10": "0.792 (n=17420)",
+  "recall@3": "0.669 (n=17770)",
+  "recall@5": "0.737 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_loss] loss-decay_within_h
+  epoch 0: loss 2.9124 over 200 blocks
+  epoch 1: loss 2.3919 over 200 blocks
+  epoch 2: loss 2.3437 over 200 blocks
+  epoch 3: loss 2.3010 over 200 blocks
+  epoch 4: loss 2.2338 over 200 blocks
+  epoch 5: loss 2.2003 over 200 blocks
+  epoch 6: loss 2.1820 over 200 blocks
+  epoch 7: loss 2.1655 over 200 blocks
+  epoch 8: loss 2.1485 over 200 blocks
+  epoch 9: loss 2.1319 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.826 (n=17820)",
+  "pr_auc@5": "0.846 (n=17620)",
+  "recall@10": "0.785 (n=17420)",
+  "recall@3": "0.725 (n=17770)",
+  "recall@5": "0.757 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_loss] loss-bce_within_h
+  epoch 0: loss 0.1750 over 200 blocks
+  epoch 1: loss 0.0751 over 200 blocks
+  epoch 2: loss 0.0670 over 200 blocks
+  epoch 3: loss 0.0549 over 200 blocks
+  epoch 4: loss 0.0491 over 200 blocks
+  epoch 5: loss 0.0468 over 200 blocks
+  epoch 6: loss 0.0456 over 200 blocks
+  epoch 7: loss 0.0449 over 200 blocks
+  epoch 8: loss 0.0443 over 200 blocks
+  epoch 9: loss 0.0439 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.815 (n=17820)",
+  "pr_auc@5": "0.831 (n=17620)",
+  "recall@10": "0.761 (n=17420)",
+  "recall@3": "0.712 (n=17770)",
+  "recall@5": "0.739 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_loss] loss-bce_balanced
+  epoch 0: loss 0.9323 over 200 blocks
+  epoch 1: loss 0.5688 over 200 blocks
+  epoch 2: loss 0.4675 over 200 blocks
+  epoch 3: loss 0.3918 over 200 blocks
+  epoch 4: loss 0.3561 over 200 blocks
+  epoch 5: loss 0.3324 over 200 blocks
+  epoch 6: loss 0.3116 over 200 blocks
+  epoch 7: loss 0.2978 over 200 blocks
+  epoch 8: loss 0.2858 over 200 blocks
+  epoch 9: loss 0.2757 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.815 (n=17820)",
+  "pr_auc@5": "0.837 (n=17620)",
+  "recall@10": "0.783 (n=17420)",
+  "recall@3": "0.710 (n=17770)",
+  "recall@5": "0.743 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_loss] loss-plackett_luce
+  epoch 0: loss 2.6990 over 200 blocks
+  epoch 1: loss 2.0856 over 200 blocks
+  epoch 2: loss 1.9830 over 200 blocks
+  epoch 3: loss 1.8911 over 200 blocks
+  epoch 4: loss 1.8269 over 200 blocks
+  epoch 5: loss 1.7965 over 200 blocks
+  epoch 6: loss 1.7736 over 200 blocks
+  epoch 7: loss 1.7561 over 200 blocks
+  epoch 8: loss 1.7430 over 200 blocks
+  epoch 9: loss 1.7327 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.827 (n=17820)",
+  "pr_auc@5": "0.848 (n=17620)",
+  "recall@10": "0.794 (n=17420)",
+  "recall@3": "0.726 (n=17770)",
+  "recall@5": "0.758 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+===== fast_loss results =====
+  loss-plackett_luce               recall@5=0.758  
+  loss-decay_within_h              recall@5=0.757  
+  loss-bce_balanced                recall@5=0.743  
+  loss-bce_within_h                recall@5=0.739  
+  loss-uniform_within_h            recall@5=0.737  
+--> loss: plackett_luce (recall@5 0.758)
+[progress] finished C loss (5 runs); remaining: D architecture (6 runs) -> E horizon (5 runs) -> F final training + bundles (3-6 trainings)
+
+[fast_arch] arch-linear
+  epoch 0: loss 4.6887 over 200 blocks
+  epoch 1: loss 4.4482 over 200 blocks
+  epoch 2: loss 4.2318 over 200 blocks
+  epoch 3: loss 4.0389 over 200 blocks
+  epoch 4: loss 3.8677 over 200 blocks
+  epoch 5: loss 3.7158 over 200 blocks
+  epoch 6: loss 3.5811 over 200 blocks
+  epoch 7: loss 3.4615 over 200 blocks
+  epoch 8: loss 3.3553 over 200 blocks
+  epoch 9: loss 3.2609 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.721 (n=17820)",
+  "pr_auc@5": "0.741 (n=17620)",
+  "recall@10": "0.683 (n=17420)",
+  "recall@3": "0.620 (n=17770)",
+  "recall@5": "0.648 (n=17670)",
+  "router": {
+    "router": "Router_linear",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_arch] arch-mlp_d32_b2
+  epoch 0: loss 3.2877 over 200 blocks
+  epoch 1: loss 2.1662 over 200 blocks
+  epoch 2: loss 2.0507 over 200 blocks
+  epoch 3: loss 1.9804 over 200 blocks
+  epoch 4: loss 1.9356 over 200 blocks
+  epoch 5: loss 1.8750 over 200 blocks
+  epoch 6: loss 1.8335 over 200 blocks
+  epoch 7: loss 1.8134 over 200 blocks
+  epoch 8: loss 1.7980 over 200 blocks
+  epoch 9: loss 1.7834 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.821 (n=17820)",
+  "pr_auc@5": "0.839 (n=17620)",
+  "recall@10": "0.781 (n=17420)",
+  "recall@3": "0.721 (n=17770)",
+  "recall@5": "0.749 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_arch] arch-mlp_d64_b2
+  epoch 0: loss 2.6990 over 200 blocks
+  epoch 1: loss 2.0856 over 200 blocks
+  epoch 2: loss 1.9830 over 200 blocks
+  epoch 3: loss 1.8911 over 200 blocks
+  epoch 4: loss 1.8269 over 200 blocks
+  epoch 5: loss 1.7965 over 200 blocks
+  epoch 6: loss 1.7736 over 200 blocks
+  epoch 7: loss 1.7561 over 200 blocks
+  epoch 8: loss 1.7430 over 200 blocks
+  epoch 9: loss 1.7327 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.827 (n=17820)",
+  "pr_auc@5": "0.848 (n=17620)",
+  "recall@10": "0.794 (n=17420)",
+  "recall@3": "0.726 (n=17770)",
+  "recall@5": "0.758 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_arch] arch-mlp_d128_b3
+  epoch 0: loss 2.3769 over 200 blocks
+  epoch 1: loss 1.9169 over 200 blocks
+  epoch 2: loss 1.8468 over 200 blocks
+  epoch 3: loss 1.8152 over 200 blocks
+  epoch 4: loss 1.7926 over 200 blocks
+  epoch 5: loss 1.7797 over 200 blocks
+  epoch 6: loss 1.7657 over 200 blocks
+  epoch 7: loss 1.7532 over 200 blocks
+  epoch 8: loss 1.7426 over 200 blocks
+  epoch 9: loss 1.7333 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.822 (n=17820)",
+  "pr_auc@5": "0.843 (n=17620)",
+  "recall@10": "0.790 (n=17420)",
+  "recall@3": "0.721 (n=17770)",
+  "recall@5": "0.753 (n=17670)",
+  "router": {
+    "router": "Router_mlp",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_arch] arch-set_attention
+  epoch 0: loss 2.2428 over 200 blocks
+  epoch 1: loss 1.8353 over 200 blocks
+  epoch 2: loss 1.7857 over 200 blocks
+  epoch 3: loss 1.7642 over 200 blocks
+  epoch 4: loss 1.7465 over 200 blocks
+  epoch 5: loss 1.7316 over 200 blocks
+  epoch 6: loss 1.7220 over 200 blocks
+  epoch 7: loss 1.7161 over 200 blocks
+  epoch 8: loss 1.7117 over 200 blocks
+  epoch 9: loss 1.7116 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.826 (n=17820)",
+  "pr_auc@5": "0.848 (n=17620)",
+  "recall@10": "0.797 (n=17420)",
+  "recall@3": "0.721 (n=17770)",
+  "recall@5": "0.759 (n=17670)",
+  "router": {
+    "router": "Router_set_attention",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+[fast_arch] arch-mockup_random: already done, skipping (RERUN=1 to force)
+
+===== fast_arch results =====
+  arch-set_attention               recall@5=0.759  
+  arch-mlp_d64_b2                  recall@5=0.758  
+  arch-mlp_d128_b3                 recall@5=0.753  
+  arch-mlp_d32_b2                  recall@5=0.749  
+  arch-linear                      recall@5=0.648  
+  arch-mockup_random               recall@5=0.061  [ineligible]
+--> architecture: arch-set_attention (recall@5 0.759)
+[progress] finished D architecture (6 runs); remaining: E horizon (5 runs) -> F final training + bundles (3-6 trainings)
+
+[fast_h] h3
+  epoch 0: loss 2.0871 over 200 blocks
+  epoch 1: loss 1.6211 over 200 blocks
+  epoch 2: loss 1.5661 over 200 blocks
+  epoch 3: loss 1.5404 over 200 blocks
+  epoch 4: loss 1.5263 over 200 blocks
+  epoch 5: loss 1.5088 over 200 blocks
+  epoch 6: loss 1.4971 over 200 blocks
+  epoch 7: loss 1.4879 over 200 blocks
+  epoch 8: loss 1.4823 over 200 blocks
+  epoch 9: loss 1.4787 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@3": "0.779 (n=17820)",
+  "pr_auc@3": "0.827 (n=17720)",
+  "recall@10": "0.790 (n=17420)",
+  "recall@3": "0.727 (n=17770)",
+  "recall@5": "0.759 (n=17670)",
+  "recall@6": "0.769 (n=17620)",
+  "router": {
+    "router": "Router_set_attention",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_h] h5
+  epoch 0: loss 2.2428 over 200 blocks
+  epoch 1: loss 1.8353 over 200 blocks
+  epoch 2: loss 1.7857 over 200 blocks
+  epoch 3: loss 1.7642 over 200 blocks
+  epoch 4: loss 1.7465 over 200 blocks
+  epoch 5: loss 1.7316 over 200 blocks
+  epoch 6: loss 1.7220 over 200 blocks
+  epoch 7: loss 1.7161 over 200 blocks
+  epoch 8: loss 1.7117 over 200 blocks
+  epoch 9: loss 1.7116 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@5": "0.826 (n=17820)",
+  "pr_auc@5": "0.848 (n=17620)",
+  "recall@10": "0.797 (n=17420)",
+  "recall@3": "0.721 (n=17770)",
+  "recall@5": "0.759 (n=17670)",
+  "router": {
+    "router": "Router_set_attention",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_h] h8
+  epoch 0: loss 2.4213 over 200 blocks
+  epoch 1: loss 2.0678 over 200 blocks
+  epoch 2: loss 2.0263 over 200 blocks
+  epoch 3: loss 1.9974 over 200 blocks
+  epoch 4: loss 1.9815 over 200 blocks
+  epoch 5: loss 1.9729 over 200 blocks
+  epoch 6: loss 1.9646 over 200 blocks
+  epoch 7: loss 1.9581 over 200 blocks
+  epoch 8: loss 1.9529 over 200 blocks
+  epoch 9: loss 1.9488 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@8": "0.862 (n=17820)",
+  "pr_auc@8": "0.870 (n=17470)",
+  "recall@10": "0.802 (n=17420)",
+  "recall@16": "0.824 (n=17120)",
+  "recall@3": "0.715 (n=17770)",
+  "recall@5": "0.756 (n=17670)",
+  "recall@8": "0.788 (n=17520)",
+  "router": {
+    "router": "Router_set_attention",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_h] h12
+  epoch 0: loss 2.5975 over 200 blocks
+  epoch 1: loss 2.2881 over 200 blocks
+  epoch 2: loss 2.2543 over 200 blocks
+  epoch 3: loss 2.2268 over 200 blocks
+  epoch 4: loss 2.2085 over 200 blocks
+  epoch 5: loss 2.1957 over 200 blocks
+  epoch 6: loss 2.1864 over 200 blocks
+  epoch 7: loss 2.1805 over 200 blocks
+  epoch 8: loss 2.1781 over 200 blocks
+  epoch 9: loss 2.1787 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@12": "0.887 (n=17820)",
+  "pr_auc@12": "0.886 (n=17270)",
+  "recall@10": "0.799 (n=17420)",
+  "recall@12": "0.809 (n=17320)",
+  "recall@24": "0.838 (n=16720)",
+  "recall@3": "0.715 (n=17770)",
+  "recall@5": "0.754 (n=17670)",
+  "router": {
+    "router": "Router_set_attention",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+[fast_h] h16
+  epoch 0: loss 2.7333 over 200 blocks
+  epoch 1: loss 2.4547 over 200 blocks
+  epoch 2: loss 2.4262 over 200 blocks
+  epoch 3: loss 2.4041 over 200 blocks
+  epoch 4: loss 2.3888 over 200 blocks
+  epoch 5: loss 2.3779 over 200 blocks
+  epoch 6: loss 2.3702 over 200 blocks
+  epoch 7: loss 2.3663 over 200 blocks
+  epoch 8: loss 2.3650 over 200 blocks
+  epoch 9: loss 2.3604 over 200 blocks
+{
+  "n_blocks": 50,
+  "ndgc@16": "0.897 (n=17820)",
+  "pr_auc@16": "0.896 (n=17070)",
+  "recall@10": "0.791 (n=17420)",
+  "recall@16": "0.821 (n=17120)",
+  "recall@3": "0.682 (n=17770)",
+  "recall@32": "0.846 (n=16320)",
+  "recall@5": "0.733 (n=17670)",
+  "router": {
+    "router": "Router_set_attention",
+    "features": [
+      "softmax_row(Feature_attn_last)",
+      "rank_normed(Feature_pos_delta)",
+      "rank_normed(Feature_mask_density)",
+      "rank_normed(Feature_margin)"
+    ],
+    "dim_in": 5
+  }
+}
+
+===== fast_h results =====
+  h3                               recall@5=0.759  
+  h5                               recall@5=0.759  
+  h8                               recall@5=0.756  
+  h12                              recall@5=0.754  
+  h16                              recall@5=0.733  
+--> horizon: h=3 (recall@5 0.759)
+[progress] finished E horizon (5 runs); remaining: F final training + bundles (3-6 trainings)
+[WARNING] features not computable online yet: {'margin'} -- extend router_deploy before e2e with this bundle
+  [final mix_no_ifeval] epoch 1/20: loss 2.0871
+  [final mix_no_ifeval] epoch 2/20: loss 1.6211
+  [final mix_no_ifeval] epoch 3/20: loss 1.5661
+  [final mix_no_ifeval] epoch 4/20: loss 1.5404
+  [final mix_no_ifeval] epoch 5/20: loss 1.5263
+  [final mix_no_ifeval] epoch 6/20: loss 1.5088
+  [final mix_no_ifeval] epoch 7/20: loss 1.4971
+  [final mix_no_ifeval] epoch 8/20: loss 1.4879
+  [final mix_no_ifeval] epoch 9/20: loss 1.4823
+  [final mix_no_ifeval] epoch 10/20: loss 1.4787
+  [final mix_no_ifeval] epoch 11/20: loss 1.4751
+  [final mix_no_ifeval] epoch 12/20: loss 1.4716
+  [final mix_no_ifeval] epoch 13/20: loss 1.4685
+  [final mix_no_ifeval] epoch 14/20: loss 1.4657
+  [final mix_no_ifeval] epoch 15/20: loss 1.4632
+  [final mix_no_ifeval] epoch 16/20: loss 1.4610
+  [final mix_no_ifeval] epoch 17/20: loss 1.4590
+  [final mix_no_ifeval] epoch 18/20: loss 1.4572
+  [final mix_no_ifeval] epoch 19/20: loss 1.4556
+  [final mix_no_ifeval] epoch 20/20: loss 1.4542
+Traceback (most recent call last):
+  File "/home/exx/Workspace/dllm-d2cache/ablation_tests/ablation_test_fast.py", line 404, in <module>
+    main()
+    ~~~~^^
+  File "/home/exx/Workspace/dllm-d2cache/ablation_tests/ablation_test_fast.py", line 375, in main
+    spec['dim_in'] = spec_dim_in(spec)
+                     ~~~~~~~~~~~^^^^^^
+  File "/home/exx/Workspace/dllm-d2cache/router_deploy.py", line 50, in spec_dim_in
+    return sum(feature_dim(name, spec['num_layers']) for name in spec['features'])
+  File "/home/exx/Workspace/dllm-d2cache/router_deploy.py", line 50, in <genexpr>
+    return sum(feature_dim(name, spec['num_layers']) for name in spec['features'])
+               ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/exx/Workspace/dllm-d2cache/router_deploy.py", line 39, in feature_dim
+    return {
+           ~
+    ...<4 lines>...
+        'conf': 1,
+        ~~~~~~~~~~
+    }[name]
+    ~^^^^^^
+KeyError: 'margin'
+undle
+  [final mix_no_ifeval] epoch 1/20: loss 2.0871
+  [final mix_no_ifeval] epoch 2/20: loss 1.6211
+  [final mix_no_ifeval] epoch 3/20: loss 1.5661
+  [final mix_no_ifeval] epoch 4/20: loss 1.5404
+  [final mix_no_ifeval] epoch 5/20: loss 1.5263
+  [final mix_no_ifeval] epoch 6/20: loss 1.5088
+  [final mix_no_ifeval] epoch 7/20: loss 1.4971
+  [final mix_no_ifeval] epoch 8/20: loss 1.4879
+  [final mix_no_ifeval] epoch 9/20: loss 1.4823
+  [final mix_no_ifeval] epoch 10/20: loss 1.4787
+  [final mix_no_ifeval] epoch 11/20: loss 1.4751
+  [final mix_no_ifeval] epoch 12/20: loss 1.4716
+  [final mix_no_ifeval] epoch 13/20: loss 1.4685
+  [final mix_no_ifeval] epoch 14/20: loss 1.4657
+  [final mix_no_ifeval] epoch 15/20: loss 1.4632
+  [final mix_no_ifeval] epoch 16/20: loss 1.4610
+  [final mix_no_ifeval] epoch 17/20: loss 1.4590
+  [final mix_no_ifeval] epoch 18/20: loss 1.4572
+  [final mix_no_ifeval] epoch 19/20: loss 1.4556
+  [final mix_no_ifeval] epoch 20/20: loss 1.4542
+Traceback (most recent call last):
+  File "/home/exx/Workspace/dllm-d2cache/ablation_tests/ablation_test_fast.py", line 404, in <module>
+    main()
+    ~~~~^^
+  File "/home/exx/Workspace/dllm-d2cache/ablation_tests/ablation_test_fast.py", line 375, in main
+    spec['dim_in'] = spec_dim_in(spec)
+                     ~~~~~~~~~~~^^^^^^
+  File "/home/exx/Workspace/dllm-d2cache/router_deploy.py", line 50, in spec_dim_in
+    return sum(feature_dim(name, spec['num_layers']) for name in spec['features'])
+  File "/home/exx/Workspace/dllm-d2cache/router_deploy.py", line 50, in <genexpr>
+    return sum(feature_dim(name, spec['num_layers']) for name in spec['features'])
+               ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/exx/Workspace/dllm-d2cache/router_deploy.py", line 39, in feature_dim
+    return {
+           ~
+    ...<4 lines>...
+        'conf': 1,
+        ~~~~~~~~~~
+    }[name]
+    ~^^^^^^
+KeyError: 'margin'

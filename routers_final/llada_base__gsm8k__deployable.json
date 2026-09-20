@@ -1,0 +1,33 @@
+{
+  "features": [
+    "attn_all",
+    "pos_delta",
+    "mask_density"
+  ],
+  "conf_mode": "none",
+  "normalization": "softmax_attn",
+  "softmax_temperature": 1.0,
+  "mask_density_window": 3,
+  "loss": "plackett_luce",
+  "dataset": "gsm8k",
+  "router_name": "set_attention",
+  "router_kwargs": {
+    "dim_model": 32,
+    "num_heads": 1,
+    "dim_hidden": 64
+  },
+  "num_layers": 32,
+  "h": 3,
+  "max_conf_age": 16,
+  "seed": 233,
+  "num_epochs": 20,
+  "recall_eval_no_ifeval": {
+    "gsm8k": "0.553 (n=2530)",
+    "minerva_math": "0.633 (n=5090)",
+    "bbh": "0.346 (n=2530)",
+    "humaneval": "0.520 (n=5090)",
+    "truthfulqa_gen": "0.581 (n=2530)"
+  },
+  "thread": "llada_base",
+  "dim_in": 35
+}

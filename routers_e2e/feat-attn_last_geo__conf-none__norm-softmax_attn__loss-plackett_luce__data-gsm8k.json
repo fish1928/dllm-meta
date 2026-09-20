@@ -1,0 +1,27 @@
+{
+  "features": [
+    "attn_last",
+    "pos_delta",
+    "mask_density"
+  ],
+  "conf_mode": "none",
+  "normalization": "softmax_attn",
+  "softmax_temperature": 1.0,
+  "mask_density_window": 3,
+  "loss": "plackett_luce",
+  "dataset": "gsm8k",
+  "router_name": "mlp",
+  "router_kwargs": {
+    "dim_hidden": 64,
+    "num_blocks_mlp": 2
+  },
+  "num_layers": 32,
+  "h": 5,
+  "max_conf_age": 16,
+  "seed": 233,
+  "num_epochs": 10,
+  "dim_in": 4,
+  "recall_holdout": {
+    "gsm8k": "0.618 (n=2510)"
+  }
+}

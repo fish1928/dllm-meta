@@ -1,0 +1,120 @@
+{
+  "thread": "llada_base",
+  "winner": {
+    "features": [
+      "attn_last",
+      "conf_aged",
+      "margin",
+      "pos_delta",
+      "mask_density"
+    ],
+    "normalization": "softmax_attn",
+    "loss": "plackett_luce",
+    "router_name": "set_attention",
+    "router_kwargs": {
+      "dim_model": 32,
+      "num_heads": 1,
+      "dim_hidden": 64
+    },
+    "h": 3,
+    "loss_pos_weight": null
+  },
+  "bundles": {
+    "mix_no_ifeval": {
+      "path": "routers_final/llada_base__mix_no_ifeval.pt",
+      "features": [
+        "attn_last",
+        "conf_aged",
+        "margin",
+        "pos_delta",
+        "mask_density"
+      ],
+      "recall_eval_no_ifeval": {
+        "gsm8k": "0.696 (n=2530)",
+        "minerva_math": "0.753 (n=5090)",
+        "bbh": "0.714 (n=2530)",
+        "humaneval": "0.723 (n=5090)",
+        "truthfulqa_gen": "0.778 (n=2530)"
+      }
+    },
+    "gsm8k": {
+      "path": "routers_final/llada_base__gsm8k.pt",
+      "features": [
+        "attn_last",
+        "conf_aged",
+        "margin",
+        "pos_delta",
+        "mask_density"
+      ],
+      "recall_eval_no_ifeval": {
+        "gsm8k": "0.696 (n=2530)",
+        "minerva_math": "0.751 (n=5090)",
+        "bbh": "0.688 (n=2530)",
+        "humaneval": "0.706 (n=5090)",
+        "truthfulqa_gen": "0.762 (n=2530)"
+      }
+    },
+    "ifeval": {
+      "path": "routers_final/llada_base__ifeval.pt",
+      "features": [
+        "attn_last",
+        "conf_aged",
+        "margin",
+        "pos_delta",
+        "mask_density"
+      ],
+      "recall_eval_no_ifeval": {
+        "gsm8k": "0.657 (n=2530)",
+        "minerva_math": "0.718 (n=5090)",
+        "bbh": "0.643 (n=2530)",
+        "humaneval": "0.666 (n=5090)",
+        "truthfulqa_gen": "0.736 (n=2530)"
+      }
+    },
+    "mix_no_ifeval__deployable": {
+      "path": "routers_final/llada_base__mix_no_ifeval__deployable.pt",
+      "features": [
+        "attn_all",
+        "pos_delta",
+        "mask_density"
+      ],
+      "recall_eval_no_ifeval": {
+        "gsm8k": "0.555 (n=2530)",
+        "minerva_math": "0.619 (n=5090)",
+        "bbh": "0.347 (n=2530)",
+        "humaneval": "0.515 (n=5090)",
+        "truthfulqa_gen": "0.601 (n=2530)"
+      }
+    },
+    "gsm8k__deployable": {
+      "path": "routers_final/llada_base__gsm8k__deployable.pt",
+      "features": [
+        "attn_all",
+        "pos_delta",
+        "mask_density"
+      ],
+      "recall_eval_no_ifeval": {
+        "gsm8k": "0.553 (n=2530)",
+        "minerva_math": "0.633 (n=5090)",
+        "bbh": "0.346 (n=2530)",
+        "humaneval": "0.520 (n=5090)",
+        "truthfulqa_gen": "0.581 (n=2530)"
+      }
+    },
+    "ifeval__deployable": {
+      "path": "routers_final/llada_base__ifeval__deployable.pt",
+      "features": [
+        "attn_all",
+        "pos_delta",
+        "mask_density"
+      ],
+      "recall_eval_no_ifeval": {
+        "gsm8k": "0.551 (n=2530)",
+        "minerva_math": "0.631 (n=5090)",
+        "bbh": "0.343 (n=2530)",
+        "humaneval": "0.520 (n=5090)",
+        "truthfulqa_gen": "0.578 (n=2530)"
+      }
+    }
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "path_router": "routers_e2e/feat-attn_last_geo__conf-none__norm-softmax_attn__loss-plackett_luce__data-gsm8k.pt",
+  "num_samples": 20,
+  "duration_total_s": 121.26,
+  "rows": [
+    {
+      "id_sample": 0,
+      "len_prompt": 1062,
+      "has_done": false,
+      "duration_s": 6.7497
+    },
+    {
+      "id_sample": 1,
+      "len_prompt": 1065,
+      "has_done": false,
+      "duration_s": 6.0615
+    },
+    {
+      "id_sample": 2,
+      "len_prompt": 1079,
+      "has_done": true,
+      "duration_s": 6.0363
+    },
+    {
+      "id_sample": 3,
+      "len_prompt": 819,
+      "has_done": false,
+      "duration_s": 5.9961
+    },
+    {
+      "id_sample": 4,
+      "len_prompt": 1092,
+      "has_done": false,
+      "duration_s": 6.0613
+    },
+    {
+      "id_sample": 5,
+      "len_prompt": 767,
+      "has_done": true,
+      "duration_s": 5.9532
+    },
+    {
+      "id_sample": 6,
+      "len_prompt": 915,
+      "has_done": false,
+      "duration_s": 6.0072
+    },
+    {
+      "id_sample": 7,
+      "len_prompt": 1020,
+      "has_done": false,
+      "duration_s": 5.9907
+    },
+    {
+      "id_sample": 8,
+      "len_prompt": 1102,
+      "has_done": true,
+      "duration_s": 6.0704
+    },
+    {
+      "id_sample": 9,
+      "len_prompt": 812,
+      "has_done": true,
+      "duration_s": 5.9498
+    },
+    {
+      "id_sample": 10,
+      "len_prompt": 961,
+      "has_done": true,
+      "duration_s": 6.021
+    },
+    {
+      "id_sample": 11,
+      "len_prompt": 1345,
+      "has_done": false,
+      "duration_s": 6.112
+    },
+    {
+      "id_sample": 12,
+      "len_prompt": 1390,
+      "has_done": false,
+      "duration_s": 6.0835
+    },
+    {
+      "id_sample": 13,
+      "len_prompt": 1161,
+      "has_done": false,
+      "duration_s": 6.0763
+    },
+    {
+      "id_sample": 14,
+      "len_prompt": 825,
+      "has_done": false,
+      "duration_s": 5.9968
+    },
+    {
+      "id_sample": 15,
+      "len_prompt": 933,
+      "has_done": true,
+      "duration_s": 6.0203
+    },
+    {
+      "id_sample": 16,
+      "len_prompt": 1240,
+      "has_done": false,
+      "duration_s": 6.0567
+    },
+    {
+      "id_sample": 17,
+      "len_prompt": 844,
+      "has_done": false,
+      "duration_s": 6.002
+    },
+    {
+      "id_sample": 18,
+      "len_prompt": 799,
+      "has_done": true,
+      "duration_s": 5.9954
+    },
+    {
+      "id_sample": 19,
+      "len_prompt": 927,
+      "has_done": true,
+      "duration_s": 6.0159
+    }
+  ]
+}
