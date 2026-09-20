@@ -46,6 +46,8 @@ def feature_dim(name, num_layers):
         'mask_density': 1,
         'conf': 1,
         'margin': 1,
+        'conf_age': 2,      # (stale value, true age/max_age) pairs -- the
+        'margin_age': 2,    # aged-router inputs; value ranked, age raw
     }[name]
 # end
 
@@ -109,7 +111,8 @@ def masked_softmax_row(x, cand_3d, temperature):
 # end
 
 
-def build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last, margin_block=None):
+def build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last, margin_block=None,
+                   age_block=None):
     """
     Build the router input for ONE sparse step, block-local.
 
@@ -120,6 +123,12 @@ def build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last, margin
     pos_last:      0-dim long tensor, block-local position of the last unmask
     margin_block:  (L,) live snapshot margin (p(top1)-p(top2), same staleness
                    as conf); required only when spec['features'] has 'margin'
+                   or 'margin_age'
+    age_block:     (L,) true per-position age of the conf/margin entries
+                   (snapshot.age); required for 'conf_age'/'margin_age' --
+                   normalized to age/max_conf_age, clamped to 1, fed RAW
+                   (never ranked: absolute staleness is the signal), exactly
+                   as Feature_rank_value_raw_age does at training time
 
     Returns (1, L, dim_in), same layout as offline build_block_x row t.
     """
@@ -133,6 +142,23 @@ def build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last, margin
 
     parts = []
     for name in spec['features']:
+        if name in ('conf_age', 'margin_age'):
+            # (value, age) pair: value channel candidate-ranked, age channel
+            # RAW in [0,1] -- mirrors Feature_rank_value_raw_age exactly
+            assert age_block is not None, \
+                f'spec wants {name} but the runner passed no age_block (pass snapshot.age)'
+            value_block = conf_block if name == 'conf_age' else margin_block
+            assert value_block is not None, \
+                f'spec wants {name} but the runner passed no value table for it'
+            max_age = float(spec.get('max_conf_age', 16))
+            value_ranked = percentile_rank_masked(
+                sanitize(value_block.view(1, L, 1)), cand)
+            age_raw = (age_block.view(1, L, 1) / max(max_age, 1.0)).clamp(0.0, 1.0)
+            age_raw = sanitize(age_raw).masked_fill(~cand_3d, 0.0)
+            parts.append(torch.cat([value_ranked, age_raw], dim=-1))
+            continue
+        # end
+
         if name == 'attn_last':
             raw = attn_rows_all[-1].view(1, L, 1)
         elif name == 'attn_all':
@@ -172,9 +198,10 @@ def build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last, margin
 
 @torch.no_grad()
 def select_topk_candidates(router, spec, attn_rows_all, conf_block, mask_still, pos_last, k,
-                           margin_block=None):
+                           margin_block=None, age_block=None):
     """Score candidates online and return the block-local indices of the top k."""
-    x = build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last, margin_block)
+    x = build_online_x(spec, attn_rows_all, conf_block, mask_still, pos_last, margin_block,
+                       age_block)
     scores = router(x).view(-1)
     scores = scores.masked_fill(~mask_still, NEG_INF)
     return scores.topk(k).indices

@@ -6,6 +6,8 @@
 #   cm_clean    attn_last + geo                       (no conf/margin)
 #   cm_policy   + conf/margin, policy-aged training   (offline recall@5 0.681)
 #   cm_aged     + conf/margin, random-aged training   (offline recall@5 0.680)
+#   cm_age      + conf/margin values WITH the true per-position age as an
+#               input channel (the aged router; runner tracks snapshot.age)
 #
 # Decoding: run_llada_semi_mlp_v2, h=5, Kr=16 (generation refresh),
 # Kp=96 (prompt refresh) -- the best-known config (~0.45 gsm8k @ ~125 TF).
@@ -47,6 +49,7 @@ ROUTERS=(
     "${THREAD}__cm_clean"
     "${THREAD}__cm_policy"
     "${THREAD}__cm_aged"
+    "${THREAD}__cm_age"
 )
 
 # task:len_target:num_fewshot:needs_unsafe_code -- canonical gen lengths;

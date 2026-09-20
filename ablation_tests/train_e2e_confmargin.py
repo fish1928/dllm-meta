@@ -8,10 +8,16 @@ trained on mix_no_ifeval, EPOCHS_FINAL epochs):
               refresh-clock aging at training time)
   cm_aged     + conf_aged + margin_aged                     (random-age
               augmentation at training time)
+  cm_age      + conf_aged_age + margin_aged_age             (the AGED router:
+              randomly aged values PLUS the true age as an input channel;
+              deployment feeds (snapshot.conf/margin, snapshot.age) -- the
+              runner tracks exact per-position staleness)
 
-All three deploy identically: the runner feeds the LIVE stale conf/margin
-tables (snapshot.conf / snapshot.margin) -- the arms differ only in how
-staleness was simulated during training. Bundles land in FOLDER_BUNDLES
+cm_clean/cm_policy/cm_aged deploy identically: the runner feeds the LIVE
+stale conf/margin tables (snapshot.conf / snapshot.margin) -- those arms
+differ only in how staleness was simulated during training. cm_age
+additionally consumes the true age table at inference (spec features
+conf_age/margin_age). Bundles land in FOLDER_BUNDLES
 (routers_e2e) as <THREAD>__cm_<arm>.pt/.json, ready for run_llada_semi_mlp[_v2]
 via path_router. Resume-safe: an arm whose .pt and .json already exist is
 skipped (RERUN=1 to force).
@@ -60,10 +66,12 @@ ARMS = {
     'cm_clean':  ['attn_last', 'pos_delta', 'mask_density'],
     'cm_policy': ['attn_last', 'pos_delta', 'mask_density', 'conf_policy', 'margin_policy'],
     'cm_aged':   ['attn_last', 'pos_delta', 'mask_density', 'conf_aged', 'margin_aged'],
+    'cm_age':    ['attn_last', 'pos_delta', 'mask_density', 'conf_aged_age', 'margin_aged_age'],
 }
 
 MAP_SPEC = {'conf_policy': 'conf', 'conf_aged': 'conf',
-            'margin_policy': 'margin', 'margin_aged': 'margin'}
+            'margin_policy': 'margin', 'margin_aged': 'margin',
+            'conf_aged_age': 'conf_age', 'margin_aged_age': 'margin_age'}
 
 
 def train_arm(name_arm, features_variant, datasets):
@@ -133,6 +141,7 @@ def train_arm(name_arm, features_variant, datasets):
         'conf_mode': 'aged' if has_conf else 'none',
         'margin_mode': 'aged' if has_margin else 'none',
         'train_aging': ('policy' if 'conf_policy' in features_variant else
+                        'random_with_age' if 'conf_aged_age' in features_variant else
                         'random' if 'conf_aged' in features_variant else 'none'),
         'normalization': RECIPE['normalization'],
         'softmax_temperature': 1.0,

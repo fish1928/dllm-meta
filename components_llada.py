@@ -6,7 +6,7 @@ from tools_debug import jprint
 
 class SimpleLogitsSnapshot:
 
-    def __init__(self, x, y, id_mask, x0=None, conf=None, margin=None):
+    def __init__(self, x, y, id_mask, x0=None, conf=None, margin=None, age=None):
         self.id_mask = id_mask
 
         self.x = x
@@ -15,6 +15,7 @@ class SimpleLogitsSnapshot:
         assert x0 is None or x0.shape[1] == self.x.shape[1]
         assert conf is None or conf.shape[1] == self.x.shape[1]
         assert margin is None or margin.shape[1] == self.x.shape[1]
+        assert age is None or age.shape[1] == self.x.shape[1]
 
         if x0 is None:
             self.x0 = torch.zeros(self.x.shape, dtype=torch.long, device=self.x.device)
@@ -38,6 +39,22 @@ class SimpleLogitsSnapshot:
         else:
             self.margin = margin
         # end
+
+        # per-position age of the conf/margin entries: steps since that
+        # position was last written by transform_logits. Reset to 0 on write,
+        # incremented once per decoding step via tick_age_() (runner calls it
+        # at the end of each step) -- the TRUE deployment age the aged router
+        # consumes as its age input channel.
+        if age is None:
+            self.age = torch.zeros(self.x.shape, dtype=torch.float32, device=self.x.device)
+        else:
+            self.age = age
+        # end
+    # end
+
+    def tick_age_(self):
+        self.age += 1.0
+        return self
     # end
 
     def get_x(self):
@@ -86,9 +103,11 @@ class SimpleLogitsSnapshot:
         if idx_transform is not None:
             self.conf.scatter_(1, idx_transform, x0_p_transformed)
             self.margin.scatter_(1, idx_transform, margin_transformed)
+            self.age.scatter_(1, idx_transform, torch.zeros_like(x0_p_transformed))
         else:
             self.conf = x0_p_transformed
             self.margin = margin_transformed
+            self.age = torch.zeros_like(self.conf)
         # end
 
         neg_inf = torch.tensor(

@@ -169,7 +169,8 @@ HORIZONS = [3, 5, 8, 12, 16]
 # stale tables -- aging is a training-time treatment only
 DEPLOYABLE_ONLINE_FEATURES = {'attn_last', 'attn_all', 'pos_delta', 'mask_density',
                               'conf', 'conf_aged', 'conf_policy',
-                              'margin', 'margin_aged', 'margin_policy'}
+                              'margin', 'margin_aged', 'margin_policy',
+                              'conf_aged_age', 'margin_aged_age'}
 
 
 STAGES = [
