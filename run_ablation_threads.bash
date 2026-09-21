@@ -42,6 +42,17 @@ layers_for () {
     esac
 }
 
+# llada_instruct oracles were swept at b8/b16/b32 (no b1); its deployment
+# convention is a constant block WIDTH of 32, which is _b8 for 256-length
+# tasks and _b16 for 512-length ones -- BLOCK_SIZE mode picks per task.
+# The one-block threads (dream_*, llada_base) keep plain _b1 selection.
+block_size_for () {
+    case "$1" in
+        llada_instruct) echo 32 ;;
+        *)              echo "" ;;
+    esac
+}
+
 # every task any dataset group uses (mix + gsm8k + ifeval groups)
 TASKS="gsm8k minerva_math bbh humaneval truthfulqa_gen ifeval"
 
@@ -64,9 +75,16 @@ fi
 
 echo
 for thread in $THREADS; do
+    block_size=$(block_size_for "$thread")
     missing=""
     for task in $TASKS; do
-        [ -d "$FOLDER_TRAIN/${thread}_${task}_b${NUM_BLOCKS}" ] || missing="$missing $task"
+        if [ -n "$block_size" ]; then
+            # BLOCK_SIZE mode: any b* collection may hold the right width;
+            # the python side picks by inferred block width
+            ls -d "$FOLDER_TRAIN/${thread}_${task}_b"* >/dev/null 2>&1 || missing="$missing $task"
+        else
+            [ -d "$FOLDER_TRAIN/${thread}_${task}_b${NUM_BLOCKS}" ] || missing="$missing $task"
+        fi
     done
     if [ -n "$missing" ]; then
         echo "[$thread] WARNING missing oracle folders:$missing (those datasets drop out of their groups)"
@@ -78,11 +96,13 @@ done
 echo
 for thread in $THREADS; do
     num_layers=$(layers_for "$thread")
+    block_size=$(block_size_for "$thread")
     log="$FOLDER_LOGS/ablation_fast_${thread}.log"
-    echo "===== $thread (layers=$num_layers, epochs=$NUM_EPOCHS, device=$DEVICE) -> $log ====="
+    echo "===== $thread (layers=$num_layers, epochs=$NUM_EPOCHS, block_size=${block_size:-n/a}, device=$DEVICE) -> $log ====="
 
     FOLDER_TRAIN="$FOLDER_TRAIN" THREAD="$thread" DEVICE="$DEVICE" \
     NUM_LAYERS="$num_layers" NUM_EPOCHS="$NUM_EPOCHS" NUM_BLOCKS="$NUM_BLOCKS" \
+    BLOCK_SIZE="$block_size" \
         python -u ablation_tests/ablation_test_fast.py >> "$log" 2>&1
     status=$?
 

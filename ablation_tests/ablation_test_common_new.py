@@ -250,15 +250,45 @@ def infer_size_block(folder_data: str) -> int:
 
 
 def resolve_datasets(names_task: Sequence[str], folder_root: str, thread: str,
-                     num_blocks: int = 1) -> List[Tuple[str, str, int]]:
-    """(task, folder, size_block) per existing collection; missing ones warn+drop."""
+                     num_blocks: int = 1,
+                     block_size: Optional[int] = None) -> List[Tuple[str, str, int]]:
+    """(task, folder, size_block) per existing collection; missing ones warn+drop.
+
+    Two selection modes:
+      num_blocks (default): the exact <thread>_<task>_b<num_blocks> folder.
+      block_size: per task, scan <thread>_<task>_b* and pick the collection
+        whose inferred block WIDTH equals block_size -- the right mode for
+        block-diffusion threads (llada_instruct: deployment block size is
+        constant at 32, so 256-length tasks live in _b8 and 512-length ones
+        in _b16; a single num_blocks suffix cannot select both).
+    """
+    import glob as _glob
+
     datasets = []
     for name_task in names_task:
-        folder = os.path.join(folder_root, f'{thread}_{name_task}_b{num_blocks}')
-        if not os.path.isdir(folder):
-            print(f'[warn] oracle folder missing, dropped from group: {folder}')
-            continue
-        datasets.append((name_task, folder, infer_size_block(folder)))
+        if block_size:
+            folder = None
+            for candidate in sorted(_glob.glob(
+                    os.path.join(folder_root, f'{thread}_{name_task}_b*'))):
+                if not os.path.isdir(candidate):
+                    continue
+                try:
+                    if infer_size_block(candidate) == int(block_size):
+                        folder = candidate
+                        break
+                except Exception:
+                    continue
+            if folder is None:
+                print(f'[warn] no {thread}_{name_task}_b* collection with block '
+                      f'width {block_size}, dropped from group')
+                continue
+            datasets.append((name_task, folder, int(block_size)))
+        else:
+            folder = os.path.join(folder_root, f'{thread}_{name_task}_b{num_blocks}')
+            if not os.path.isdir(folder):
+                print(f'[warn] oracle folder missing, dropped from group: {folder}')
+                continue
+            datasets.append((name_task, folder, infer_size_block(folder)))
     return datasets
 
 

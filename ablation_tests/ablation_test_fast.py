@@ -82,6 +82,10 @@ if THREAD == 'llada_base' and not os.path.exists(_report_default) \
 REPORT_PATH = os.environ.get('REPORT_PATH', _report_default)
 
 NUM_BLOCKS = int(os.environ.get('NUM_BLOCKS', 1))
+BLOCK_SIZE = int(os.environ['BLOCK_SIZE']) if os.environ.get('BLOCK_SIZE') else None
+# BLOCK_SIZE selects collections by block WIDTH instead of the b<N>
+# suffix (llada_instruct: BLOCK_SIZE=32 picks _b8 for 256-length
+# tasks and _b16 for 512-length ones)
 DEVICE = os.environ.get('DEVICE', 'cuda:0')
 NUM_LAYERS = int(os.environ.get('NUM_LAYERS', 32))
 NUM_EPOCHS = int(os.environ.get('NUM_EPOCHS', 4))    # ranking-only; final uses EPOCHS_FINAL
@@ -224,7 +228,7 @@ def pick_best(stage, candidates, eligible):
 
 
 def main():
-    datasets_search = resolve_datasets(DATASET_GROUPS[GROUP_SEARCH], FOLDER_TRAIN, THREAD, NUM_BLOCKS)
+    datasets_search = resolve_datasets(DATASET_GROUPS[GROUP_SEARCH], FOLDER_TRAIN, THREAD, NUM_BLOCKS, BLOCK_SIZE)
     assert datasets_search, f'no train folders for group {GROUP_SEARCH} under {FOLDER_TRAIN}'
     print(f'search group {GROUP_SEARCH}: {[(n, s) for n, _, s in datasets_search]}')
 
@@ -389,7 +393,7 @@ def main():
         # end
 
         for name_group, names_task in DATASET_GROUPS.items():
-            datasets = resolve_datasets(names_task, FOLDER_TRAIN, THREAD, NUM_BLOCKS)
+            datasets = resolve_datasets(names_task, FOLDER_TRAIN, THREAD, NUM_BLOCKS, BLOCK_SIZE)
             if not datasets:
                 print(f'[warn] final: group {name_group} has no folders, skipped')
                 bar_final.update(1)
@@ -435,7 +439,7 @@ def main():
                       f'loss {loss_mean:.4f}', flush=True)
             # end
             router.eval()
-            datasets_eval = resolve_datasets(DATASET_GROUPS[GROUP_EVAL], FOLDER_TRAIN, THREAD, NUM_BLOCKS)
+            datasets_eval = resolve_datasets(DATASET_GROUPS[GROUP_EVAL], FOLDER_TRAIN, THREAD, NUM_BLOCKS, BLOCK_SIZE)
             recalls = {}
             with torch.no_grad():
                 for name_task, folder_eval, sb_eval in datasets_eval:
