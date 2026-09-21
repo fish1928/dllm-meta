@@ -46,6 +46,10 @@ FOLDER_TRAIN = os.environ.get('FOLDER_TRAIN', 'stats_train')
 THREAD = os.environ.get('THREAD', 'llada_base')
 NUM_BLOCKS = int(os.environ.get('NUM_BLOCKS', 1))
 DEVICE = os.environ.get('DEVICE', 'cuda:0')
+BLOCK_SIZE = int(os.environ['BLOCK_SIZE']) if os.environ.get('BLOCK_SIZE') else None
+    # BLOCK_SIZE selects collections by block WIDTH instead of the b<N> suffix
+    # (llada_instruct: BLOCK_SIZE=32 picks _b8 for 256-length tasks and _b16
+    # for 512-length ones; the one-block threads keep NUM_BLOCKS/_b1)
 NUM_LAYERS = int(os.environ.get('NUM_LAYERS', 32))
 EPOCHS_FINAL = int(os.environ.get('EPOCHS_FINAL', 20))
 H = int(os.environ.get('H', 5))
@@ -167,7 +171,7 @@ def train_arm(name_arm, features_variant, datasets):
 
 
 def main():
-    datasets = resolve_datasets(TASKS, FOLDER_TRAIN, THREAD, NUM_BLOCKS)
+    datasets = resolve_datasets(TASKS, FOLDER_TRAIN, THREAD, NUM_BLOCKS, BLOCK_SIZE)
     assert datasets, f'no train folders for group {GROUP} under {FOLDER_TRAIN}'
     print(f'group {GROUP}: {[(n, s) for n, _, s in datasets]}  '
           f'(epochs={EPOCHS_FINAL}, h={H}, max_age={MAX_CONF_AGE})')
