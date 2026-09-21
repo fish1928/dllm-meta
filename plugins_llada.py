@@ -317,6 +317,19 @@ class CacheAttnRolloutPlugin_Enabled(InspectorPlugin):
     Batch size 1 pipeline; state is class-level like the other attn plugin.'''
 
     _ROLLOUT = None    # (B, T, T)
+    ROW_MASK = None    # optional (B, T) bool: PER-SAMPLE queried rows. Under
+                       # union batching the forward carries rows some samples
+                       # did not select; without this mask every union row
+                       # would count as queried for every sample, silently
+                       # making the batched rollout fresher than the bs-1
+                       # method. The *_batch runner sets it each step; bs-1
+                       # runners leave it None (original behavior).
+
+    @classmethod
+    def set_row_mask(cls, mask_rows):
+        cls.ROW_MASK = mask_rows
+        return cls
+    # end
 
     def get_plugin_name(self):
         return 'plugin_cache_attn'
@@ -326,9 +339,10 @@ class CacheAttnRolloutPlugin_Enabled(InspectorPlugin):
         layer_id = self.load_attrs('layer_id')[0]
         q_current_rotated, k_final_rotated = self.load_vars('q_current_rotated', 'k_final_rotated')
         idx_current = self.load_vars('idx_current')[0]
+        attention_bias = self.load_vars('attention_bias')[0]    # pad mask (or None)
         get_attn_score_avg = self.load_func('get_attn_score_avg')
 
-        scores = get_attn_score_avg(q_current_rotated, k_final_rotated)    # (B, q, T) row-stochastic
+        scores = get_attn_score_avg(q_current_rotated, k_final_rotated, attention_bias)    # (B, q, T) row-stochastic
         B, num_q, T = scores.shape
         device, dtype = scores.device, scores.dtype
         eye = torch.eye(T, device=device, dtype=dtype)
@@ -344,6 +358,14 @@ class CacheAttnRolloutPlugin_Enabled(InspectorPlugin):
 
         effective = eye.repeat(B, 1, 1)
         effective[:, idx_current, :] = scores    # only queried rows carry real attention
+
+        mask_rows = CacheAttnRolloutPlugin_Enabled.ROW_MASK
+        if mask_rows is not None and mask_rows.shape == (B, T):
+            # keep identity at rows THIS sample did not select (union batching)
+            effective = torch.where(mask_rows.to(device).unsqueeze(-1), effective,
+                                    eye.expand(B, -1, -1))
+        # end
+
         residual = effective + eye
         residual = residual / residual.sum(dim=-1, keepdim=True)
         CacheAttnRolloutPlugin_Enabled._ROLLOUT = residual @ rollout
@@ -356,6 +378,7 @@ class CacheAttnRolloutPlugin_Enabled(InspectorPlugin):
 
     def clear(self, model):
         CacheAttnRolloutPlugin_Enabled._ROLLOUT = None
+        CacheAttnRolloutPlugin_Enabled.ROW_MASK = None
     # end
 # end
 
@@ -463,13 +486,14 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
         # canvas's LAST block instead.
         matrix_current = matrix_current[:, :, idx_block_current_min:idx_block_current_min + len_block]
 
+        B = matrix_current.shape[0]    # batch-general: shared idx, per-sample scores
         if id_block_current != id_block_origin:
-            matrix_origin = torch.zeros((1, len_block, len_block), dtype=matrix_current.dtype, device=device)   # -1
+            matrix_origin = torch.zeros((B, len_block, len_block), dtype=matrix_current.dtype, device=device)   # -1
         # end
 
         idx_current_relevant = idx_current - idx_block_current_min
 
-        idx_current_relevant_3d = idx_current_relevant.view(1, -1, 1).expand(1, -1, len_block)
+        idx_current_relevant_3d = idx_current_relevant.view(1, -1, 1).expand(B, -1, len_block)
 
         matrix_origin = matrix_origin.scatter(1, idx_current_relevant_3d, matrix_current)
         return matrix_origin
@@ -483,10 +507,11 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
 
         q_current_rotated, k_final_rotated = self.load_vars('q_current_rotated', 'k_final_rotated')
         idx_current = self.load_vars('idx_current')[0]
+        attention_bias = self.load_vars('attention_bias')[0]    # pad mask (or None)
 
         get_attn_score_avg = self.load_func('get_attn_score_avg')
 
-        scores_attn_current = get_attn_score_avg(q_current_rotated, k_final_rotated)   
+        scores_attn_current = get_attn_score_avg(q_current_rotated, k_final_rotated, attention_bias)
         scores_attn_origin, idx_origin =  self.load_attrs('scores_attn_origin', 'idx_origin')
 
         scores_attn_current = self.reset_and_refresh_3d(
@@ -509,6 +534,14 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
         # end
 
         return torch.stack(list_scores_attn_avg, dim=0)  # from [(1, Q, K),...] to [B, Q, K]
+    # end
+
+    def collect_attn_from_all_blocks_batched(self, model): # -> (num_layers, B, Q, K)
+        # batch-preserving variant for the *_batch runners; the original method
+        # keeps its batch-1 squeeze so existing runners stay untouched
+        return torch.stack(
+            [block_transformer.scores_attn_origin
+             for block_transformer in model.model.transformer.blocks[:]], dim=0)
     # end
 
     def clear(self, model):
@@ -571,6 +604,21 @@ class CachePastKVPlugin_Disabled(InspectorPlugin):
 
 class CachePastKVPlugin_Enabled(InspectorPlugin):
 
+    ROW_MASK = None    # optional (B, T) bool: PER-SAMPLE selected rows. Under
+                       # union batching a forward carries rows some samples did
+                       # not select; without this mask their K/V would be
+                       # refreshed for every sample, making the batched cache
+                       # fresher than the bs-1 method. True = this sample takes
+                       # the fresh row; False = it keeps its cached row. The
+                       # *_batch runners set it per union forward (None for
+                       # shared-row forwards); bs-1 runners never touch it.
+
+    @classmethod
+    def set_row_mask(cls, mask_rows):
+        cls.ROW_MASK = mask_rows
+        return cls
+    # end
+
     def get_plugin_name(self):
         return 'plugin_cache_past_kv'
     # end
@@ -579,7 +627,7 @@ class CachePastKVPlugin_Enabled(InspectorPlugin):
         layer_past = self.load_attrs('layer_past')[0]
 
         k_current, v_current = self.load_vars('k_current', 'v_current')
-        
+
         if layer_past is None:  # the first time
             k_final, v_final = k_current, v_current
             return k_final, v_final
@@ -590,8 +638,25 @@ class CachePastKVPlugin_Enabled(InspectorPlugin):
 
         k_previous, v_previous = layer_past
 
+        mask_rows = CachePastKVPlugin_Enabled.ROW_MASK
+        keep_k = keep_v = idx_old = None
+        if mask_rows is not None:
+            # snapshot the pre-merge rows (concat_and_replace writes in place);
+            # rows beyond the old cache length are NEW and stay fresh for all
+            len_old = k_previous.shape[-2]
+            idx_old = idx_current[idx_current < len_old]
+            keep_k = k_previous[:, :, idx_old, :].clone()
+            keep_v = v_previous[:, :, idx_old, :].clone()
+        # end
+
         k_final = concat_and_replace(k_previous, k_current, idx_current, shape_target)
         v_final = concat_and_replace(v_previous, v_current, idx_current, shape_target)
+
+        if mask_rows is not None and idx_old.numel() > 0:
+            fresh = mask_rows[:, idx_old][:, None, :, None]    # (B, 1, n, 1)
+            k_final[:, :, idx_old, :] = torch.where(fresh, k_final[:, :, idx_old, :], keep_k)
+            v_final[:, :, idx_old, :] = torch.where(fresh, v_final[:, :, idx_old, :], keep_v)
+        # end
 
         return k_final, v_final
     # end
@@ -603,6 +668,7 @@ class CachePastKVPlugin_Enabled(InspectorPlugin):
     # end
 
     def clear(self, model):
+        CachePastKVPlugin_Enabled.ROW_MASK = None
         for block in model.model.transformer.blocks:
             if hasattr(block, 'layer_past'):
                 del block.layer_past

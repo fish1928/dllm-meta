@@ -735,11 +735,16 @@ class LLaDABlock(nn.Module):
     # end def
 
 
-    def get_attn_score_avg(self, Q, K):
-        # Q, K, V: (batch, heads, seq_len, head_dim)
+    def get_attn_score_avg(self, Q, K, bias=None):
+        # Q, K, V: (batch, heads, seq_len, head_dim); bias: additive
+        # (B, 1, 1, T_keys) pad mask so plugin-side scores match the model's
+        # real (pad-excluding) attention under batched left-padded inputs
         scale = Q.size(-1) ** -0.5
         # (batch, heads, seq_len, seq_len)
         attn_weights = torch.matmul(Q, K.transpose(-2, -1)) * scale
+        if bias is not None:
+            attn_weights = attn_weights + bias[:, :, :, : attn_weights.shape[-1]].to(attn_weights.dtype)
+        # end
         attn_weights = F.softmax(attn_weights, dim=-1)
         attn_weights_avg = attn_weights.mean(dim=1)
         return attn_weights_avg
@@ -791,11 +796,20 @@ class LLaDABlock(nn.Module):
 
         self.plugin_cache_attn.save()
 
+        # additive bias (pad masking for batched inputs): (B, 1, 1, T_keys),
+        # broadcast over heads and the sparse query rows. None keeps the
+        # original (flash-capable) path byte-identical.
+        attn_mask = None
+        if attention_bias is not None:
+            attn_mask = self._cast_attn_bias(
+                attention_bias[:, :, :, : k_final_rotated.shape[-2]], q_current_rotated.dtype)
+        # end
+
         hidden = self._scaled_dot_product_attention(
-            q_current_rotated, 
+            q_current_rotated,
             k_final_rotated,
             v_final,
-            attn_mask=None,
+            attn_mask=attn_mask,
             dropout_p=0.0 if not self.training else self.config.attention_dropout,
             is_causal=False
         )
@@ -1160,6 +1174,15 @@ class LLaDAModel(nn.Module):
             attention_mask = (1.0 - attention_mask) * torch.finfo(attention_mask.dtype).min
         else:
             attention_mask = None
+
+        # fold the padding mask into the additive attention bias so batched
+        # left-padded inputs never attend pad keys (bias broadcasts over the
+        # sparse query rows: (B, 1, 1, T_keys)). The mask covers the KEY axis
+        # of the merged cache, so callers pass it at shape_target length.
+        if attention_mask is not None:
+            attention_bias = attention_mask if attention_bias is None \
+                else attention_bias + attention_mask
+        # end
 
         # Apply blocks one-by-one.
         if self.config.block_group_size == 1:

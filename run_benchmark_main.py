@@ -17,7 +17,7 @@ from lm_eval.api.model import LM
 from lm_eval.api.registry import register_model
 from tqdm import tqdm
 
-from dataprocess_llada import Preprocessor_Until, Collater_Until_One
+from dataprocess_llada import Preprocessor_Until, Collater_Until_One, Collater_Until_Batch
 from tools_llada import TopKSorter, MaxCollector
 from configs_llada import DiffusionConfig_Eval
 from tools_debug import jprint, Timer
@@ -134,13 +134,20 @@ class TestLM(LM):
             use_official_gsm8k_prompt=bool(getattr(self.config, 'use_official_gsm8k_prompt', None)),
         ))
 
-        '''prepare dataloader'''
+        '''prepare dataloader: size_batch>1 needs the batch collater (left-pad
+        + attention_mask) AND a *_batch runner -- the bs-1 collater would
+        silently drop every sample but the first'''
+        if self.config.size_batch > 1:
+            collater = Collater_Until_Batch(self.config, self.tokenizer.pad_token_id)
+        else:
+            collater = Collater_Until_One(self.config)
+        # end
         loader = DataLoader(
             ds,
             batch_size=self.config.size_batch,
             shuffle=False,
             drop_last=False,
-            collate_fn=Collater_Until_One(self.config)
+            collate_fn=collater
         )
 
         t = Timer().click()
@@ -157,11 +164,18 @@ class TestLM(LM):
                 self.model, self.tokenizer, self.config, **batch
             )
 
-            if not has_done:
-                errors_eval.append(id_batch)
-            # end
-            
-            outputs_eval.append(text_generated)
+            if isinstance(text_generated, list):    # *_batch runners: one output per sample
+                for offset, done_each in enumerate(has_done):
+                    if not done_each:
+                        errors_eval.append(id_batch * self.config.size_batch + offset)
+                    # end
+                # end
+                outputs_eval.extend(text_generated)
+            else:
+                if not has_done:
+                    errors_eval.append(id_batch)
+                # end
+                outputs_eval.append(text_generated)
             # end
         # end
 

@@ -127,6 +127,62 @@ class Collater_Until_One(Collater_):
 # end
 
 
+class Collater_Until_Batch(Collater_):
+    """True batching for the *_batch runners: prompts are LEFT-padded to the
+    batch max, so the generation area is column-aligned across samples (same
+    block bounds, same step count -- only the per-step sparse index sets
+    differ). Padding is neutralized by attention_mask (0 at pad keys), which
+    the model folds into an additive attention bias; RoPE's shift invariance
+    makes the per-sample uniform position offset harmless.
+
+    Emits:
+      ids_input      (B, len_prompt + len_target)
+      attention_mask (B, len_prompt + len_target)  1=real, 0=pad
+      len_prompt     PADDED prompt length (shared; block math anchors here)
+      len_prompts    per-sample REAL prompt lengths (reporting)
+      until          shared stop words (asserted identical within the batch)
+      text_prompt    list of prompt strings
+    """
+
+    def __init__(self, config, id_pad):
+        self.len_target = config.len_target
+        self.id_mask = config.id_mask
+        assert id_pad is not None, 'batched collation needs a pad token id'
+        assert id_pad != config.id_mask, 'pad id must differ from the mask id'
+        self.id_pad = id_pad
+    # end
+
+    def _collate(self, ds_batch):
+        assert type(ds_batch) is list and len(ds_batch) >= 1
+        len_prompts = [len(ds_each['ids_prompt']) for ds_each in ds_batch]
+        len_prompt_pad = max(len_prompts)
+
+        rows = []
+        masks = []
+        for ds_each, len_real in zip(ds_batch, len_prompts):
+            num_pad = len_prompt_pad - len_real
+            ids_row = [self.id_pad] * num_pad + ds_each['ids_prompt'] \
+                + [self.id_mask] * self.len_target
+            rows.append(ids_row)
+            masks.append([0] * num_pad + [1] * (len_real + self.len_target))
+        # end
+
+        until = ds_batch[0]['until']
+        assert all(ds_each['until'] == until for ds_each in ds_batch), \
+            'until must be identical within a batch (same task guarantees this)'
+
+        return {
+            'ids_input': torch.tensor(rows, dtype=torch.long),
+            'attention_mask': torch.tensor(masks, dtype=torch.long),
+            'len_prompt': len_prompt_pad,
+            'len_prompts': len_prompts,
+            'text_prompt': [ds_each['text_prompt'] for ds_each in ds_batch],
+            'until': until,
+        }
+    # end
+# end
+
+
 class Collater_sample(Collater_):
 
     def __init__(self, id_mask):
