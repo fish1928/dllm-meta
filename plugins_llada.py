@@ -51,6 +51,13 @@ class InspectorPlugin(ABC):
         return tuple(locals_caller[arg] for arg in args)
     # end
 
+    def load_var_optional(self, name, default=None):
+        # tolerant variant: a variable some model frames simply do not have
+        # (e.g. attention_bias exists in the llada attention frame but not in
+        # dream's) comes back as the default instead of a KeyError
+        return self._find_client_frame().f_locals.get(name, default)
+    # end
+
     def load_attrs(self, *args):
         frame = self._find_client_frame()
         vars_caller = frame.f_locals
@@ -339,10 +346,17 @@ class CacheAttnRolloutPlugin_Enabled(InspectorPlugin):
         layer_id = self.load_attrs('layer_id')[0]
         q_current_rotated, k_final_rotated = self.load_vars('q_current_rotated', 'k_final_rotated')
         idx_current = self.load_vars('idx_current')[0]
-        attention_bias = self.load_vars('attention_bias')[0]    # pad mask (or None)
+        # pad mask; ABSENT from model frames without batch support (dream) --
+        # then scores are computed unbiased, and dream's 2-arg score function
+        # is called without the extra argument
+        attention_bias = self.load_var_optional('attention_bias')
         get_attn_score_avg = self.load_func('get_attn_score_avg')
 
-        scores = get_attn_score_avg(q_current_rotated, k_final_rotated, attention_bias)    # (B, q, T) row-stochastic
+        if attention_bias is not None:
+            scores = get_attn_score_avg(q_current_rotated, k_final_rotated, attention_bias)    # (B, q, T) row-stochastic
+        else:
+            scores = get_attn_score_avg(q_current_rotated, k_final_rotated)
+        # end
         B, num_q, T = scores.shape
         device, dtype = scores.device, scores.dtype
         eye = torch.eye(T, device=device, dtype=dtype)
@@ -524,11 +538,16 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
 
         q_current_rotated, k_final_rotated = self.load_vars('q_current_rotated', 'k_final_rotated')
         idx_current = self.load_vars('idx_current')[0]
-        attention_bias = self.load_vars('attention_bias')[0]    # pad mask (or None)
+        # pad mask; absent from model frames without batch support (dream)
+        attention_bias = self.load_var_optional('attention_bias')
 
         get_attn_score_avg = self.load_func('get_attn_score_avg')
 
-        scores_attn_current = get_attn_score_avg(q_current_rotated, k_final_rotated, attention_bias)
+        if attention_bias is not None:
+            scores_attn_current = get_attn_score_avg(q_current_rotated, k_final_rotated, attention_bias)
+        else:
+            scores_attn_current = get_attn_score_avg(q_current_rotated, k_final_rotated)    # dream: 2-arg signature
+        # end
         scores_attn_origin, idx_origin =  self.load_attrs('scores_attn_origin', 'idx_origin')
 
         scores_attn_current = self.reset_and_refresh_3d(
