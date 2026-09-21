@@ -408,6 +408,13 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
                               # the whole canvas, so the current decoding block cannot
                               # be inferred from idx_current[-1]; set it explicitly
                               # per block and reset to None afterwards
+    SKIP_SAVE = False    # KV-only maintenance forwards over rows OUTSIDE the
+                         # current block (e.g. the instruct runner's suffix
+                         # refresh) would make reset_and_refresh_3d infer the
+                         # wrong block from idx_current[-1] and wipe the
+                         # current block's score table -- set this True around
+                         # such forwards (prompt-row forwards need no guard:
+                         # they early-return via the len_base check)
 
     @classmethod
     def set_len_prompt(cls, len_prompt):
@@ -424,6 +431,12 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
     @classmethod
     def set_size_block(cls, size_block):
         cls.SIZE_BLOCK = size_block
+        return cls
+    # end
+
+    @classmethod
+    def set_skip_save(cls, skip):
+        CacheAttnPlugin_Enabled.SKIP_SAVE = bool(skip)    # base-class slot: covers subclasses
         return cls
     # end
 
@@ -501,6 +514,10 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
 
     def save(self):
 
+        if CacheAttnPlugin_Enabled.SKIP_SAVE:
+            return
+        # end
+
         layer_id = self.load_attrs('layer_id')[0]   # TODO: remove after bug fixed
         len_block = self.__class__.SIZE_BLOCK
         len_base = self.__class__.LEN_PROMPT
@@ -545,6 +562,7 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
     # end
 
     def clear(self, model):
+        CacheAttnPlugin_Enabled.SKIP_SAVE = False
         for block_transformer in model.model.transformer.blocks[:]:
             if hasattr(block_transformer, 'scores_attn_origin'):
                 del block_transformer.scores_attn_origin
@@ -552,7 +570,7 @@ class CacheAttnPlugin_Enabled(InspectorPlugin):
             if hasattr(block_transformer, 'idx_origin'):
                 del block_transformer.idx_origin
             # end
-        # end        
+        # end
     # end
 # end
 

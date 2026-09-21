@@ -11,6 +11,21 @@
 #   - conf outside the current block is forced to -inf on EVERY selection step:
 #     future-block masks are legitimate "still masked" positions to the sorter
 #     but must never be unmasked early
+#   - THREE refresh clocks, all independent:
+#       step_refresh_remainder         (Kr)  current-block re-query
+#       step_refresh_remainder_prompt  (Kp)  prompt KV re-forward; None/0 =
+#                                            never (v2 semantics -- note the
+#                                            historical behavior coupled the
+#                                            prompt to Kr; pass Kp=Kr to
+#                                            reproduce old runs)
+#       step_refresh_remainder_surfix        future-block KV re-forward
+#   - step_refresh_remainder_surfix (optional): every this many steps the
+#     SUFFIX -- future, still-masked blocks after the current one -- is
+#     re-forwarded KV-only, so its cache re-encodes the tokens unmasked since
+#     prefill. None/0 = historical behavior (suffix stale until its block
+#     becomes current). The forward runs under CacheAttnPlugin SKIP_SAVE:
+#     suffix rows belong to a future block and would otherwise wipe the
+#     current block's attention table.
 #   - EOS truncation ALWAYS on (instruct SFT EOS-fills the tail)
 # Depends on the block-based attention-column slice in CacheAttnPlugin_Enabled
 # (under full canvas the current block sits mid-window, not at the end).
@@ -23,6 +38,7 @@ from components_llada import SimpleLogitsSnapshot
 from tools_llada import BlockDiffusionQuotaHelper, collect_ids_stop, truncate_text_at_stop
 from router_deploy import select_topk_candidates
 from runner_mlp_common import RunModelMLPBase
+from plugins_llada import CacheAttnPlugin_Enabled
 
 
 class RunModel(RunModelMLPBase):
@@ -37,6 +53,8 @@ class RunModel(RunModelMLPBase):
         collector = config_diffusion.klass_collector()
 
         step_refresh_remainder = config_diffusion.step_refresh_remainder
+        remainder_prompt = getattr(config_diffusion, 'step_refresh_remainder_prompt', None)
+        remainder_surfix = getattr(config_diffusion, 'step_refresh_remainder_surfix', None)
 
         words_stop = list(kwargs['until'])
         len_prompt = kwargs['len_prompt']
@@ -78,8 +96,29 @@ class RunModel(RunModelMLPBase):
 
             for step in range(step_per_block):
 
-                if step != 0 and step % step_refresh_remainder == 0:
+                # PROMPT clock (Kp), decoupled from the generation clock (v2
+                # semantics: None/0 = the prompt is NEVER refreshed after the
+                # initial canvas forward). NOTE behavior change: historically
+                # the prompt refreshed on the Kr clock -- pass
+                # step_refresh_remainder_prompt=Kr to reproduce old runs.
+                if remainder_prompt and step != 0 and step % remainder_prompt == 0:
                     model(x[:, idx_prompt], idx_current=idx_prompt, shape_target=shape_target, skip_logits=True)
+                # end
+
+                # SUFFIX clock: re-encode the future still-masked blocks (KV
+                # only) against the tokens unmasked since prefill. SKIP_SAVE
+                # keeps the attention plugin's current-block table intact --
+                # these rows belong to future blocks.
+                if remainder_surfix and step != 0 and step % remainder_surfix == 0 \
+                        and position_end < len_full:
+                    idx_surfix = torch.arange(position_end, len_full, dtype=torch.long, device=x.device)
+                    CacheAttnPlugin_Enabled.set_skip_save(True)
+                    try:
+                        model(x[:, idx_surfix], idx_current=idx_surfix,
+                              shape_target=shape_target, skip_logits=True)
+                    finally:
+                        CacheAttnPlugin_Enabled.set_skip_save(False)
+                    # end
                 # end
 
                 if step == 0 or step % step_refresh_remainder == 0:

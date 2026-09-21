@@ -41,6 +41,7 @@ class RunModel(RunModelMLPBase):
         collector = config_diffusion.klass_collector()
 
         step_refresh_remainder = config_diffusion.step_refresh_remainder
+        remainder_prompt = getattr(config_diffusion, 'step_refresh_remainder_prompt', None)
 
         words_stop = list(kwargs['until'])
         len_prompt = kwargs['len_prompt']
@@ -80,7 +81,10 @@ class RunModel(RunModelMLPBase):
 
             for step in range(step_per_block):
 
-                if step != 0 and step % step_refresh_remainder == 0:
+                # PROMPT clock (Kp), decoupled (v2 semantics: None/0 = never
+                # refreshed after init). Historically coupled to Kr -- pass
+                # step_refresh_remainder_prompt=Kr to reproduce old runs.
+                if remainder_prompt and step != 0 and step % remainder_prompt == 0:
                     model(x[:, idx_prompt], idx_current=idx_prompt, shape_target=shape_target, skip_logits=True)
                 # end
 

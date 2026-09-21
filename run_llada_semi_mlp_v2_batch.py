@@ -50,7 +50,10 @@ class RunModel(RunModelMLPBase):
         words_stop = list(kwargs['until'])
         len_prompt = kwargs['len_prompt']    # PADDED prompt length (batch-aligned)
         x = kwargs['ids_input']
-        mask_attention = kwargs['attention_mask']    # (B, T_total), 0 at left pads
+        mask_attention = kwargs.get('attention_mask')    # (B, T_total), 0 at left pads
+        if mask_attention is None:    # bs-1 collater path: no pads exist
+            mask_attention = torch.ones_like(x)
+        # end
 
         plugin_cache_attn = kwargs['plugin_cache_attn']
         future_idx_selector = kwargs['future_idx_selector']

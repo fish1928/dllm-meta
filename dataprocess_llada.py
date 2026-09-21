@@ -147,8 +147,7 @@ class Collater_Until_Batch(Collater_):
     def __init__(self, config, id_pad):
         self.len_target = config.len_target
         self.id_mask = config.id_mask
-        assert id_pad is not None, 'batched collation needs a pad token id'
-        assert id_pad != config.id_mask, 'pad id must differ from the mask id'
+        assert id_pad is None or id_pad != config.id_mask, 'pad id must differ from the mask id'
         self.id_pad = id_pad
     # end
 
@@ -156,6 +155,9 @@ class Collater_Until_Batch(Collater_):
         assert type(ds_batch) is list and len(ds_batch) >= 1
         len_prompts = [len(ds_each['ids_prompt']) for ds_each in ds_batch]
         len_prompt_pad = max(len_prompts)
+        if len_prompt_pad != min(len_prompts):    # padding actually needed
+            assert self.id_pad is not None, 'batched collation needs a pad token id'
+        # end
 
         rows = []
         masks = []

@@ -70,6 +70,14 @@ class DiffusionConfig_Eval:
                                                            # never refreshed after init.
                                                            # step_refresh_remainder stays the
                                                            # GENERATION-area interval (Kr)
+    step_refresh_remainder_surfix: Optional[int] = None    # instruct runner: re-forward the
+                                                           # SUFFIX (future, still-masked
+                                                           # blocks after the current one, KV
+                                                           # only) every this many steps.
+                                                           # None/0 = suffix KV stays as of
+                                                           # the initial canvas forward until
+                                                           # its block becomes current
+                                                           # (the historical behavior)
     h: Optional[int] = None
     select_only_in_h: Optional[bool] = None
     path_router: Optional[str] = None    # router bundle (.pt with .json sidecar); None -> legacy scalar MLP

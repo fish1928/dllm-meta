@@ -50,6 +50,7 @@ class TestLM(LM):
 
         module_runner = importlib.import_module(kwargs['runner'])
         self.runner_model = module_runner.RunModel()
+        self.name_runner = kwargs['runner']
         del kwargs['runner']
 
         trust_remote_code = kwargs.get('trust_remote_code', True)
@@ -136,8 +137,10 @@ class TestLM(LM):
 
         '''prepare dataloader: size_batch>1 needs the batch collater (left-pad
         + attention_mask) AND a *_batch runner -- the bs-1 collater would
-        silently drop every sample but the first'''
-        if self.config.size_batch > 1:
+        silently drop every sample but the first. A *_batch runner gets the
+        batch collater even at size_batch=1 (it expects the batch kwargs;
+        at B=1 no padding happens so the trajectory is the bs-1 one).'''
+        if self.config.size_batch > 1 or self.name_runner.endswith('_batch'):
             collater = Collater_Until_Batch(self.config, self.tokenizer.pad_token_id)
         else:
             collater = Collater_Until_One(self.config)
