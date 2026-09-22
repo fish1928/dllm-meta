@@ -60,10 +60,10 @@ case "$THREAD" in
         RUNNER=${RUNNER:-run_llada_instruct_mlp}; MARGIN_WIRED=1 ;;
     dream_base)
         ID_MODEL="Dream-org/Dream-v0-Base-7B";   ID_MASK=151666
-        RUNNER=${RUNNER:-run_dream_semi_mlp};    MARGIN_WIRED=0 ;;
+        RUNNER=${RUNNER:-run_dream_semi_mlp};    MARGIN_WIRED=1 ;;
     dream_instruct)
         ID_MODEL="Dream-org/Dream-v0-Instruct-7B"; ID_MASK=151666
-        RUNNER=${RUNNER:-run_dream_instruct_mlp};  MARGIN_WIRED=0 ;;
+        RUNNER=${RUNNER:-run_dream_instruct_mlp};  MARGIN_WIRED=1 ;;
     *) echo "unknown THREAD=$THREAD"; exit 1 ;;
 esac
 
@@ -124,7 +124,7 @@ for name in "${ROUTERS[@]}"; do
     fi
 
     if [ "$MARGIN_WIRED" != "1" ] && [ "$(spec_needs_margin "$path_spec")" = "1" ]; then
-        echo "SKIP router $name: spec needs online margin/age but runner $RUNNER is not wired for it yet (only the llada_base runners are)"
+        echo "SKIP router $name: spec needs online margin/age but runner $RUNNER is not wired for it yet"
         num_skip=$((num_skip + 1))
         continue
     fi
