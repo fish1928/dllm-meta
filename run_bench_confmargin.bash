@@ -170,14 +170,16 @@ for name in "${ROUTERS[@]}"; do
                         # bare 0-shot chat caps dream_instruct at ~0.37 while
                         # the model is capable of ~0.8
                         args_extra=",use_official_gsm8k_prompt=True" ;;
-                    humaneval|mbpp|truthfulqa_gen)
-                        # TEMPLATE-FREE: Dream-Instruct's chat template zeroes
-                        # non-chat-native tasks (tqa probe: plain 0.5, chat 0.0
-                        # -- early <|im_end|> truncation); llada_instruct keeps
-                        # chat here, where it is healthy
+                    humaneval|mbpp|truthfulqa_gen|bbh)
+                        # TEMPLATE-FREE: Dream-Instruct's chat template harms
+                        # non-dialogue tasks -- zeroing tqa/code (early
+                        # <|im_end|>) and taxing bbh ~30% relative (chat
+                        # 0.37-0.40 vs plain 0.55). Matches the official Dream
+                        # eval and the baseline suites; llada_instruct keeps
+                        # chat everywhere, where it is healthy
                         args_extra="" ;;
                     *)
-                        args_extra=",use_chat_template=True" ;;
+                        args_extra=",use_chat_template=True" ;;    # minerva only (parked)
                 esac
                 ;;
             *)

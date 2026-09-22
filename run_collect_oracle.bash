@@ -108,9 +108,11 @@ for spec in "${SPECS[@]}"; do
                 # code tasks are completion tasks: collect WITHOUT the chat
                 # template (chat-wrapped answers are unscorable by lm_eval)
                 flags_extra="--plain_prompt"
-            elif [ "$THREAD" = "dream_instruct" ] && [ "$task" = "truthfulqa_gen" ]; then
-                # Dream-Instruct's chat template zeroes truthfulqa (early
-                # <|im_end|>); the deployed protocol is plain, so collect plain
+            elif [ "$THREAD" = "dream_instruct" ] \
+                    && { [ "$task" = "truthfulqa_gen" ] || [ "$task" = "bbh" ]; }; then
+                # Dream-Instruct's chat template harms non-dialogue tasks
+                # (zeroes tqa via early <|im_end|>, taxes bbh ~30% relative);
+                # the deployed protocol is plain, so collect plain
                 flags_extra="--plain_prompt"
             fi
         fi
