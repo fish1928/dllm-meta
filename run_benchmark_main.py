@@ -127,7 +127,10 @@ class TestLM(LM):
         outputs_eval = []
         errors_eval = []
 
-        ds = [{"prompt": req_eval.args[0], "until": req_eval.args[1]['until']} for req_eval in requests_eval]
+        words_stop_extra = ['```'] if getattr(self.config, 'stop_at_code_fence', None) else []
+        ds = [{"prompt": req_eval.args[0],
+               "until": list(req_eval.args[1]['until']) + words_stop_extra}
+              for req_eval in requests_eval]
         ds = Dataset.from_list(ds)
         ds = ds.map(Preprocessor_Until(
             self.tokenizer,

@@ -111,7 +111,12 @@ for entry in "${BENCHMARKS[@]}"; do
         humaneval)    [ "$LIMIT" -gt 148 ] && limit_task=148 ;;
     esac
 
-    model_args="id_model=$ID_MODEL,size_batch=1,len_target=$len_target,num_blocks=1,num_unmask_per_step=$NUM_UNMASK,id_mask=$ID_MASK,step_refresh_remainder=$KR,step_refresh_remainder_prompt=$KP,select_only_in_h=True,runner=$RUNNER,h=$H_BUNDLE,path_router=$path_pt,path_report=$path_runner"
+    args_extra=""
+    if [ "$task" = "humaneval" ] || [ "$task" = "mbpp" ]; then
+        args_extra=",stop_at_code_fence=True"    # cut at markdown fence (Dream tail rescue)
+    fi
+
+    model_args="id_model=$ID_MODEL,size_batch=1,len_target=$len_target,num_blocks=1,num_unmask_per_step=$NUM_UNMASK,id_mask=$ID_MASK,step_refresh_remainder=$KR,step_refresh_remainder_prompt=$KP,select_only_in_h=True,runner=$RUNNER,h=$H_BUNDLE,path_router=$path_pt,path_report=$path_runner$args_extra"
 
     echo "=== [$THREAD] $tag (len=$len_target, nshot=$nshot, limit=$limit_task/subtask) ==="
 

@@ -181,6 +181,12 @@ for name in "${ROUTERS[@]}"; do
                 ;;
         esac
 
+        # ALL threads: cut code generations at a markdown fence (no-op for
+        # models that emit none; rescues Dream's fence-then-prose tail)
+        if [ "$task" = "humaneval" ] || [ "$task" = "mbpp" ]; then
+            args_extra="$args_extra,stop_at_code_fence=True"
+        fi
+
         tag="${name}__${task}"
         path_runner="$FOLDER_RESULTS/${tag}__runner.json"
 

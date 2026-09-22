@@ -48,6 +48,15 @@ class DiffusionConfig_Eval:
     use_official_gsm8k_prompt: Optional[bool] = None    # rebuild the OpenCompass 4-shot CoT
                                                         # multiturn prompt (run with --num_fewshot 0;
                                                         # implies chat template; gsm8k only)
+    stop_at_code_fence: Optional[bool] = None   # code tasks (humaneval/mbpp): also cut the
+                                                # generation at a markdown fence '```'.
+                                                # Dream closes completions with a fence and
+                                                # drifts into prose the standard stop words
+                                                # never catch -- the fence line alone is a
+                                                # SyntaxError in the executed prompt+generation
+                                                # unit (the official Dream eval sanitizes
+                                                # code output for the same reason). No-op
+                                                # when the model emits no fence.
     truncate_at_eos: Optional[bool] = None      # DEPRECATED no-op, kept so old command lines
                                                 # still parse; the instruct runners
                                                 # (run_llada_instruct[_mlp]/run_dream_instruct[_mlp])
