@@ -80,10 +80,10 @@ ROUTERS=(
 BENCHMARKS=(
     "gsm8k:256:5:no"
     "bbh:256:3:no"
-    # "minerva_math:512:4:no"
-    # "mbpp:512:3:yes"
-    # "humaneval:512:0:yes"
-    # "truthfulqa_gen:256:0:no"
+    "minerva_math:512:4:no"
+    "mbpp:512:3:yes"
+    "humaneval:512:0:yes"
+    "truthfulqa_gen:256:0:no"
 )
 
 mkdir -p "$FOLDER_RESULTS" "$FOLDER_LOGS"
