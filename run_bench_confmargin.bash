@@ -155,9 +155,15 @@ for name in "${ROUTERS[@]}"; do
                 ;;
             dream_instruct)
                 num_blocks=1
-                args_extra=",use_chat_template=True"
                 if [ "$task" = "gsm8k" ]; then
                     nshot=0
+                    # official 4-shot CoT prompt (implies chat template) -- the
+                    # 0-shot bare-chat protocol caps dream_instruct at ~0.37
+                    # while the model is capable of ~0.8; oracle + router are
+                    # collected/trained under this prompt too
+                    args_extra=",use_official_gsm8k_prompt=True"
+                else
+                    args_extra=",use_chat_template=True"
                 fi
                 ;;
             *)

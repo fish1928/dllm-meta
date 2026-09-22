@@ -27,9 +27,9 @@ class OracleCollector(OracleCollectorDreamBase):
 
 
 if __name__ == '__main__':
-    main_collect(
-        OracleCollector,
-        DreamModelLM,
-        build_parser(id_model='Dream-org/Dream-v0-Instruct-7B', id_mask=151666),
-    )
+    parser = build_parser(id_model='Dream-org/Dream-v0-Instruct-7B', id_mask=151666)
+    parser.add_argument('--use_official_gsm8k_prompt', action='store_true',
+                        help='rebuild the OpenCompass 4-shot CoT gsm8k prompt '
+                             '(use a 0-shot gsm8k mockup CSV with this)')
+    main_collect(OracleCollector, DreamModelLM, parser)
 # end

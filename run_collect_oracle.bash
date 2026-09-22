@@ -101,7 +101,8 @@ for spec in "${SPECS[@]}"; do
         fi
 
         flags_extra=""
-        if [ "$THREAD" = "llada_instruct" ] && [ "$task" = "gsm8k" ] && [ "$OFFICIAL_GSM8K" = "1" ]; then
+        if { [ "$THREAD" = "llada_instruct" ] || [ "$THREAD" = "dream_instruct" ]; } \
+                && [ "$task" = "gsm8k" ] && [ "$OFFICIAL_GSM8K" = "1" ]; then
             flags_extra="--use_official_gsm8k_prompt"
         fi
 
