@@ -1,0 +1,943 @@
+nohup: ignoring input
+=== [llada_instruct] llada_instruct__cm_clean__gsm8k (len=256, blocks=8, nshot=0, h=8, limit=100/subtask) ===
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+2026-09-21:22:57:18 WARNING  [config.evaluate_config:337] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-09-21:22:57:48 INFO     [_cli.run:392] Selected Tasks: ['gsm8k']
+2026-09-21:22:57:48 WARNING  [evaluator:184] pretrained=None appears to be an instruct or chat variant but chat template is not applied. Recommend setting `apply_chat_template`
+        (optionally `fewshot_as_multiturn`).
+2026-09-21:22:57:49 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-21:22:57:49 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_clean.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_clean__gsm8k__runner.json', 'use_official_gsm8k_prompt': True}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_clean.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_clean__gsm8k__runner.json', 'use_official_gsm8k_prompt': True, 'device': 'cuda:0'} [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:00,  6.01it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  7.56it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  5.17it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  6.13it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:00<00:00,  6.82it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  7.26it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  6.70it/s]
+2026-09-21:22:58:18 INFO     [evaluator_utils:472] Selected tasks:
+2026-09-21:22:58:18 INFO     [evaluator_utils:506] Task: gsm8k (gsm8k/gsm8k.yaml)
+2026-09-21:22:58:18 INFO     [evaluator:314] gsm8k: Using gen_kwargs: {'until': ['Question:', '</s>', '<|im_end|>'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:22:58:18 WARNING  [evaluator:335] Overwriting default num_fewshot of gsm8k from 5 to 0
+2026-09-21:22:58:18 INFO     [api.task:312] Building contexts for gsm8k on rank 0...
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 2396.25it/s]
+2026-09-21:22:58:18 INFO     [evaluator:589] Running generate_until requests
+Map:   0%|          | 0/100 [00:00<?, ? examples/s]Map:  53%|█████▎    | 53/100 [00:00<00:00, 516.72 examples/s]Map: 100%|██████████| 100/100 [00:00<00:00, 485.99 examples/s]
+  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [00:15<24:58, 15.14s/it]  2%|▏         | 2/100 [00:23<17:55, 10.98s/it]  3%|▎         | 3/100 [00:31<15:32,  9.61s/it]  4%|▍         | 4/100 [00:39<14:20,  8.97s/it]  5%|▌         | 5/100 [00:47<13:39,  8.63s/it]  6%|▌         | 6/100 [00:55<13:11,  8.42s/it]  7%|▋         | 7/100 [01:03<12:48,  8.26s/it]  8%|▊         | 8/100 [01:11<12:31,  8.16s/it]  9%|▉         | 9/100 [01:19<12:19,  8.12s/it] 10%|█         | 10/100 [01:27<12:04,  8.05s/it] 11%|█         | 11/100 [01:35<12:15,  8.27s/it] 12%|█▏        | 12/100 [01:44<12:11,  8.32s/it] 13%|█▎        | 13/100 [01:52<11:53,  8.20s/it] 14%|█▍        | 14/100 [02:00<11:38,  8.12s/it] 15%|█▌        | 15/100 [02:08<11:26,  8.08s/it] 16%|█▌        | 16/100 [02:15<11:14,  8.03s/it] 17%|█▋        | 17/100 [02:23<11:03,  7.99s/it] 18%|█▊        | 18/100 [02:31<10:54,  7.98s/it] 19%|█▉        | 19/100 [02:39<10:46,  7.98s/it] 20%|██        | 20/100 [02:48<10:45,  8.07s/it] 21%|██        | 21/100 [02:56<10:33,  8.02s/it] 22%|██▏       | 22/100 [03:03<10:24,  8.00s/it] 23%|██▎       | 23/100 [03:11<10:12,  7.96s/it] 24%|██▍       | 24/100 [03:19<10:05,  7.97s/it] 25%|██▌       | 25/100 [03:27<09:56,  7.96s/it] 26%|██▌       | 26/100 [03:35<09:47,  7.94s/it] 27%|██▋       | 27/100 [03:43<09:37,  7.92s/it] 28%|██▊       | 28/100 [03:51<09:30,  7.92s/it] 29%|██▉       | 29/100 [03:59<09:22,  7.92s/it] 30%|███       | 30/100 [04:07<09:14,  7.91s/it] 31%|███       | 31/100 [04:15<09:05,  7.90s/it] 32%|███▏      | 32/100 [04:22<08:55,  7.87s/it] 33%|███▎      | 33/100 [04:30<08:49,  7.90s/it] 34%|███▍      | 34/100 [04:38<08:41,  7.90s/it] 35%|███▌      | 35/100 [04:46<08:32,  7.88s/it] 36%|███▌      | 36/100 [04:54<08:22,  7.86s/it] 37%|███▋      | 37/100 [05:02<08:14,  7.85s/it] 38%|███▊      | 38/100 [05:10<08:05,  7.83s/it] 39%|███▉      | 39/100 [05:17<07:57,  7.83s/it] 40%|████      | 40/100 [05:25<07:49,  7.82s/it] 41%|████      | 41/100 [05:33<07:41,  7.82s/it] 42%|████▏     | 42/100 [05:41<07:33,  7.82s/it] 43%|████▎     | 43/100 [05:49<07:25,  7.82s/it] 44%|████▍     | 44/100 [05:56<07:18,  7.82s/it] 45%|████▌     | 45/100 [06:04<07:10,  7.82s/it] 46%|████▌     | 46/100 [06:12<07:02,  7.82s/it] 47%|████▋     | 47/100 [06:20<06:54,  7.82s/it] 48%|████▊     | 48/100 [06:28<06:46,  7.83s/it] 49%|████▉     | 49/100 [06:36<06:39,  7.83s/it] 50%|█████     | 50/100 [06:43<06:31,  7.83s/it] 51%|█████     | 51/100 [06:51<06:23,  7.82s/it] 52%|█████▏    | 52/100 [06:59<06:14,  7.79s/it] 53%|█████▎    | 53/100 [07:07<06:06,  7.80s/it] 54%|█████▍    | 54/100 [07:15<05:58,  7.80s/it] 55%|█████▌    | 55/100 [07:22<05:50,  7.80s/it] 56%|█████▌    | 56/100 [07:30<05:43,  7.80s/it] 57%|█████▋    | 57/100 [07:38<05:35,  7.80s/it] 58%|█████▊    | 58/100 [07:46<05:27,  7.81s/it] 59%|█████▉    | 59/100 [07:54<05:20,  7.81s/it] 60%|██████    | 60/100 [08:01<05:11,  7.79s/it] 61%|██████    | 61/100 [08:09<05:04,  7.80s/it] 62%|██████▏   | 62/100 [08:17<04:56,  7.80s/it] 63%|██████▎   | 63/100 [08:25<04:49,  7.83s/it] 64%|██████▍   | 64/100 [08:33<04:44,  7.90s/it] 65%|██████▌   | 65/100 [08:41<04:38,  7.95s/it] 66%|██████▌   | 66/100 [08:49<04:33,  8.05s/it] 67%|██████▋   | 67/100 [08:58<04:27,  8.10s/it] 68%|██████▊   | 68/100 [09:06<04:20,  8.13s/it] 69%|██████▉   | 69/100 [09:14<04:12,  8.13s/it] 70%|███████   | 70/100 [09:22<04:03,  8.12s/it] 71%|███████   | 71/100 [09:30<03:56,  8.15s/it] 72%|███████▏  | 72/100 [09:38<03:48,  8.16s/it] 73%|███████▎  | 73/100 [09:47<03:40,  8.17s/it] 74%|███████▍  | 74/100 [09:55<03:32,  8.17s/it] 75%|███████▌  | 75/100 [10:03<03:24,  8.17s/it] 76%|███████▌  | 76/100 [10:11<03:15,  8.14s/it] 77%|███████▋  | 77/100 [10:19<03:07,  8.13s/it] 78%|███████▊  | 78/100 [10:27<02:58,  8.13s/it] 79%|███████▉  | 79/100 [10:35<02:49,  8.08s/it] 80%|████████  | 80/100 [10:43<02:40,  8.00s/it] 81%|████████  | 81/100 [10:51<02:31,  7.99s/it] 82%|████████▏ | 82/100 [10:59<02:23,  7.97s/it] 83%|████████▎ | 83/100 [11:07<02:15,  7.94s/it] 84%|████████▍ | 84/100 [11:15<02:06,  7.93s/it] 85%|████████▌ | 85/100 [11:23<01:58,  7.93s/it] 86%|████████▌ | 86/100 [11:30<01:50,  7.91s/it] 87%|████████▋ | 87/100 [11:38<01:42,  7.90s/it] 88%|████████▊ | 88/100 [11:46<01:34,  7.90s/it] 89%|████████▉ | 89/100 [11:54<01:26,  7.89s/it] 90%|█████████ | 90/100 [12:02<01:18,  7.88s/it] 91%|█████████ | 91/100 [12:10<01:11,  7.89s/it] 92%|█████████▏| 92/100 [12:18<01:03,  7.89s/it] 93%|█████████▎| 93/100 [12:26<00:55,  7.89s/it] 94%|█████████▍| 94/100 [12:33<00:47,  7.88s/it] 95%|█████████▌| 95/100 [12:41<00:39,  7.87s/it] 96%|█████████▌| 96/100 [12:49<00:31,  7.86s/it] 97%|█████████▋| 97/100 [12:57<00:23,  7.88s/it] 98%|█████████▊| 98/100 [13:05<00:15,  7.86s/it] 99%|█████████▉| 99/100 [13:13<00:08,  8.06s/it]100%|██████████| 100/100 [13:22<00:00,  8.14s/it]100%|██████████| 100/100 [13:22<00:00,  8.02s/it]
+2026-09-21:23:11:44 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+[YUKAI][DEBUG][run_one:77] loaded router bundle routers_e2e/llada_instruct__cm_clean.pt: ['attn_last', 'pos_delta', 'mask_density'] norm=softmax_attn [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/runner_mlp_common.py
+[YUKAI][DEBUG][generate_until:185] Total unfinished: 0, duration: 0:13:23 [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_clean.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_clean__gsm8k__runner.json', 'use_official_gsm8k_prompt': True}), gen_kwargs: ({}), limit: 100.0, num_fewshot: 0, batch_size: 1
+|Tasks|Version|     Filter     |n-shot|  Metric   |   |Value|   |Stderr|
+|-----|------:|----------------|-----:|-----------|---|----:|---|-----:|
+|gsm8k|      3|flexible-extract|     0|exact_match|↑  | 0.72|±  |0.0451|
+|     |       |strict-match    |     0|exact_match|↑  | 0.00|±  |0.0000|
+
+=== [llada_instruct] llada_instruct__cm_clean__bbh (len=256, blocks=8, nshot=3, h=8, limit=4/subtask) ===
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+2026-09-21:23:11:54 WARNING  [config.evaluate_config:337] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-09-21:23:12:06 INFO     [_cli.run:392] Selected Tasks: ['bbh']
+2026-09-21:23:12:06 WARNING  [evaluator:184] pretrained=None appears to be an instruct or chat variant but chat template is not applied. Recommend setting `apply_chat_template`
+        (optionally `fewshot_as_multiturn`).
+2026-09-21:23:12:06 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-21:23:12:06 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_clean.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_clean__bbh__runner.json', 'use_chat_template': True}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_clean.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_clean__bbh__runner.json', 'use_chat_template': True, 'device': 'cuda:0'} [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:00,  6.62it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  7.23it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  6.17it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  6.63it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:00<00:00,  7.12it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  7.37it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  7.04it/s]
+2026-09-21:23:12:38 INFO     [evaluator_utils:472] Selected tasks:
+2026-09-21:23:12:38 INFO     [evaluator_utils:488] Group: bbh
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_boolean_expressions (bbh/cot_fewshot/boolean_expressions.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_causal_judgement (bbh/cot_fewshot/causal_judgement.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_date_understanding (bbh/cot_fewshot/date_understanding.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_disambiguation_qa (bbh/cot_fewshot/disambiguation_qa.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_dyck_languages (bbh/cot_fewshot/dyck_languages.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_formal_fallacies (bbh/cot_fewshot/formal_fallacies.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_geometric_shapes (bbh/cot_fewshot/geometric_shapes.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_hyperbaton (bbh/cot_fewshot/hyperbaton.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_five_objects (bbh/cot_fewshot/logical_deduction_five_objects.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_seven_objects (bbh/cot_fewshot/logical_deduction_seven_objects.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_three_objects (bbh/cot_fewshot/logical_deduction_three_objects.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_movie_recommendation (bbh/cot_fewshot/movie_recommendation.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_multistep_arithmetic_two (bbh/cot_fewshot/multistep_arithmetic_two.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_navigate (bbh/cot_fewshot/navigate.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_object_counting (bbh/cot_fewshot/object_counting.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_penguins_in_a_table (bbh/cot_fewshot/penguins_in_a_table.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_reasoning_about_colored_objects (bbh/cot_fewshot/reasoning_about_colored_objects.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_ruin_names (bbh/cot_fewshot/ruin_names.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_salient_translation_error_detection (bbh/cot_fewshot/salient_translation_error_detection.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_snarks (bbh/cot_fewshot/snarks.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_sports_understanding (bbh/cot_fewshot/sports_understanding.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_temporal_sequences (bbh/cot_fewshot/temporal_sequences.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_five_objects (bbh/cot_fewshot/tracking_shuffled_objects_five_objects.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_seven_objects (bbh/cot_fewshot/tracking_shuffled_objects_seven_objects.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_three_objects (bbh/cot_fewshot/tracking_shuffled_objects_three_objects.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_web_of_lies (bbh/cot_fewshot/web_of_lies.yaml)
+2026-09-21:23:12:38 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_word_sorting (bbh/cot_fewshot/word_sorting.yaml)
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_boolean_expressions: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_boolean_expressions from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_causal_judgement: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_causal_judgement from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_date_understanding: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_date_understanding from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_disambiguation_qa: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_disambiguation_qa from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_dyck_languages: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_dyck_languages from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_formal_fallacies: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_formal_fallacies from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_geometric_shapes: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_geometric_shapes from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_hyperbaton: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_hyperbaton from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_five_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_five_objects from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_seven_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_seven_objects from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_three_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_three_objects from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_movie_recommendation: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_movie_recommendation from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_multistep_arithmetic_two: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_multistep_arithmetic_two from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_navigate: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_navigate from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_object_counting: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_object_counting from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_penguins_in_a_table: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_penguins_in_a_table from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_reasoning_about_colored_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_reasoning_about_colored_objects from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_ruin_names: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_ruin_names from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_salient_translation_error_detection: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_salient_translation_error_detection from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_snarks: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_snarks from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_sports_understanding: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_sports_understanding from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_temporal_sequences: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_temporal_sequences from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_five_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_five_objects from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_seven_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_seven_objects from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_three_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_three_objects from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_web_of_lies: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_web_of_lies from 3 to 3
+2026-09-21:23:12:38 INFO     [evaluator:314] bbh_cot_fewshot_word_sorting: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:12:38 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_word_sorting from 3 to 3
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_boolean_expressions on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 429.61it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_causal_judgement on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 431.73it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_date_understanding on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 437.33it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_disambiguation_qa on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 431.30it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_dyck_languages on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 420.87it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_formal_fallacies on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 429.93it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_geometric_shapes on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 438.56it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_hyperbaton on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 446.49it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_five_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 438.38it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_seven_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 436.00it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_three_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 430.87it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_movie_recommendation on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 421.15it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_multistep_arithmetic_two on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 430.72it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_navigate on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 435.41it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_object_counting on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 442.04it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_penguins_in_a_table on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 435.40it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_reasoning_about_colored_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 439.53it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_ruin_names on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 437.90it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_salient_translation_error_detection on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 414.88it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_snarks on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 433.59it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_sports_understanding on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 435.26it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_temporal_sequences on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 437.48it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_five_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 442.92it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_seven_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 435.51it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_three_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 438.37it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_web_of_lies on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 411.30it/s]
+2026-09-21:23:12:38 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_word_sorting on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 441.40it/s]
+2026-09-21:23:12:38 INFO     [evaluator:589] Running generate_until requests
+Map:   0%|          | 0/108 [00:00<?, ? examples/s]Map:  67%|██████▋   | 72/108 [00:00<00:00, 710.61 examples/s]Map: 100%|██████████| 108/108 [00:00<00:00, 695.03 examples/s]
+  0%|          | 0/108 [00:00<?, ?it/s]  1%|          | 1/108 [00:10<18:37, 10.45s/it]  2%|▏         | 2/108 [00:18<15:50,  8.96s/it]  3%|▎         | 3/108 [00:26<14:49,  8.47s/it]  4%|▎         | 4/108 [00:34<14:17,  8.24s/it]  5%|▍         | 5/108 [00:42<14:00,  8.16s/it]  6%|▌         | 6/108 [00:50<13:46,  8.10s/it]  6%|▋         | 7/108 [00:58<13:32,  8.04s/it]  7%|▋         | 8/108 [01:06<13:22,  8.02s/it]  8%|▊         | 9/108 [01:13<13:11,  7.99s/it]  9%|▉         | 10/108 [01:21<13:01,  7.97s/it] 10%|█         | 11/108 [01:29<12:52,  7.97s/it] 11%|█         | 12/108 [01:37<12:41,  7.93s/it] 12%|█▏        | 13/108 [01:45<12:33,  7.93s/it] 13%|█▎        | 14/108 [01:53<12:26,  7.94s/it] 14%|█▍        | 15/108 [02:01<12:16,  7.92s/it] 15%|█▍        | 16/108 [02:09<12:08,  7.92s/it] 16%|█▌        | 17/108 [02:17<12:02,  7.94s/it] 17%|█▋        | 18/108 [02:25<11:54,  7.94s/it] 18%|█▊        | 19/108 [02:33<11:47,  7.95s/it] 19%|█▊        | 20/108 [02:41<11:38,  7.93s/it] 19%|█▉        | 21/108 [02:49<11:30,  7.94s/it] 20%|██        | 22/108 [02:56<11:20,  7.92s/it] 21%|██▏       | 23/108 [03:04<11:12,  7.92s/it] 22%|██▏       | 24/108 [03:12<11:04,  7.91s/it] 23%|██▎       | 25/108 [03:20<10:58,  7.93s/it] 24%|██▍       | 26/108 [03:28<10:50,  7.94s/it] 25%|██▌       | 27/108 [03:36<10:43,  7.95s/it] 26%|██▌       | 28/108 [03:44<10:34,  7.93s/it] 27%|██▋       | 29/108 [03:52<10:25,  7.91s/it] 28%|██▊       | 30/108 [04:00<10:17,  7.92s/it] 29%|██▊       | 31/108 [04:08<10:10,  7.93s/it] 30%|██▉       | 32/108 [04:16<10:06,  7.98s/it] 31%|███       | 33/108 [04:25<10:17,  8.24s/it] 31%|███▏      | 34/108 [04:33<10:10,  8.25s/it] 32%|███▏      | 35/108 [04:41<10:04,  8.28s/it] 33%|███▎      | 36/108 [04:50<09:56,  8.28s/it] 34%|███▍      | 37/108 [04:58<09:50,  8.31s/it] 35%|███▌      | 38/108 [05:06<09:39,  8.28s/it] 36%|███▌      | 39/108 [05:15<09:30,  8.27s/it] 37%|███▋      | 40/108 [05:23<09:22,  8.27s/it] 38%|███▊      | 41/108 [05:31<09:12,  8.24s/it] 39%|███▉      | 42/108 [05:39<09:00,  8.19s/it] 40%|███▉      | 43/108 [05:47<08:49,  8.14s/it] 41%|████      | 44/108 [05:55<08:41,  8.15s/it] 42%|████▏     | 45/108 [06:03<08:32,  8.13s/it] 43%|████▎     | 46/108 [06:11<08:23,  8.12s/it] 44%|████▎     | 47/108 [06:19<08:12,  8.07s/it] 44%|████▍     | 48/108 [06:27<08:02,  8.04s/it] 45%|████▌     | 49/108 [06:35<07:53,  8.02s/it] 46%|████▋     | 50/108 [06:43<07:44,  8.02s/it] 47%|████▋     | 51/108 [06:51<07:36,  8.01s/it] 48%|████▊     | 52/108 [06:59<07:27,  7.99s/it] 49%|████▉     | 53/108 [07:07<07:20,  8.00s/it] 50%|█████     | 54/108 [07:15<07:11,  7.99s/it] 51%|█████     | 55/108 [07:23<07:02,  7.97s/it] 52%|█████▏    | 56/108 [07:31<06:53,  7.96s/it] 53%|█████▎    | 57/108 [07:39<06:45,  7.95s/it] 54%|█████▎    | 58/108 [07:47<06:35,  7.90s/it] 55%|█████▍    | 59/108 [07:55<06:25,  7.87s/it] 56%|█████▌    | 60/108 [08:03<06:17,  7.87s/it] 56%|█████▋    | 61/108 [08:10<06:10,  7.88s/it] 57%|█████▋    | 62/108 [08:18<06:02,  7.89s/it] 58%|█████▊    | 63/108 [08:26<05:54,  7.88s/it] 59%|█████▉    | 64/108 [08:34<05:48,  7.92s/it] 60%|██████    | 65/108 [08:42<05:41,  7.93s/it] 61%|██████    | 66/108 [08:50<05:33,  7.95s/it] 62%|██████▏   | 67/108 [08:58<05:26,  7.97s/it] 63%|██████▎   | 68/108 [09:06<05:18,  7.96s/it] 64%|██████▍   | 69/108 [09:14<05:10,  7.96s/it] 65%|██████▍   | 70/108 [09:22<05:02,  7.95s/it] 66%|██████▌   | 71/108 [09:30<04:54,  7.97s/it] 67%|██████▋   | 72/108 [09:38<04:46,  7.97s/it] 68%|██████▊   | 73/108 [09:46<04:39,  7.99s/it] 69%|██████▊   | 74/108 [09:54<04:31,  7.98s/it] 69%|██████▉   | 75/108 [10:02<04:23,  7.98s/it] 70%|███████   | 76/108 [10:10<04:15,  7.98s/it] 71%|███████▏  | 77/108 [10:18<04:06,  7.96s/it] 72%|███████▏  | 78/108 [10:26<03:58,  7.96s/it] 73%|███████▎  | 79/108 [10:34<03:50,  7.95s/it] 74%|███████▍  | 80/108 [10:42<03:42,  7.96s/it] 75%|███████▌  | 81/108 [10:50<03:34,  7.94s/it] 76%|███████▌  | 82/108 [10:57<03:25,  7.92s/it] 77%|███████▋  | 83/108 [11:05<03:18,  7.92s/it] 78%|███████▊  | 84/108 [11:13<03:09,  7.88s/it] 79%|███████▊  | 85/108 [11:21<03:01,  7.88s/it] 80%|███████▉  | 86/108 [11:29<02:53,  7.88s/it] 81%|████████  | 87/108 [11:37<02:45,  7.90s/it] 81%|████████▏ | 88/108 [11:45<02:38,  7.90s/it] 82%|████████▏ | 89/108 [11:53<02:29,  7.89s/it] 83%|████████▎ | 90/108 [12:01<02:21,  7.89s/it] 84%|████████▍ | 91/108 [12:09<02:16,  8.02s/it] 85%|████████▌ | 92/108 [12:18<02:11,  8.24s/it] 86%|████████▌ | 93/108 [12:26<02:02,  8.17s/it] 87%|████████▋ | 94/108 [12:34<01:53,  8.14s/it] 88%|████████▊ | 95/108 [12:42<01:44,  8.07s/it] 89%|████████▉ | 96/108 [12:50<01:36,  8.03s/it] 90%|████████▉ | 97/108 [12:57<01:28,  8.01s/it] 91%|█████████ | 98/108 [13:05<01:19,  7.98s/it] 92%|█████████▏| 99/108 [13:13<01:11,  7.97s/it] 93%|█████████▎| 100/108 [13:21<01:03,  7.95s/it] 94%|█████████▎| 101/108 [13:29<00:55,  7.96s/it] 94%|█████████▍| 102/108 [13:37<00:47,  7.96s/it] 95%|█████████▌| 103/108 [13:45<00:39,  7.96s/it] 96%|█████████▋| 104/108 [13:53<00:31,  7.95s/it] 97%|█████████▋| 105/108 [14:01<00:23,  7.94s/it] 98%|█████████▊| 106/108 [14:09<00:15,  7.93s/it] 99%|█████████▉| 107/108 [14:17<00:07,  7.93s/it]100%|██████████| 108/108 [14:25<00:00,  7.94s/it]100%|██████████| 108/108 [14:25<00:00,  8.01s/it]
+2026-09-21:23:27:07 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+[YUKAI][DEBUG][run_one:77] loaded router bundle routers_e2e/llada_instruct__cm_clean.pt: ['attn_last', 'pos_delta', 'mask_density'] norm=softmax_attn [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/runner_mlp_common.py
+[YUKAI][DEBUG][generate_until:185] Total unfinished: 0, duration: 0:14:25 [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_clean.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_clean__bbh__runner.json', 'use_chat_template': True}), gen_kwargs: ({}), limit: 4.0, num_fewshot: 3, batch_size: 1
+|                          Tasks                           |Version|  Filter  |n-shot|  Metric   |   |Value|   |Stderr|
+|----------------------------------------------------------|------:|----------|-----:|-----------|---|----:|---|-----:|
+|bbh                                                       |      3|get-answer|     3|exact_match|↑  | 0.25|±  |0.0389|
+| - bbh_cot_fewshot_boolean_expressions                    |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_causal_judgement                       |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_date_understanding                     |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_disambiguation_qa                      |      4|get-answer|     3|exact_match|↑  | 0.50|±  |0.2887|
+| - bbh_cot_fewshot_dyck_languages                         |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_formal_fallacies                       |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_geometric_shapes                       |      4|get-answer|     3|exact_match|↑  | 0.50|±  |0.2887|
+| - bbh_cot_fewshot_hyperbaton                             |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_logical_deduction_five_objects         |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_logical_deduction_seven_objects        |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_logical_deduction_three_objects        |      4|get-answer|     3|exact_match|↑  | 0.75|±  |0.2500|
+| - bbh_cot_fewshot_movie_recommendation                   |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_multistep_arithmetic_two               |      4|get-answer|     3|exact_match|↑  | 0.50|±  |0.2887|
+| - bbh_cot_fewshot_navigate                               |      4|get-answer|     3|exact_match|↑  | 0.50|±  |0.2887|
+| - bbh_cot_fewshot_object_counting                        |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_penguins_in_a_table                    |      4|get-answer|     3|exact_match|↑  | 0.75|±  |0.2500|
+| - bbh_cot_fewshot_reasoning_about_colored_objects        |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_ruin_names                             |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_salient_translation_error_detection    |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_snarks                                 |      4|get-answer|     3|exact_match|↑  | 0.50|±  |0.2887|
+| - bbh_cot_fewshot_sports_understanding                   |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_temporal_sequences                     |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_tracking_shuffled_objects_five_objects |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_tracking_shuffled_objects_seven_objects|      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_tracking_shuffled_objects_three_objects|      4|get-answer|     3|exact_match|↑  | 0.75|±  |0.2500|
+| - bbh_cot_fewshot_web_of_lies                            |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_word_sorting                           |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+
+|Groups|Version|  Filter  |n-shot|  Metric   |   |Value|   |Stderr|
+|------|------:|----------|-----:|-----------|---|----:|---|-----:|
+|bbh   |      3|get-answer|     3|exact_match|↑  | 0.25|±  |0.0389|
+
+=== [llada_instruct] llada_instruct__cm_policy__gsm8k (len=256, blocks=8, nshot=0, h=8, limit=100/subtask) ===
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+2026-09-21:23:27:19 WARNING  [config.evaluate_config:337] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-09-21:23:27:37 INFO     [_cli.run:392] Selected Tasks: ['gsm8k']
+2026-09-21:23:27:37 WARNING  [evaluator:184] pretrained=None appears to be an instruct or chat variant but chat template is not applied. Recommend setting `apply_chat_template`
+        (optionally `fewshot_as_multiturn`).
+2026-09-21:23:27:37 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-21:23:27:37 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_policy.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_policy__gsm8k__runner.json', 'use_official_gsm8k_prompt': True}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_policy.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_policy__gsm8k__runner.json', 'use_official_gsm8k_prompt': True, 'device': 'cuda:0'} [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:00,  6.17it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  7.40it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  5.02it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  5.86it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:00<00:00,  6.57it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  7.19it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  6.56it/s]
+2026-09-21:23:28:04 INFO     [evaluator_utils:472] Selected tasks:
+2026-09-21:23:28:04 INFO     [evaluator_utils:506] Task: gsm8k (gsm8k/gsm8k.yaml)
+2026-09-21:23:28:04 INFO     [evaluator:314] gsm8k: Using gen_kwargs: {'until': ['Question:', '</s>', '<|im_end|>'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:28:04 WARNING  [evaluator:335] Overwriting default num_fewshot of gsm8k from 5 to 0
+2026-09-21:23:28:04 INFO     [api.task:312] Building contexts for gsm8k on rank 0...
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 2379.46it/s]
+2026-09-21:23:28:04 INFO     [evaluator:589] Running generate_until requests
+Map:   0%|          | 0/100 [00:00<?, ? examples/s]Map:  59%|█████▉    | 59/100 [00:00<00:00, 573.98 examples/s]Map: 100%|██████████| 100/100 [00:00<00:00, 537.79 examples/s]
+  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [00:11<18:42, 11.34s/it]  2%|▏         | 2/100 [00:19<15:53,  9.73s/it]  3%|▎         | 3/100 [00:28<15:01,  9.29s/it]  4%|▍         | 4/100 [00:36<14:11,  8.87s/it]  5%|▌         | 5/100 [00:45<13:39,  8.63s/it]  6%|▌         | 6/100 [00:53<13:18,  8.49s/it]  7%|▋         | 7/100 [01:01<13:01,  8.41s/it]  8%|▊         | 8/100 [01:09<12:48,  8.35s/it]  9%|▉         | 9/100 [01:17<12:31,  8.25s/it] 10%|█         | 10/100 [01:25<12:17,  8.19s/it] 11%|█         | 11/100 [01:33<12:03,  8.13s/it] 12%|█▏        | 12/100 [01:41<11:54,  8.12s/it] 13%|█▎        | 13/100 [01:50<11:44,  8.10s/it] 14%|█▍        | 14/100 [01:58<11:38,  8.12s/it] 15%|█▌        | 15/100 [02:06<11:29,  8.11s/it] 16%|█▌        | 16/100 [02:14<11:22,  8.12s/it] 17%|█▋        | 17/100 [02:22<11:14,  8.12s/it] 18%|█▊        | 18/100 [02:30<11:04,  8.10s/it] 19%|█▉        | 19/100 [02:38<10:55,  8.09s/it] 20%|██        | 20/100 [02:46<10:46,  8.08s/it] 21%|██        | 21/100 [02:54<10:35,  8.05s/it] 22%|██▏       | 22/100 [03:02<10:28,  8.06s/it] 23%|██▎       | 23/100 [03:10<10:20,  8.06s/it] 24%|██▍       | 24/100 [03:18<10:13,  8.07s/it] 25%|██▌       | 25/100 [03:26<10:03,  8.05s/it] 26%|██▌       | 26/100 [03:34<09:51,  7.99s/it] 27%|██▋       | 27/100 [03:42<09:45,  8.02s/it] 28%|██▊       | 28/100 [03:51<09:44,  8.12s/it] 29%|██▉       | 29/100 [03:59<09:49,  8.30s/it] 30%|███       | 30/100 [04:08<09:41,  8.31s/it] 31%|███       | 31/100 [04:16<09:34,  8.33s/it] 32%|███▏      | 32/100 [04:24<09:23,  8.28s/it] 33%|███▎      | 33/100 [04:32<09:10,  8.22s/it] 34%|███▍      | 34/100 [04:41<09:06,  8.28s/it] 35%|███▌      | 35/100 [04:49<09:04,  8.37s/it] 36%|███▌      | 36/100 [04:58<08:51,  8.30s/it] 37%|███▋      | 37/100 [05:06<08:38,  8.23s/it] 38%|███▊      | 38/100 [05:14<08:26,  8.17s/it] 39%|███▉      | 39/100 [05:22<08:19,  8.18s/it] 40%|████      | 40/100 [05:30<08:07,  8.12s/it] 41%|████      | 41/100 [05:38<07:57,  8.09s/it] 42%|████▏     | 42/100 [05:46<07:47,  8.06s/it] 43%|████▎     | 43/100 [05:54<07:38,  8.04s/it] 44%|████▍     | 44/100 [06:02<07:30,  8.04s/it] 45%|████▌     | 45/100 [06:10<07:22,  8.04s/it] 46%|████▌     | 46/100 [06:18<07:15,  8.06s/it] 47%|████▋     | 47/100 [06:26<07:06,  8.04s/it] 48%|████▊     | 48/100 [06:34<06:57,  8.02s/it] 49%|████▉     | 49/100 [06:42<06:48,  8.02s/it] 50%|█████     | 50/100 [06:50<06:39,  8.00s/it] 51%|█████     | 51/100 [06:58<06:39,  8.14s/it] 52%|█████▏    | 52/100 [07:08<06:51,  8.58s/it] 53%|█████▎    | 53/100 [07:16<06:37,  8.46s/it] 54%|█████▍    | 54/100 [07:24<06:21,  8.29s/it] 55%|█████▌    | 55/100 [07:32<06:10,  8.23s/it] 56%|█████▌    | 56/100 [07:40<05:59,  8.17s/it] 57%|█████▋    | 57/100 [07:49<05:55,  8.28s/it] 58%|█████▊    | 58/100 [07:58<05:55,  8.47s/it] 59%|█████▉    | 59/100 [08:06<05:41,  8.33s/it] 60%|██████    | 60/100 [08:14<05:30,  8.26s/it] 61%|██████    | 61/100 [08:22<05:20,  8.21s/it] 62%|██████▏   | 62/100 [08:30<05:10,  8.17s/it] 63%|██████▎   | 63/100 [08:38<05:01,  8.15s/it] 64%|██████▍   | 64/100 [08:46<04:53,  8.14s/it] 65%|██████▌   | 65/100 [08:54<04:44,  8.14s/it] 66%|██████▌   | 66/100 [09:03<04:37,  8.16s/it] 67%|██████▋   | 67/100 [09:11<04:29,  8.16s/it] 68%|██████▊   | 68/100 [09:19<04:20,  8.15s/it] 69%|██████▉   | 69/100 [09:27<04:12,  8.13s/it] 70%|███████   | 70/100 [09:36<04:08,  8.30s/it] 71%|███████   | 71/100 [09:45<04:06,  8.49s/it] 72%|███████▏  | 72/100 [09:54<04:03,  8.70s/it] 73%|███████▎  | 73/100 [10:02<03:49,  8.51s/it] 74%|███████▍  | 74/100 [10:10<03:38,  8.39s/it] 75%|███████▌  | 75/100 [10:18<03:27,  8.31s/it] 76%|███████▌  | 76/100 [10:26<03:17,  8.24s/it] 77%|███████▋  | 77/100 [10:34<03:07,  8.15s/it] 78%|███████▊  | 78/100 [10:42<02:59,  8.17s/it] 79%|███████▉  | 79/100 [10:51<02:54,  8.30s/it] 80%|████████  | 80/100 [10:59<02:45,  8.28s/it] 81%|████████  | 81/100 [11:07<02:37,  8.30s/it] 82%|████████▏ | 82/100 [11:16<02:28,  8.25s/it] 83%|████████▎ | 83/100 [11:24<02:19,  8.20s/it] 84%|████████▍ | 84/100 [11:32<02:11,  8.24s/it] 85%|████████▌ | 85/100 [11:41<02:04,  8.33s/it] 86%|████████▌ | 86/100 [11:49<01:55,  8.24s/it] 87%|████████▋ | 87/100 [11:57<01:46,  8.18s/it] 88%|████████▊ | 88/100 [12:05<01:37,  8.13s/it] 89%|████████▉ | 89/100 [12:13<01:29,  8.13s/it] 90%|█████████ | 90/100 [12:21<01:21,  8.11s/it] 91%|█████████ | 91/100 [12:29<01:12,  8.07s/it] 92%|█████████▏| 92/100 [12:37<01:04,  8.06s/it] 93%|█████████▎| 93/100 [12:45<00:56,  8.04s/it] 94%|█████████▍| 94/100 [12:54<00:49,  8.26s/it] 95%|█████████▌| 95/100 [13:02<00:41,  8.26s/it] 96%|█████████▌| 96/100 [13:10<00:32,  8.21s/it] 97%|█████████▋| 97/100 [13:18<00:24,  8.16s/it] 98%|█████████▊| 98/100 [13:26<00:16,  8.13s/it] 99%|█████████▉| 99/100 [13:34<00:08,  8.09s/it]100%|██████████| 100/100 [13:42<00:00,  8.07s/it]100%|██████████| 100/100 [13:42<00:00,  8.23s/it]
+2026-09-21:23:41:51 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+[YUKAI][DEBUG][run_one:77] loaded router bundle routers_e2e/llada_instruct__cm_policy.pt: ['attn_last', 'pos_delta', 'mask_density', 'conf', 'margin'] norm=softmax_attn [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/runner_mlp_common.py
+[YUKAI][DEBUG][generate_until:185] Total unfinished: 0, duration: 0:13:42 [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_policy.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_policy__gsm8k__runner.json', 'use_official_gsm8k_prompt': True}), gen_kwargs: ({}), limit: 100.0, num_fewshot: 0, batch_size: 1
+|Tasks|Version|     Filter     |n-shot|  Metric   |   |Value|   |Stderr|
+|-----|------:|----------------|-----:|-----------|---|----:|---|-----:|
+|gsm8k|      3|flexible-extract|     0|exact_match|↑  | 0.72|±  |0.0451|
+|     |       |strict-match    |     0|exact_match|↑  | 0.00|±  |0.0000|
+
+=== [llada_instruct] llada_instruct__cm_policy__bbh (len=256, blocks=8, nshot=3, h=8, limit=4/subtask) ===
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+2026-09-21:23:42:04 WARNING  [config.evaluate_config:337] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-09-21:23:42:23 INFO     [_cli.run:392] Selected Tasks: ['bbh']
+2026-09-21:23:42:23 WARNING  [evaluator:184] pretrained=None appears to be an instruct or chat variant but chat template is not applied. Recommend setting `apply_chat_template`
+        (optionally `fewshot_as_multiturn`).
+2026-09-21:23:42:23 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-21:23:42:23 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_policy.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_policy__bbh__runner.json', 'use_chat_template': True}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_policy.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_policy__bbh__runner.json', 'use_chat_template': True, 'device': 'cuda:0'} [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:00,  6.73it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  7.82it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  5.07it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  5.84it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:00<00:00,  6.43it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  7.05it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  6.55it/s]
+2026-09-21:23:42:58 INFO     [evaluator_utils:472] Selected tasks:
+2026-09-21:23:42:58 INFO     [evaluator_utils:488] Group: bbh
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_boolean_expressions (bbh/cot_fewshot/boolean_expressions.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_causal_judgement (bbh/cot_fewshot/causal_judgement.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_date_understanding (bbh/cot_fewshot/date_understanding.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_disambiguation_qa (bbh/cot_fewshot/disambiguation_qa.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_dyck_languages (bbh/cot_fewshot/dyck_languages.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_formal_fallacies (bbh/cot_fewshot/formal_fallacies.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_geometric_shapes (bbh/cot_fewshot/geometric_shapes.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_hyperbaton (bbh/cot_fewshot/hyperbaton.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_five_objects (bbh/cot_fewshot/logical_deduction_five_objects.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_seven_objects (bbh/cot_fewshot/logical_deduction_seven_objects.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_three_objects (bbh/cot_fewshot/logical_deduction_three_objects.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_movie_recommendation (bbh/cot_fewshot/movie_recommendation.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_multistep_arithmetic_two (bbh/cot_fewshot/multistep_arithmetic_two.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_navigate (bbh/cot_fewshot/navigate.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_object_counting (bbh/cot_fewshot/object_counting.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_penguins_in_a_table (bbh/cot_fewshot/penguins_in_a_table.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_reasoning_about_colored_objects (bbh/cot_fewshot/reasoning_about_colored_objects.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_ruin_names (bbh/cot_fewshot/ruin_names.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_salient_translation_error_detection (bbh/cot_fewshot/salient_translation_error_detection.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_snarks (bbh/cot_fewshot/snarks.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_sports_understanding (bbh/cot_fewshot/sports_understanding.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_temporal_sequences (bbh/cot_fewshot/temporal_sequences.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_five_objects (bbh/cot_fewshot/tracking_shuffled_objects_five_objects.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_seven_objects (bbh/cot_fewshot/tracking_shuffled_objects_seven_objects.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_three_objects (bbh/cot_fewshot/tracking_shuffled_objects_three_objects.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_web_of_lies (bbh/cot_fewshot/web_of_lies.yaml)
+2026-09-21:23:42:58 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_word_sorting (bbh/cot_fewshot/word_sorting.yaml)
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_boolean_expressions: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_boolean_expressions from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_causal_judgement: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_causal_judgement from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_date_understanding: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_date_understanding from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_disambiguation_qa: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_disambiguation_qa from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_dyck_languages: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_dyck_languages from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_formal_fallacies: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_formal_fallacies from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_geometric_shapes: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_geometric_shapes from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_hyperbaton: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_hyperbaton from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_five_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_five_objects from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_seven_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_seven_objects from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_three_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_three_objects from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_movie_recommendation: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_movie_recommendation from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_multistep_arithmetic_two: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_multistep_arithmetic_two from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_navigate: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_navigate from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_object_counting: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_object_counting from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_penguins_in_a_table: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_penguins_in_a_table from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_reasoning_about_colored_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_reasoning_about_colored_objects from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_ruin_names: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_ruin_names from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_salient_translation_error_detection: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_salient_translation_error_detection from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_snarks: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_snarks from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_sports_understanding: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_sports_understanding from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_temporal_sequences: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_temporal_sequences from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_five_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_five_objects from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_seven_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_seven_objects from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_three_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_three_objects from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_web_of_lies: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_web_of_lies from 3 to 3
+2026-09-21:23:42:58 INFO     [evaluator:314] bbh_cot_fewshot_word_sorting: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:42:58 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_word_sorting from 3 to 3
+2026-09-21:23:42:58 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_boolean_expressions on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 565.86it/s]
+2026-09-21:23:42:58 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_causal_judgement on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 591.18it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_date_understanding on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 537.80it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_disambiguation_qa on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 577.73it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_dyck_languages on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 497.15it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_formal_fallacies on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 576.24it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_geometric_shapes on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 538.46it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_hyperbaton on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 540.24it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_five_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 578.19it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_seven_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 577.29it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_three_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 584.04it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_movie_recommendation on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 560.98it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_multistep_arithmetic_two on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 585.22it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_navigate on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 543.83it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_object_counting on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 577.21it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_penguins_in_a_table on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 589.61it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_reasoning_about_colored_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 582.54it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_ruin_names on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 584.88it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_salient_translation_error_detection on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 544.93it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_snarks on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 571.92it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_sports_understanding on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 578.17it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_temporal_sequences on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 596.61it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_five_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 574.31it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_seven_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 581.51it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_three_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 584.27it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_web_of_lies on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 547.04it/s]
+2026-09-21:23:42:59 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_word_sorting on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 597.67it/s]
+2026-09-21:23:42:59 INFO     [evaluator:589] Running generate_until requests
+Map:   0%|          | 0/108 [00:00<?, ? examples/s]Map:  87%|████████▋ | 94/108 [00:00<00:00, 925.60 examples/s]Map: 100%|██████████| 108/108 [00:00<00:00, 870.08 examples/s]
+  0%|          | 0/108 [00:00<?, ?it/s]  1%|          | 1/108 [00:11<21:17, 11.94s/it]  2%|▏         | 2/108 [00:20<17:15,  9.77s/it]  3%|▎         | 3/108 [00:28<15:51,  9.06s/it]  4%|▎         | 4/108 [00:36<15:05,  8.71s/it]  5%|▍         | 5/108 [00:44<14:44,  8.58s/it]  6%|▌         | 6/108 [00:53<14:24,  8.47s/it]  6%|▋         | 7/108 [01:01<14:07,  8.40s/it]  7%|▋         | 8/108 [01:09<13:57,  8.38s/it]  8%|▊         | 9/108 [01:18<13:45,  8.34s/it]  9%|▉         | 10/108 [01:26<13:36,  8.33s/it] 10%|█         | 11/108 [01:35<13:54,  8.60s/it] 11%|█         | 12/108 [01:43<13:39,  8.54s/it] 12%|█▏        | 13/108 [01:52<13:22,  8.45s/it] 13%|█▎        | 14/108 [02:00<13:09,  8.39s/it] 14%|█▍        | 15/108 [02:08<12:54,  8.32s/it] 15%|█▍        | 16/108 [02:17<12:50,  8.38s/it] 16%|█▌        | 17/108 [02:26<13:10,  8.69s/it] 17%|█▋        | 18/108 [02:35<13:07,  8.75s/it] 18%|█▊        | 19/108 [02:44<13:05,  8.82s/it] 19%|█▊        | 20/108 [02:54<13:28,  9.19s/it] 19%|█▉        | 21/108 [03:03<13:19,  9.18s/it] 20%|██        | 22/108 [03:12<12:56,  9.03s/it] 21%|██▏       | 23/108 [03:20<12:37,  8.91s/it] 22%|██▏       | 24/108 [03:29<12:21,  8.83s/it] 23%|██▎       | 25/108 [03:38<12:12,  8.83s/it] 24%|██▍       | 26/108 [03:47<12:03,  8.82s/it] 25%|██▌       | 27/108 [03:55<11:51,  8.78s/it] 26%|██▌       | 28/108 [04:04<11:41,  8.76s/it] 27%|██▋       | 29/108 [04:13<11:26,  8.69s/it] 28%|██▊       | 30/108 [04:21<11:11,  8.61s/it] 29%|██▊       | 31/108 [04:30<10:59,  8.57s/it] 30%|██▉       | 32/108 [04:38<10:49,  8.55s/it] 31%|███       | 33/108 [04:46<10:36,  8.49s/it] 31%|███▏      | 34/108 [04:55<10:22,  8.42s/it] 32%|███▏      | 35/108 [05:04<10:36,  8.72s/it] 33%|███▎      | 36/108 [05:13<10:22,  8.65s/it] 34%|███▍      | 37/108 [05:21<10:05,  8.53s/it] 35%|███▌      | 38/108 [05:29<09:50,  8.44s/it] 36%|███▌      | 39/108 [05:37<09:38,  8.38s/it] 37%|███▋      | 40/108 [05:46<09:27,  8.35s/it] 38%|███▊      | 41/108 [05:54<09:18,  8.33s/it] 39%|███▉      | 42/108 [06:02<09:08,  8.32s/it] 40%|███▉      | 43/108 [06:10<08:58,  8.29s/it] 41%|████      | 44/108 [06:19<08:51,  8.30s/it] 42%|████▏     | 45/108 [06:27<08:43,  8.32s/it] 43%|████▎     | 46/108 [06:35<08:37,  8.34s/it] 44%|████▎     | 47/108 [06:44<08:29,  8.36s/it] 44%|████▍     | 48/108 [06:52<08:21,  8.35s/it] 45%|████▌     | 49/108 [07:00<08:11,  8.33s/it] 46%|████▋     | 50/108 [07:09<08:04,  8.35s/it] 47%|████▋     | 51/108 [07:17<07:54,  8.32s/it] 48%|████▊     | 52/108 [07:25<07:45,  8.31s/it] 49%|████▉     | 53/108 [07:34<07:36,  8.30s/it] 50%|█████     | 54/108 [07:42<07:27,  8.29s/it] 51%|█████     | 55/108 [07:50<07:18,  8.27s/it] 52%|█████▏    | 56/108 [07:58<07:09,  8.27s/it] 53%|█████▎    | 57/108 [08:07<07:02,  8.28s/it] 54%|█████▎    | 58/108 [08:15<06:53,  8.27s/it] 55%|█████▍    | 59/108 [08:23<06:44,  8.26s/it] 56%|█████▌    | 60/108 [08:31<06:36,  8.27s/it] 56%|█████▋    | 61/108 [08:40<06:28,  8.27s/it] 57%|█████▋    | 62/108 [08:48<06:20,  8.26s/it] 58%|█████▊    | 63/108 [08:56<06:11,  8.25s/it] 59%|█████▉    | 64/108 [09:05<06:03,  8.27s/it] 60%|██████    | 65/108 [09:13<05:55,  8.26s/it] 61%|██████    | 66/108 [09:21<05:47,  8.27s/it] 62%|██████▏   | 67/108 [09:29<05:39,  8.27s/it] 63%|██████▎   | 68/108 [09:38<05:31,  8.29s/it] 64%|██████▍   | 69/108 [09:46<05:23,  8.30s/it] 65%|██████▍   | 70/108 [09:54<05:16,  8.33s/it] 66%|██████▌   | 71/108 [10:03<05:08,  8.33s/it] 67%|██████▋   | 72/108 [10:11<05:00,  8.34s/it] 68%|██████▊   | 73/108 [10:19<04:51,  8.33s/it] 69%|██████▊   | 74/108 [10:28<04:44,  8.36s/it] 69%|██████▉   | 75/108 [10:36<04:35,  8.35s/it] 70%|███████   | 76/108 [10:45<04:27,  8.35s/it] 71%|███████▏  | 77/108 [10:53<04:18,  8.33s/it] 72%|███████▏  | 78/108 [11:01<04:09,  8.32s/it] 73%|███████▎  | 79/108 [11:09<04:01,  8.32s/it] 74%|███████▍  | 80/108 [11:18<03:52,  8.31s/it] 75%|███████▌  | 81/108 [11:26<03:44,  8.30s/it] 76%|███████▌  | 82/108 [11:34<03:36,  8.32s/it] 77%|███████▋  | 83/108 [11:43<03:27,  8.30s/it] 78%|███████▊  | 84/108 [11:51<03:19,  8.30s/it] 79%|███████▊  | 85/108 [11:59<03:11,  8.31s/it] 80%|███████▉  | 86/108 [12:08<03:02,  8.32s/it] 81%|████████  | 87/108 [12:16<02:55,  8.34s/it] 81%|████████▏ | 88/108 [12:24<02:46,  8.35s/it] 82%|████████▏ | 89/108 [12:33<02:39,  8.37s/it] 83%|████████▎ | 90/108 [12:41<02:30,  8.37s/it] 84%|████████▍ | 91/108 [12:49<02:22,  8.37s/it] 85%|████████▌ | 92/108 [12:58<02:13,  8.35s/it] 86%|████████▌ | 93/108 [13:06<02:05,  8.34s/it] 87%|████████▋ | 94/108 [13:14<01:56,  8.34s/it] 88%|████████▊ | 95/108 [13:23<01:48,  8.33s/it] 89%|████████▉ | 96/108 [13:31<01:40,  8.41s/it] 90%|████████▉ | 97/108 [13:40<01:32,  8.38s/it] 91%|█████████ | 98/108 [13:48<01:23,  8.37s/it] 92%|█████████▏| 99/108 [13:56<01:15,  8.36s/it] 93%|█████████▎| 100/108 [14:05<01:06,  8.34s/it] 94%|█████████▎| 101/108 [14:13<00:58,  8.36s/it] 94%|█████████▍| 102/108 [14:21<00:50,  8.35s/it] 95%|█████████▌| 103/108 [14:30<00:41,  8.34s/it] 96%|█████████▋| 104/108 [14:38<00:33,  8.33s/it] 97%|█████████▋| 105/108 [14:46<00:24,  8.31s/it] 98%|█████████▊| 106/108 [14:55<00:16,  8.32s/it] 99%|█████████▉| 107/108 [15:03<00:08,  8.32s/it]100%|██████████| 108/108 [15:11<00:00,  8.32s/it]100%|██████████| 108/108 [15:11<00:00,  8.44s/it]
+2026-09-21:23:58:16 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+[YUKAI][DEBUG][run_one:77] loaded router bundle routers_e2e/llada_instruct__cm_policy.pt: ['attn_last', 'pos_delta', 'mask_density', 'conf', 'margin'] norm=softmax_attn [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/runner_mlp_common.py
+[YUKAI][DEBUG][generate_until:185] Total unfinished: 0, duration: 0:15:12 [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_policy.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_policy__bbh__runner.json', 'use_chat_template': True}), gen_kwargs: ({}), limit: 4.0, num_fewshot: 3, batch_size: 1
+|                          Tasks                           |Version|  Filter  |n-shot|  Metric   |   |Value |   |Stderr|
+|----------------------------------------------------------|------:|----------|-----:|-----------|---|-----:|---|-----:|
+|bbh                                                       |      3|get-answer|     3|exact_match|↑  |0.2407|±  |0.0378|
+| - bbh_cot_fewshot_boolean_expressions                    |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_causal_judgement                       |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_date_understanding                     |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_disambiguation_qa                      |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_dyck_languages                         |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_formal_fallacies                       |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_geometric_shapes                       |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_hyperbaton                             |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_logical_deduction_five_objects         |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_logical_deduction_seven_objects        |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_logical_deduction_three_objects        |      4|get-answer|     3|exact_match|↑  |0.7500|±  |0.2500|
+| - bbh_cot_fewshot_movie_recommendation                   |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_multistep_arithmetic_two               |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_navigate                               |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_object_counting                        |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_penguins_in_a_table                    |      4|get-answer|     3|exact_match|↑  |0.7500|±  |0.2500|
+| - bbh_cot_fewshot_reasoning_about_colored_objects        |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_ruin_names                             |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_salient_translation_error_detection    |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_snarks                                 |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_sports_understanding                   |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_temporal_sequences                     |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_tracking_shuffled_objects_five_objects |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_tracking_shuffled_objects_seven_objects|      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_tracking_shuffled_objects_three_objects|      4|get-answer|     3|exact_match|↑  |0.7500|±  |0.2500|
+| - bbh_cot_fewshot_web_of_lies                            |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_word_sorting                           |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+
+|Groups|Version|  Filter  |n-shot|  Metric   |   |Value |   |Stderr|
+|------|------:|----------|-----:|-----------|---|-----:|---|-----:|
+|bbh   |      3|get-answer|     3|exact_match|↑  |0.2407|±  |0.0378|
+
+=== [llada_instruct] llada_instruct__cm_aged__gsm8k (len=256, blocks=8, nshot=0, h=8, limit=100/subtask) ===
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+2026-09-21:23:58:34 WARNING  [config.evaluate_config:337] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-09-21:23:58:59 INFO     [_cli.run:392] Selected Tasks: ['gsm8k']
+2026-09-21:23:58:59 WARNING  [evaluator:184] pretrained=None appears to be an instruct or chat variant but chat template is not applied. Recommend setting `apply_chat_template`
+        (optionally `fewshot_as_multiturn`).
+2026-09-21:23:58:59 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-21:23:58:59 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_aged.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_aged__gsm8k__runner.json', 'use_official_gsm8k_prompt': True}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_aged.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_aged__gsm8k__runner.json', 'use_official_gsm8k_prompt': True, 'device': 'cuda:0'} [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:01,  4.58it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  5.57it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  5.19it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  5.72it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:00<00:00,  6.15it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  6.43it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  5.95it/s]
+2026-09-21:23:59:26 INFO     [evaluator_utils:472] Selected tasks:
+2026-09-21:23:59:26 INFO     [evaluator_utils:506] Task: gsm8k (gsm8k/gsm8k.yaml)
+2026-09-21:23:59:26 INFO     [evaluator:314] gsm8k: Using gen_kwargs: {'until': ['Question:', '</s>', '<|im_end|>'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:59:26 WARNING  [evaluator:335] Overwriting default num_fewshot of gsm8k from 5 to 0
+2026-09-21:23:59:26 INFO     [api.task:312] Building contexts for gsm8k on rank 0...
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 1865.62it/s]
+2026-09-21:23:59:26 INFO     [evaluator:589] Running generate_until requests
+Map:   0%|          | 0/100 [00:00<?, ? examples/s]Map:  46%|████▌     | 46/100 [00:00<00:00, 447.67 examples/s]Map:  97%|█████████▋| 97/100 [00:00<00:00, 480.30 examples/s]Map: 100%|██████████| 100/100 [00:00<00:00, 444.64 examples/s]
+  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [00:11<18:28, 11.20s/it]  2%|▏         | 2/100 [00:19<15:24,  9.44s/it]  3%|▎         | 3/100 [00:27<14:11,  8.78s/it]  4%|▍         | 4/100 [00:35<13:32,  8.47s/it]  5%|▌         | 5/100 [00:43<13:09,  8.31s/it]  6%|▌         | 6/100 [00:51<12:51,  8.20s/it]  7%|▋         | 7/100 [00:59<12:38,  8.15s/it]  8%|▊         | 8/100 [01:07<12:26,  8.12s/it]  9%|▉         | 9/100 [01:15<12:14,  8.08s/it] 10%|█         | 10/100 [01:23<12:06,  8.07s/it] 11%|█         | 11/100 [01:31<11:57,  8.06s/it] 12%|█▏        | 12/100 [01:39<11:49,  8.06s/it] 13%|█▎        | 13/100 [01:47<11:40,  8.05s/it] 14%|█▍        | 14/100 [01:55<11:32,  8.06s/it] 15%|█▌        | 15/100 [02:03<11:24,  8.05s/it] 16%|█▌        | 16/100 [02:11<11:17,  8.06s/it] 17%|█▋        | 17/100 [02:19<11:08,  8.05s/it] 18%|█▊        | 18/100 [02:27<11:00,  8.06s/it] 19%|█▉        | 19/100 [02:36<10:52,  8.05s/it] 20%|██        | 20/100 [02:44<10:43,  8.04s/it] 21%|██        | 21/100 [02:52<10:35,  8.04s/it] 22%|██▏       | 22/100 [03:00<10:27,  8.05s/it] 23%|██▎       | 23/100 [03:08<10:18,  8.03s/it] 24%|██▍       | 24/100 [03:16<10:26,  8.24s/it] 25%|██▌       | 25/100 [03:24<10:12,  8.17s/it] 26%|██▌       | 26/100 [03:32<10:02,  8.14s/it] 27%|██▋       | 27/100 [03:41<09:54,  8.14s/it] 28%|██▊       | 28/100 [03:49<09:45,  8.14s/it] 29%|██▉       | 29/100 [03:57<09:38,  8.14s/it] 30%|███       | 30/100 [04:05<09:28,  8.12s/it] 31%|███       | 31/100 [04:13<09:19,  8.10s/it] 32%|███▏      | 32/100 [04:21<09:10,  8.10s/it] 33%|███▎      | 33/100 [04:29<09:03,  8.11s/it] 34%|███▍      | 34/100 [04:37<08:55,  8.12s/it] 35%|███▌      | 35/100 [04:46<08:48,  8.13s/it] 36%|███▌      | 36/100 [04:54<08:40,  8.14s/it] 37%|███▋      | 37/100 [05:02<08:32,  8.14s/it] 38%|███▊      | 38/100 [05:10<08:23,  8.12s/it] 39%|███▉      | 39/100 [05:18<08:15,  8.12s/it] 40%|████      | 40/100 [05:26<08:07,  8.12s/it] 41%|████      | 41/100 [05:34<07:58,  8.11s/it] 42%|████▏     | 42/100 [05:42<07:50,  8.11s/it] 43%|████▎     | 43/100 [05:51<07:44,  8.16s/it] 44%|████▍     | 44/100 [05:59<07:36,  8.15s/it] 45%|████▌     | 45/100 [06:07<07:28,  8.16s/it] 46%|████▌     | 46/100 [06:15<07:20,  8.15s/it] 47%|████▋     | 47/100 [06:23<07:11,  8.15s/it] 48%|████▊     | 48/100 [06:31<07:03,  8.14s/it] 49%|████▉     | 49/100 [06:39<06:54,  8.13s/it] 50%|█████     | 50/100 [06:48<06:46,  8.12s/it] 51%|█████     | 51/100 [06:56<06:37,  8.11s/it] 52%|█████▏    | 52/100 [07:04<06:28,  8.09s/it] 53%|█████▎    | 53/100 [07:12<06:19,  8.08s/it] 54%|█████▍    | 54/100 [07:20<06:11,  8.07s/it] 55%|█████▌    | 55/100 [07:28<06:03,  8.08s/it] 56%|█████▌    | 56/100 [07:36<05:54,  8.07s/it] 57%|█████▋    | 57/100 [07:44<05:46,  8.06s/it] 58%|█████▊    | 58/100 [07:52<05:38,  8.07s/it] 59%|█████▉    | 59/100 [08:00<05:30,  8.07s/it] 60%|██████    | 60/100 [08:08<05:21,  8.05s/it] 61%|██████    | 61/100 [08:16<05:13,  8.05s/it] 62%|██████▏   | 62/100 [08:24<05:05,  8.04s/it] 63%|██████▎   | 63/100 [08:32<04:57,  8.04s/it] 64%|██████▍   | 64/100 [08:40<04:49,  8.04s/it] 65%|██████▌   | 65/100 [08:48<04:41,  8.05s/it] 66%|██████▌   | 66/100 [08:56<04:33,  8.04s/it] 67%|██████▋   | 67/100 [09:04<04:25,  8.05s/it] 68%|██████▊   | 68/100 [09:12<04:17,  8.06s/it] 69%|██████▉   | 69/100 [09:21<04:10,  8.08s/it] 70%|███████   | 70/100 [09:29<04:02,  8.08s/it] 71%|███████   | 71/100 [09:37<03:54,  8.10s/it] 72%|███████▏  | 72/100 [09:45<03:46,  8.10s/it] 73%|███████▎  | 73/100 [09:53<03:38,  8.11s/it] 74%|███████▍  | 74/100 [10:01<03:30,  8.10s/it] 75%|███████▌  | 75/100 [10:09<03:21,  8.07s/it] 76%|███████▌  | 76/100 [10:17<03:13,  8.06s/it] 77%|███████▋  | 77/100 [10:25<03:05,  8.05s/it] 78%|███████▊  | 78/100 [10:33<02:56,  8.04s/it] 79%|███████▉  | 79/100 [10:41<02:49,  8.05s/it] 80%|████████  | 80/100 [10:49<02:41,  8.07s/it] 81%|████████  | 81/100 [10:57<02:33,  8.06s/it] 82%|████████▏ | 82/100 [11:05<02:24,  8.05s/it] 83%|████████▎ | 83/100 [11:13<02:16,  8.04s/it] 84%|████████▍ | 84/100 [11:22<02:08,  8.05s/it] 85%|████████▌ | 85/100 [11:30<02:00,  8.05s/it] 86%|████████▌ | 86/100 [11:38<01:52,  8.05s/it] 87%|████████▋ | 87/100 [11:46<01:45,  8.14s/it] 88%|████████▊ | 88/100 [11:55<01:41,  8.42s/it] 89%|████████▉ | 89/100 [12:03<01:31,  8.30s/it] 90%|█████████ | 90/100 [12:11<01:22,  8.23s/it] 91%|█████████ | 91/100 [12:19<01:13,  8.18s/it] 92%|█████████▏| 92/100 [12:27<01:05,  8.15s/it] 93%|█████████▎| 93/100 [12:35<00:56,  8.11s/it] 94%|█████████▍| 94/100 [12:43<00:48,  8.08s/it] 95%|█████████▌| 95/100 [12:51<00:40,  8.07s/it] 96%|█████████▌| 96/100 [12:59<00:32,  8.07s/it] 97%|█████████▋| 97/100 [13:08<00:24,  8.07s/it] 98%|█████████▊| 98/100 [13:16<00:16,  8.07s/it] 99%|█████████▉| 99/100 [13:24<00:08,  8.08s/it]100%|██████████| 100/100 [13:32<00:00,  8.08s/it]100%|██████████| 100/100 [13:32<00:00,  8.12s/it]
+2026-09-22:00:13:05 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+[YUKAI][DEBUG][run_one:77] loaded router bundle routers_e2e/llada_instruct__cm_aged.pt: ['attn_last', 'pos_delta', 'mask_density', 'conf', 'margin'] norm=softmax_attn [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/runner_mlp_common.py
+[YUKAI][DEBUG][generate_until:185] Total unfinished: 0, duration: 0:13:32 [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_aged.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_aged__gsm8k__runner.json', 'use_official_gsm8k_prompt': True}), gen_kwargs: ({}), limit: 100.0, num_fewshot: 0, batch_size: 1
+|Tasks|Version|     Filter     |n-shot|  Metric   |   |Value|   |Stderr|
+|-----|------:|----------------|-----:|-----------|---|----:|---|-----:|
+|gsm8k|      3|flexible-extract|     0|exact_match|↑  | 0.72|±  |0.0451|
+|     |       |strict-match    |     0|exact_match|↑  | 0.00|±  |0.0000|
+
+=== [llada_instruct] llada_instruct__cm_aged__bbh (len=256, blocks=8, nshot=3, h=8, limit=4/subtask) ===
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+2026-09-22:00:13:23 WARNING  [config.evaluate_config:337] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-09-22:00:13:49 INFO     [_cli.run:392] Selected Tasks: ['bbh']
+2026-09-22:00:13:49 WARNING  [evaluator:184] pretrained=None appears to be an instruct or chat variant but chat template is not applied. Recommend setting `apply_chat_template`
+        (optionally `fewshot_as_multiturn`).
+2026-09-22:00:13:49 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-22:00:13:49 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_aged.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_aged__bbh__runner.json', 'use_chat_template': True}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_aged.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_aged__bbh__runner.json', 'use_chat_template': True, 'device': 'cuda:0'} [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:01,  4.80it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  5.70it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  4.23it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  4.91it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:00<00:00,  5.45it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  6.02it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  5.44it/s]
+2026-09-22:00:14:25 INFO     [evaluator_utils:472] Selected tasks:
+2026-09-22:00:14:25 INFO     [evaluator_utils:488] Group: bbh
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_boolean_expressions (bbh/cot_fewshot/boolean_expressions.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_causal_judgement (bbh/cot_fewshot/causal_judgement.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_date_understanding (bbh/cot_fewshot/date_understanding.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_disambiguation_qa (bbh/cot_fewshot/disambiguation_qa.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_dyck_languages (bbh/cot_fewshot/dyck_languages.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_formal_fallacies (bbh/cot_fewshot/formal_fallacies.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_geometric_shapes (bbh/cot_fewshot/geometric_shapes.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_hyperbaton (bbh/cot_fewshot/hyperbaton.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_five_objects (bbh/cot_fewshot/logical_deduction_five_objects.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_seven_objects (bbh/cot_fewshot/logical_deduction_seven_objects.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_three_objects (bbh/cot_fewshot/logical_deduction_three_objects.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_movie_recommendation (bbh/cot_fewshot/movie_recommendation.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_multistep_arithmetic_two (bbh/cot_fewshot/multistep_arithmetic_two.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_navigate (bbh/cot_fewshot/navigate.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_object_counting (bbh/cot_fewshot/object_counting.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_penguins_in_a_table (bbh/cot_fewshot/penguins_in_a_table.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_reasoning_about_colored_objects (bbh/cot_fewshot/reasoning_about_colored_objects.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_ruin_names (bbh/cot_fewshot/ruin_names.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_salient_translation_error_detection (bbh/cot_fewshot/salient_translation_error_detection.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_snarks (bbh/cot_fewshot/snarks.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_sports_understanding (bbh/cot_fewshot/sports_understanding.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_temporal_sequences (bbh/cot_fewshot/temporal_sequences.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_five_objects (bbh/cot_fewshot/tracking_shuffled_objects_five_objects.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_seven_objects (bbh/cot_fewshot/tracking_shuffled_objects_seven_objects.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_three_objects (bbh/cot_fewshot/tracking_shuffled_objects_three_objects.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_web_of_lies (bbh/cot_fewshot/web_of_lies.yaml)
+2026-09-22:00:14:25 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_word_sorting (bbh/cot_fewshot/word_sorting.yaml)
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_boolean_expressions: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_boolean_expressions from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_causal_judgement: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_causal_judgement from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_date_understanding: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_date_understanding from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_disambiguation_qa: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_disambiguation_qa from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_dyck_languages: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_dyck_languages from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_formal_fallacies: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_formal_fallacies from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_geometric_shapes: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_geometric_shapes from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_hyperbaton: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_hyperbaton from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_five_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_five_objects from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_seven_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_seven_objects from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_three_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_three_objects from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_movie_recommendation: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_movie_recommendation from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_multistep_arithmetic_two: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_multistep_arithmetic_two from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_navigate: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_navigate from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_object_counting: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_object_counting from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_penguins_in_a_table: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_penguins_in_a_table from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_reasoning_about_colored_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_reasoning_about_colored_objects from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_ruin_names: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_ruin_names from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_salient_translation_error_detection: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_salient_translation_error_detection from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_snarks: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_snarks from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_sports_understanding: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_sports_understanding from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_temporal_sequences: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_temporal_sequences from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_five_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_five_objects from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_seven_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_seven_objects from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_three_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_three_objects from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_web_of_lies: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_web_of_lies from 3 to 3
+2026-09-22:00:14:25 INFO     [evaluator:314] bbh_cot_fewshot_word_sorting: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:14:25 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_word_sorting from 3 to 3
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_boolean_expressions on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 561.49it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_causal_judgement on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 533.71it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_date_understanding on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 581.71it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_disambiguation_qa on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 537.15it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_dyck_languages on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 512.67it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_formal_fallacies on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 576.28it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_geometric_shapes on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 545.80it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_hyperbaton on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 590.00it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_five_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 587.62it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_seven_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 549.30it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_three_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 582.28it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_movie_recommendation on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 550.43it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_multistep_arithmetic_two on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 596.48it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_navigate on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 595.38it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_object_counting on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 578.60it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_penguins_in_a_table on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 543.53it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_reasoning_about_colored_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 584.53it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_ruin_names on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 588.51it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_salient_translation_error_detection on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 513.74it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_snarks on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 576.85it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_sports_understanding on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 546.15it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_temporal_sequences on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 585.16it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_five_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 582.52it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_seven_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 583.43it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_three_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 580.89it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_web_of_lies on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 527.25it/s]
+2026-09-22:00:14:25 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_word_sorting on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 575.67it/s]
+2026-09-22:00:14:25 INFO     [evaluator:589] Running generate_until requests
+Map:   0%|          | 0/108 [00:00<?, ? examples/s]Map:  85%|████████▌ | 92/108 [00:00<00:00, 904.36 examples/s]Map: 100%|██████████| 108/108 [00:00<00:00, 843.04 examples/s]
+  0%|          | 0/108 [00:00<?, ?it/s]  1%|          | 1/108 [00:12<21:48, 12.23s/it]  2%|▏         | 2/108 [00:20<17:12,  9.74s/it]  3%|▎         | 3/108 [00:28<15:40,  8.96s/it]  4%|▎         | 4/108 [00:36<14:51,  8.57s/it]  5%|▍         | 5/108 [00:44<14:23,  8.38s/it]  6%|▌         | 6/108 [00:52<14:07,  8.31s/it]  6%|▋         | 7/108 [01:00<13:50,  8.22s/it]  7%|▋         | 8/108 [01:08<13:39,  8.20s/it]  8%|▊         | 9/108 [01:16<13:25,  8.14s/it]  9%|▉         | 10/108 [01:24<13:12,  8.08s/it] 10%|█         | 11/108 [01:32<13:03,  8.07s/it] 11%|█         | 12/108 [01:40<12:51,  8.04s/it] 12%|█▏        | 13/108 [01:48<12:41,  8.02s/it] 13%|█▎        | 14/108 [01:56<12:32,  8.01s/it] 14%|█▍        | 15/108 [02:04<12:21,  7.97s/it] 15%|█▍        | 16/108 [02:12<12:13,  7.97s/it] 16%|█▌        | 17/108 [02:20<12:05,  7.98s/it] 17%|█▋        | 18/108 [02:28<11:58,  7.99s/it] 18%|█▊        | 19/108 [02:36<11:52,  8.01s/it] 19%|█▊        | 20/108 [02:44<11:42,  7.98s/it] 19%|█▉        | 21/108 [02:52<11:34,  7.98s/it] 20%|██        | 22/108 [03:00<11:27,  8.00s/it] 21%|██▏       | 23/108 [03:08<11:20,  8.00s/it] 22%|██▏       | 24/108 [03:16<11:13,  8.01s/it] 23%|██▎       | 25/108 [03:24<11:06,  8.03s/it] 24%|██▍       | 26/108 [03:32<10:57,  8.02s/it] 25%|██▌       | 27/108 [03:40<10:50,  8.03s/it] 26%|██▌       | 28/108 [03:48<10:44,  8.05s/it] 27%|██▋       | 29/108 [03:56<10:34,  8.03s/it] 28%|██▊       | 30/108 [04:04<10:26,  8.03s/it] 29%|██▊       | 31/108 [04:12<10:17,  8.02s/it] 30%|██▉       | 32/108 [04:20<10:09,  8.02s/it] 31%|███       | 33/108 [04:28<09:59,  8.00s/it] 31%|███▏      | 34/108 [04:36<09:51,  7.99s/it] 32%|███▏      | 35/108 [04:44<09:42,  7.98s/it] 33%|███▎      | 36/108 [04:52<09:35,  7.99s/it] 34%|███▍      | 37/108 [05:00<09:27,  7.99s/it] 35%|███▌      | 38/108 [05:08<09:17,  7.97s/it] 36%|███▌      | 39/108 [05:16<09:10,  7.98s/it] 37%|███▋      | 40/108 [05:24<09:02,  7.98s/it] 38%|███▊      | 41/108 [05:32<08:53,  7.97s/it] 39%|███▉      | 42/108 [05:40<08:45,  7.97s/it] 40%|███▉      | 43/108 [05:48<08:36,  7.95s/it] 41%|████      | 44/108 [05:56<08:29,  7.97s/it] 42%|████▏     | 45/108 [06:04<08:20,  7.94s/it] 43%|████▎     | 46/108 [06:11<08:09,  7.90s/it] 44%|████▎     | 47/108 [06:19<07:58,  7.84s/it] 44%|████▍     | 48/108 [06:27<07:49,  7.83s/it] 45%|████▌     | 49/108 [06:35<07:41,  7.83s/it] 46%|████▋     | 50/108 [06:43<07:32,  7.81s/it] 47%|████▋     | 51/108 [06:50<07:25,  7.81s/it] 48%|████▊     | 52/108 [06:58<07:16,  7.79s/it] 49%|████▉     | 53/108 [07:06<07:08,  7.79s/it] 50%|█████     | 54/108 [07:14<06:59,  7.77s/it] 51%|█████     | 55/108 [07:21<06:52,  7.79s/it] 52%|█████▏    | 56/108 [07:29<06:45,  7.79s/it] 53%|█████▎    | 57/108 [07:37<06:38,  7.82s/it] 54%|█████▎    | 58/108 [07:45<06:29,  7.78s/it] 55%|█████▍    | 59/108 [07:52<06:18,  7.73s/it] 56%|█████▌    | 60/108 [08:01<06:19,  7.90s/it] 56%|█████▋    | 61/108 [08:10<06:25,  8.20s/it] 57%|█████▋    | 62/108 [08:17<06:11,  8.07s/it] 58%|█████▊    | 63/108 [08:26<06:12,  8.29s/it] 59%|█████▉    | 64/108 [08:34<06:03,  8.27s/it] 60%|██████    | 65/108 [08:42<05:48,  8.10s/it] 61%|██████    | 66/108 [08:50<05:36,  8.01s/it] 62%|██████▏   | 67/108 [08:58<05:25,  7.93s/it] 63%|██████▎   | 68/108 [09:05<05:14,  7.87s/it] 64%|██████▍   | 69/108 [09:13<05:06,  7.86s/it] 65%|██████▍   | 70/108 [09:21<04:57,  7.82s/it] 66%|██████▌   | 71/108 [09:29<04:48,  7.80s/it] 67%|██████▋   | 72/108 [09:37<04:41,  7.81s/it] 68%|██████▊   | 73/108 [09:44<04:33,  7.81s/it] 69%|██████▊   | 74/108 [09:52<04:25,  7.80s/it] 69%|██████▉   | 75/108 [10:00<04:18,  7.83s/it] 70%|███████   | 76/108 [10:08<04:10,  7.82s/it] 71%|███████▏  | 77/108 [10:16<04:02,  7.82s/it] 72%|███████▏  | 78/108 [10:23<03:53,  7.79s/it] 73%|███████▎  | 79/108 [10:31<03:45,  7.77s/it] 74%|███████▍  | 80/108 [10:39<03:37,  7.75s/it] 75%|███████▌  | 81/108 [10:47<03:29,  7.78s/it] 76%|███████▌  | 82/108 [10:54<03:22,  7.78s/it] 77%|███████▋  | 83/108 [11:02<03:14,  7.78s/it] 78%|███████▊  | 84/108 [11:10<03:06,  7.76s/it] 79%|███████▊  | 85/108 [11:18<02:57,  7.74s/it] 80%|███████▉  | 86/108 [11:25<02:50,  7.74s/it] 81%|████████  | 87/108 [11:33<02:42,  7.74s/it] 81%|████████▏ | 88/108 [11:41<02:34,  7.71s/it] 82%|████████▏ | 89/108 [11:49<02:26,  7.73s/it] 83%|████████▎ | 90/108 [11:56<02:18,  7.71s/it] 84%|████████▍ | 91/108 [12:04<02:10,  7.69s/it] 85%|████████▌ | 92/108 [12:12<02:03,  7.70s/it] 86%|████████▌ | 93/108 [12:19<01:55,  7.70s/it] 87%|████████▋ | 94/108 [12:27<01:47,  7.68s/it] 88%|████████▊ | 95/108 [12:35<01:40,  7.72s/it] 89%|████████▉ | 96/108 [12:42<01:32,  7.70s/it] 90%|████████▉ | 97/108 [12:50<01:24,  7.69s/it] 91%|█████████ | 98/108 [12:58<01:16,  7.68s/it] 92%|█████████▏| 99/108 [13:05<01:09,  7.69s/it] 93%|█████████▎| 100/108 [13:13<01:01,  7.67s/it] 94%|█████████▎| 101/108 [13:21<00:53,  7.67s/it] 94%|█████████▍| 102/108 [13:28<00:46,  7.69s/it] 95%|█████████▌| 103/108 [13:36<00:38,  7.68s/it] 96%|█████████▋| 104/108 [13:44<00:31,  7.77s/it] 97%|█████████▋| 105/108 [13:52<00:23,  7.75s/it] 98%|█████████▊| 106/108 [13:59<00:15,  7.73s/it] 99%|█████████▉| 107/108 [14:07<00:07,  7.74s/it]100%|██████████| 108/108 [14:15<00:00,  7.71s/it]100%|██████████| 108/108 [14:15<00:00,  7.92s/it]
+2026-09-22:00:28:47 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+[YUKAI][DEBUG][run_one:77] loaded router bundle routers_e2e/llada_instruct__cm_aged.pt: ['attn_last', 'pos_delta', 'mask_density', 'conf', 'margin'] norm=softmax_attn [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/runner_mlp_common.py
+[YUKAI][DEBUG][generate_until:185] Total unfinished: 0, duration: 0:14:15 [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_aged.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_aged__bbh__runner.json', 'use_chat_template': True}), gen_kwargs: ({}), limit: 4.0, num_fewshot: 3, batch_size: 1
+|                          Tasks                           |Version|  Filter  |n-shot|  Metric   |   |Value|   |Stderr|
+|----------------------------------------------------------|------:|----------|-----:|-----------|---|----:|---|-----:|
+|bbh                                                       |      3|get-answer|     3|exact_match|↑  | 0.25|±  |0.0374|
+| - bbh_cot_fewshot_boolean_expressions                    |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_causal_judgement                       |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_date_understanding                     |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_disambiguation_qa                      |      4|get-answer|     3|exact_match|↑  | 0.50|±  |0.2887|
+| - bbh_cot_fewshot_dyck_languages                         |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_formal_fallacies                       |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_geometric_shapes                       |      4|get-answer|     3|exact_match|↑  | 0.50|±  |0.2887|
+| - bbh_cot_fewshot_hyperbaton                             |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_logical_deduction_five_objects         |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_logical_deduction_seven_objects        |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_logical_deduction_three_objects        |      4|get-answer|     3|exact_match|↑  | 1.00|±  |0.0000|
+| - bbh_cot_fewshot_movie_recommendation                   |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_multistep_arithmetic_two               |      4|get-answer|     3|exact_match|↑  | 0.50|±  |0.2887|
+| - bbh_cot_fewshot_navigate                               |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_object_counting                        |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_penguins_in_a_table                    |      4|get-answer|     3|exact_match|↑  | 0.75|±  |0.2500|
+| - bbh_cot_fewshot_reasoning_about_colored_objects        |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_ruin_names                             |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_salient_translation_error_detection    |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_snarks                                 |      4|get-answer|     3|exact_match|↑  | 0.50|±  |0.2887|
+| - bbh_cot_fewshot_sports_understanding                   |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_temporal_sequences                     |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_tracking_shuffled_objects_five_objects |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+| - bbh_cot_fewshot_tracking_shuffled_objects_seven_objects|      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_tracking_shuffled_objects_three_objects|      4|get-answer|     3|exact_match|↑  | 0.75|±  |0.2500|
+| - bbh_cot_fewshot_web_of_lies                            |      4|get-answer|     3|exact_match|↑  | 0.00|±  |0.0000|
+| - bbh_cot_fewshot_word_sorting                           |      4|get-answer|     3|exact_match|↑  | 0.25|±  |0.2500|
+
+|Groups|Version|  Filter  |n-shot|  Metric   |   |Value|   |Stderr|
+|------|------:|----------|-----:|-----------|---|----:|---|-----:|
+|bbh   |      3|get-answer|     3|exact_match|↑  | 0.25|±  |0.0374|
+
+=== [llada_instruct] llada_instruct__cm_age__gsm8k (len=256, blocks=8, nshot=0, h=8, limit=100/subtask) ===
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+2026-09-22:00:29:05 WARNING  [config.evaluate_config:337] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-09-22:00:29:31 INFO     [_cli.run:392] Selected Tasks: ['gsm8k']
+2026-09-22:00:29:31 WARNING  [evaluator:184] pretrained=None appears to be an instruct or chat variant but chat template is not applied. Recommend setting `apply_chat_template`
+        (optionally `fewshot_as_multiturn`).
+2026-09-22:00:29:31 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-22:00:29:31 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_age.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_age__gsm8k__runner.json', 'use_official_gsm8k_prompt': True}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_age.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_age__gsm8k__runner.json', 'use_official_gsm8k_prompt': True, 'device': 'cuda:0'} [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:00,  5.68it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  7.11it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  5.18it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  6.07it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:00<00:00,  6.94it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  7.56it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  6.78it/s]
+2026-09-22:00:29:59 INFO     [evaluator_utils:472] Selected tasks:
+2026-09-22:00:29:59 INFO     [evaluator_utils:506] Task: gsm8k (gsm8k/gsm8k.yaml)
+2026-09-22:00:29:59 INFO     [evaluator:314] gsm8k: Using gen_kwargs: {'until': ['Question:', '</s>', '<|im_end|>'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:29:59 WARNING  [evaluator:335] Overwriting default num_fewshot of gsm8k from 5 to 0
+2026-09-22:00:29:59 INFO     [api.task:312] Building contexts for gsm8k on rank 0...
+  0%|          | 0/100 [00:00<?, ?it/s]100%|██████████| 100/100 [00:00<00:00, 2283.12it/s]
+2026-09-22:00:29:59 INFO     [evaluator:589] Running generate_until requests
+Map:   0%|          | 0/100 [00:00<?, ? examples/s]Map:  57%|█████▋    | 57/100 [00:00<00:00, 556.72 examples/s]Map: 100%|██████████| 100/100 [00:00<00:00, 503.64 examples/s]
+  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [00:11<19:44, 11.96s/it]  2%|▏         | 2/100 [00:19<15:37,  9.57s/it]  3%|▎         | 3/100 [00:27<14:12,  8.79s/it]  4%|▍         | 4/100 [00:35<13:27,  8.41s/it]  5%|▌         | 5/100 [00:43<12:57,  8.18s/it]  6%|▌         | 6/100 [00:51<12:37,  8.06s/it]  7%|▋         | 7/100 [00:59<12:24,  8.01s/it]  8%|▊         | 8/100 [01:06<12:09,  7.93s/it]  9%|▉         | 9/100 [01:14<12:00,  7.92s/it] 10%|█         | 10/100 [01:22<11:52,  7.91s/it] 11%|█         | 11/100 [01:30<11:44,  7.92s/it] 12%|█▏        | 12/100 [01:38<11:34,  7.89s/it] 13%|█▎        | 13/100 [01:46<11:25,  7.88s/it] 14%|█▍        | 14/100 [01:54<11:15,  7.85s/it] 15%|█▌        | 15/100 [02:01<11:06,  7.84s/it] 16%|█▌        | 16/100 [02:09<11:00,  7.86s/it] 17%|█▋        | 17/100 [02:17<10:50,  7.84s/it] 18%|█▊        | 18/100 [02:25<10:43,  7.84s/it] 19%|█▉        | 19/100 [02:33<10:35,  7.85s/it] 20%|██        | 20/100 [02:41<10:26,  7.83s/it] 21%|██        | 21/100 [02:48<10:16,  7.81s/it] 22%|██▏       | 22/100 [02:56<10:10,  7.83s/it] 23%|██▎       | 23/100 [03:04<10:00,  7.80s/it] 24%|██▍       | 24/100 [03:12<09:53,  7.81s/it] 25%|██▌       | 25/100 [03:20<09:46,  7.81s/it] 26%|██▌       | 26/100 [03:27<09:38,  7.82s/it] 27%|██▋       | 27/100 [03:35<09:30,  7.81s/it] 28%|██▊       | 28/100 [03:43<09:25,  7.85s/it] 29%|██▉       | 29/100 [03:51<09:16,  7.83s/it] 30%|███       | 30/100 [03:59<09:08,  7.84s/it] 31%|███       | 31/100 [04:07<09:00,  7.83s/it] 32%|███▏      | 32/100 [04:14<08:50,  7.80s/it] 33%|███▎      | 33/100 [04:22<08:43,  7.81s/it] 34%|███▍      | 34/100 [04:30<08:37,  7.84s/it] 35%|███▌      | 35/100 [04:38<08:29,  7.84s/it] 36%|███▌      | 36/100 [04:46<08:21,  7.84s/it] 37%|███▋      | 37/100 [04:54<08:14,  7.86s/it] 38%|███▊      | 38/100 [05:01<08:05,  7.83s/it] 39%|███▉      | 39/100 [05:09<07:59,  7.87s/it] 40%|████      | 40/100 [05:17<07:51,  7.85s/it] 41%|████      | 41/100 [05:25<07:42,  7.84s/it] 42%|████▏     | 42/100 [05:33<07:43,  7.98s/it] 43%|████▎     | 43/100 [05:41<07:31,  7.92s/it] 44%|████▍     | 44/100 [05:49<07:22,  7.90s/it] 45%|████▌     | 45/100 [05:57<07:16,  7.94s/it] 46%|████▌     | 46/100 [06:05<07:06,  7.89s/it] 47%|████▋     | 47/100 [06:13<06:58,  7.90s/it] 48%|████▊     | 48/100 [06:20<06:49,  7.87s/it] 49%|████▉     | 49/100 [06:28<06:40,  7.86s/it] 50%|█████     | 50/100 [06:36<06:32,  7.84s/it] 51%|█████     | 51/100 [06:44<06:25,  7.86s/it] 52%|█████▏    | 52/100 [06:52<06:16,  7.84s/it] 53%|█████▎    | 53/100 [07:00<06:07,  7.83s/it] 54%|█████▍    | 54/100 [07:07<06:00,  7.84s/it] 55%|█████▌    | 55/100 [07:15<05:52,  7.84s/it] 56%|█████▌    | 56/100 [07:23<05:44,  7.82s/it] 57%|█████▋    | 57/100 [07:31<05:37,  7.86s/it] 58%|█████▊    | 58/100 [07:39<05:29,  7.85s/it] 59%|█████▉    | 59/100 [07:47<05:20,  7.83s/it] 60%|██████    | 60/100 [07:54<05:13,  7.85s/it] 61%|██████    | 61/100 [08:02<05:05,  7.83s/it] 62%|██████▏   | 62/100 [08:10<04:57,  7.84s/it] 63%|██████▎   | 63/100 [08:18<04:51,  7.87s/it] 64%|██████▍   | 64/100 [08:26<04:42,  7.85s/it] 65%|██████▌   | 65/100 [08:34<04:35,  7.87s/it] 66%|██████▌   | 66/100 [08:41<04:25,  7.81s/it] 67%|██████▋   | 67/100 [08:49<04:17,  7.80s/it] 68%|██████▊   | 68/100 [08:57<04:10,  7.84s/it] 69%|██████▉   | 69/100 [09:05<04:02,  7.81s/it] 70%|███████   | 70/100 [09:13<03:54,  7.81s/it] 71%|███████   | 71/100 [09:21<03:47,  7.85s/it] 72%|███████▏  | 72/100 [09:29<03:39,  7.84s/it] 73%|███████▎  | 73/100 [09:37<03:34,  7.93s/it] 74%|███████▍  | 74/100 [09:45<03:26,  7.93s/it] 75%|███████▌  | 75/100 [09:53<03:23,  8.15s/it] 76%|███████▌  | 76/100 [10:01<03:13,  8.05s/it] 77%|███████▋  | 77/100 [10:09<03:04,  8.02s/it] 78%|███████▊  | 78/100 [10:17<02:55,  7.97s/it] 79%|███████▉  | 79/100 [10:25<02:46,  7.93s/it] 80%|████████  | 80/100 [10:33<02:38,  7.94s/it] 81%|████████  | 81/100 [10:40<02:30,  7.90s/it] 82%|████████▏ | 82/100 [10:48<02:21,  7.87s/it] 83%|████████▎ | 83/100 [10:56<02:14,  7.88s/it] 84%|████████▍ | 84/100 [11:04<02:05,  7.87s/it] 85%|████████▌ | 85/100 [11:12<01:57,  7.83s/it] 86%|████████▌ | 86/100 [11:20<01:49,  7.85s/it] 87%|████████▋ | 87/100 [11:27<01:41,  7.83s/it] 88%|████████▊ | 88/100 [11:35<01:34,  7.84s/it] 89%|████████▉ | 89/100 [11:43<01:25,  7.81s/it] 90%|█████████ | 90/100 [11:51<01:17,  7.79s/it] 91%|█████████ | 91/100 [11:59<01:10,  7.82s/it] 92%|█████████▏| 92/100 [12:06<01:02,  7.80s/it] 93%|█████████▎| 93/100 [12:14<00:54,  7.78s/it] 94%|█████████▍| 94/100 [12:22<00:46,  7.81s/it] 95%|█████████▌| 95/100 [12:30<00:38,  7.80s/it] 96%|█████████▌| 96/100 [12:38<00:31,  7.79s/it] 97%|█████████▋| 97/100 [12:45<00:23,  7.79s/it] 98%|█████████▊| 98/100 [12:53<00:15,  7.82s/it] 99%|█████████▉| 99/100 [13:01<00:07,  7.80s/it]100%|██████████| 100/100 [13:09<00:00,  7.83s/it]100%|██████████| 100/100 [13:09<00:00,  7.89s/it]
+2026-09-22:00:43:15 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+[YUKAI][DEBUG][run_one:77] loaded router bundle routers_e2e/llada_instruct__cm_age.pt: ['attn_last', 'pos_delta', 'mask_density', 'conf_age', 'margin_age'] norm=softmax_attn [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/runner_mlp_common.py
+[YUKAI][DEBUG][generate_until:185] Total unfinished: 0, duration: 0:13:10 [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_age.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_age__gsm8k__runner.json', 'use_official_gsm8k_prompt': True}), gen_kwargs: ({}), limit: 100.0, num_fewshot: 0, batch_size: 1
+|Tasks|Version|     Filter     |n-shot|  Metric   |   |Value|   |Stderr|
+|-----|------:|----------------|-----:|-----------|---|----:|---|-----:|
+|gsm8k|      3|flexible-extract|     0|exact_match|↑  | 0.75|±  |0.0435|
+|     |       |strict-match    |     0|exact_match|↑  | 0.00|±  |0.0000|
+
+=== [llada_instruct] llada_instruct__cm_age__bbh (len=256, blocks=8, nshot=3, h=8, limit=4/subtask) ===
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+2026-09-22:00:43:34 WARNING  [config.evaluate_config:337] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-09-22:00:44:03 INFO     [_cli.run:392] Selected Tasks: ['bbh']
+2026-09-22:00:44:03 WARNING  [evaluator:184] pretrained=None appears to be an instruct or chat variant but chat template is not applied. Recommend setting `apply_chat_template`
+        (optionally `fewshot_as_multiturn`).
+2026-09-22:00:44:03 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-22:00:44:03 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_age.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_age__bbh__runner.json', 'use_chat_template': True}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_age.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_age__bbh__runner.json', 'use_chat_template': True, 'device': 'cuda:0'} [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:00,  5.18it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  6.53it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  4.09it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  4.36it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:01<00:00,  4.69it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  5.19it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  4.94it/s]
+2026-09-22:00:44:42 INFO     [evaluator_utils:472] Selected tasks:
+2026-09-22:00:44:42 INFO     [evaluator_utils:488] Group: bbh
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_boolean_expressions (bbh/cot_fewshot/boolean_expressions.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_causal_judgement (bbh/cot_fewshot/causal_judgement.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_date_understanding (bbh/cot_fewshot/date_understanding.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_disambiguation_qa (bbh/cot_fewshot/disambiguation_qa.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_dyck_languages (bbh/cot_fewshot/dyck_languages.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_formal_fallacies (bbh/cot_fewshot/formal_fallacies.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_geometric_shapes (bbh/cot_fewshot/geometric_shapes.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_hyperbaton (bbh/cot_fewshot/hyperbaton.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_five_objects (bbh/cot_fewshot/logical_deduction_five_objects.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_seven_objects (bbh/cot_fewshot/logical_deduction_seven_objects.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_three_objects (bbh/cot_fewshot/logical_deduction_three_objects.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_movie_recommendation (bbh/cot_fewshot/movie_recommendation.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_multistep_arithmetic_two (bbh/cot_fewshot/multistep_arithmetic_two.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_navigate (bbh/cot_fewshot/navigate.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_object_counting (bbh/cot_fewshot/object_counting.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_penguins_in_a_table (bbh/cot_fewshot/penguins_in_a_table.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_reasoning_about_colored_objects (bbh/cot_fewshot/reasoning_about_colored_objects.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_ruin_names (bbh/cot_fewshot/ruin_names.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_salient_translation_error_detection (bbh/cot_fewshot/salient_translation_error_detection.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_snarks (bbh/cot_fewshot/snarks.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_sports_understanding (bbh/cot_fewshot/sports_understanding.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_temporal_sequences (bbh/cot_fewshot/temporal_sequences.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_five_objects (bbh/cot_fewshot/tracking_shuffled_objects_five_objects.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_seven_objects (bbh/cot_fewshot/tracking_shuffled_objects_seven_objects.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_three_objects (bbh/cot_fewshot/tracking_shuffled_objects_three_objects.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_web_of_lies (bbh/cot_fewshot/web_of_lies.yaml)
+2026-09-22:00:44:42 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_word_sorting (bbh/cot_fewshot/word_sorting.yaml)
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_boolean_expressions: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_boolean_expressions from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_causal_judgement: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_causal_judgement from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_date_understanding: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_date_understanding from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_disambiguation_qa: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_disambiguation_qa from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_dyck_languages: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_dyck_languages from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_formal_fallacies: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_formal_fallacies from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_geometric_shapes: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_geometric_shapes from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_hyperbaton: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_hyperbaton from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_five_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_five_objects from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_seven_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_seven_objects from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_three_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_three_objects from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_movie_recommendation: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_movie_recommendation from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_multistep_arithmetic_two: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_multistep_arithmetic_two from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_navigate: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_navigate from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_object_counting: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_object_counting from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_penguins_in_a_table: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_penguins_in_a_table from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_reasoning_about_colored_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_reasoning_about_colored_objects from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_ruin_names: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_ruin_names from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_salient_translation_error_detection: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_salient_translation_error_detection from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_snarks: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_snarks from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_sports_understanding: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_sports_understanding from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_temporal_sequences: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_temporal_sequences from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_five_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_five_objects from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_seven_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_seven_objects from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_three_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_three_objects from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_web_of_lies: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_web_of_lies from 3 to 3
+2026-09-22:00:44:42 INFO     [evaluator:314] bbh_cot_fewshot_word_sorting: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-22:00:44:42 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_word_sorting from 3 to 3
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_boolean_expressions on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 539.39it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_causal_judgement on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 442.68it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_date_understanding on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 441.77it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_disambiguation_qa on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 440.45it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_dyck_languages on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 415.13it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_formal_fallacies on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 435.56it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_geometric_shapes on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 438.28it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_hyperbaton on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 440.13it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_five_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 447.95it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_seven_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 436.92it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_three_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 449.45it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_movie_recommendation on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 450.85it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_multistep_arithmetic_two on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 590.02it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_navigate on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 586.78it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_object_counting on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 499.63it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_penguins_in_a_table on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 453.65it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_reasoning_about_colored_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 437.42it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_ruin_names on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 566.61it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_salient_translation_error_detection on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 519.68it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_snarks on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 581.15it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_sports_understanding on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 601.36it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_temporal_sequences on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 587.46it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_five_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 579.38it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_seven_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 584.94it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_three_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 590.75it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_web_of_lies on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 560.59it/s]
+2026-09-22:00:44:42 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_word_sorting on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 597.91it/s]
+2026-09-22:00:44:42 INFO     [evaluator:589] Running generate_until requests
+Map:   0%|          | 0/108 [00:00<?, ? examples/s]Map:  87%|████████▋ | 94/108 [00:00<00:00, 924.11 examples/s]Map: 100%|██████████| 108/108 [00:00<00:00, 845.69 examples/s]
+  0%|          | 0/108 [00:00<?, ?it/s]  1%|          | 1/108 [00:12<22:00, 12.34s/it]  2%|▏         | 2/108 [00:20<17:27,  9.88s/it]  3%|▎         | 3/108 [00:28<15:53,  9.08s/it]  4%|▎         | 4/108 [00:36<15:04,  8.70s/it]  5%|▍         | 5/108 [00:45<14:40,  8.54s/it]  6%|▌         | 6/108 [00:53<14:24,  8.47s/it]  6%|▋         | 7/108 [01:01<14:04,  8.36s/it]  7%|▋         | 8/108 [01:10<14:13,  8.54s/it]  8%|▊         | 9/108 [01:18<13:50,  8.39s/it]  9%|▉         | 10/108 [01:26<13:31,  8.28s/it] 10%|█         | 11/108 [01:34<13:16,  8.21s/it] 11%|█         | 12/108 [01:42<12:59,  8.12s/it] 12%|█▏        | 13/108 [01:50<12:43,  8.04s/it] 13%|█▎        | 14/108 [01:58<12:36,  8.05s/it] 14%|█▍        | 15/108 [02:06<12:28,  8.04s/it] 15%|█▍        | 16/108 [02:14<12:20,  8.05s/it] 16%|█▌        | 17/108 [02:22<12:10,  8.03s/it] 17%|█▋        | 18/108 [02:30<12:04,  8.05s/it] 18%|█▊        | 19/108 [02:38<11:57,  8.06s/it] 19%|█▊        | 20/108 [02:46<11:49,  8.07s/it] 19%|█▉        | 21/108 [02:54<11:42,  8.08s/it] 20%|██        | 22/108 [03:02<11:34,  8.08s/it] 21%|██▏       | 23/108 [03:10<11:26,  8.08s/it] 22%|██▏       | 24/108 [03:18<11:16,  8.05s/it] 23%|██▎       | 25/108 [03:27<11:11,  8.10s/it] 24%|██▍       | 26/108 [03:35<11:04,  8.11s/it] 25%|██▌       | 27/108 [03:43<10:57,  8.12s/it] 26%|██▌       | 28/108 [03:51<10:49,  8.12s/it] 27%|██▋       | 29/108 [03:59<10:38,  8.08s/it] 28%|██▊       | 30/108 [04:07<10:26,  8.04s/it] 29%|██▊       | 31/108 [04:15<10:14,  7.98s/it] 30%|██▉       | 32/108 [04:23<10:09,  8.01s/it] 31%|███       | 33/108 [04:31<10:02,  8.03s/it] 31%|███▏      | 34/108 [04:39<09:56,  8.07s/it] 32%|███▏      | 35/108 [04:47<09:47,  8.05s/it] 33%|███▎      | 36/108 [04:55<09:38,  8.03s/it] 34%|███▍      | 37/108 [05:03<09:29,  8.01s/it] 35%|███▌      | 38/108 [05:11<09:20,  8.01s/it] 36%|███▌      | 39/108 [05:19<09:13,  8.02s/it] 37%|███▋      | 40/108 [05:27<09:05,  8.03s/it] 38%|███▊      | 41/108 [05:35<08:58,  8.03s/it] 39%|███▉      | 42/108 [05:43<08:48,  8.01s/it] 40%|███▉      | 43/108 [05:51<08:40,  8.01s/it] 41%|████      | 44/108 [05:59<08:33,  8.02s/it] 42%|████▏     | 45/108 [06:07<08:24,  8.00s/it] 43%|████▎     | 46/108 [06:15<08:14,  7.98s/it] 44%|████▎     | 47/108 [06:23<08:06,  7.97s/it] 44%|████▍     | 48/108 [06:31<07:58,  7.97s/it] 45%|████▌     | 49/108 [06:39<07:51,  7.99s/it] 46%|████▋     | 50/108 [06:47<07:43,  7.99s/it] 47%|████▋     | 51/108 [06:55<07:35,  7.99s/it] 48%|████▊     | 52/108 [07:03<07:27,  7.99s/it] 49%|████▉     | 53/108 [07:11<07:20,  8.01s/it] 50%|█████     | 54/108 [07:19<07:11,  7.99s/it] 51%|█████     | 55/108 [07:27<07:03,  7.99s/it] 52%|█████▏    | 56/108 [07:35<06:54,  7.96s/it] 53%|█████▎    | 57/108 [07:43<06:45,  7.95s/it] 54%|█████▎    | 58/108 [07:51<06:38,  7.96s/it] 55%|█████▍    | 59/108 [07:59<06:29,  7.96s/it] 56%|█████▌    | 60/108 [08:07<06:22,  7.97s/it] 56%|█████▋    | 61/108 [08:15<06:14,  7.97s/it] 57%|█████▋    | 62/108 [08:23<06:05,  7.95s/it] 58%|█████▊    | 63/108 [08:31<05:57,  7.95s/it] 59%|█████▉    | 64/108 [08:39<05:50,  7.97s/it] 60%|██████    | 65/108 [08:47<05:43,  7.99s/it] 61%|██████    | 66/108 [08:55<05:35,  8.00s/it] 62%|██████▏   | 67/108 [09:03<05:28,  8.01s/it] 63%|██████▎   | 68/108 [09:11<05:20,  8.00s/it] 64%|██████▍   | 69/108 [09:19<05:11,  7.99s/it] 65%|██████▍   | 70/108 [09:27<05:07,  8.10s/it] 66%|██████▌   | 71/108 [09:36<05:03,  8.21s/it] 67%|██████▋   | 72/108 [09:44<04:58,  8.28s/it] 68%|██████▊   | 73/108 [09:52<04:52,  8.35s/it] 69%|██████▊   | 74/108 [10:01<04:44,  8.36s/it] 69%|██████▉   | 75/108 [10:09<04:36,  8.37s/it] 70%|███████   | 76/108 [10:18<04:27,  8.37s/it] 71%|███████▏  | 77/108 [10:26<04:20,  8.39s/it] 72%|███████▏  | 78/108 [10:34<04:11,  8.38s/it] 73%|███████▎  | 79/108 [10:42<04:00,  8.28s/it] 74%|███████▍  | 80/108 [10:51<03:49,  8.20s/it] 75%|███████▌  | 81/108 [10:59<03:42,  8.24s/it] 76%|███████▌  | 82/108 [11:07<03:33,  8.22s/it] 77%|███████▋  | 83/108 [11:15<03:25,  8.21s/it] 78%|███████▊  | 84/108 [11:24<03:17,  8.24s/it] 79%|███████▊  | 85/108 [11:32<03:09,  8.22s/it] 80%|███████▉  | 86/108 [11:40<03:00,  8.22s/it] 81%|████████  | 87/108 [11:48<02:52,  8.24s/it] 81%|████████▏ | 88/108 [11:56<02:44,  8.23s/it] 82%|████████▏ | 89/108 [12:05<02:36,  8.24s/it] 83%|████████▎ | 90/108 [12:13<02:27,  8.22s/it] 84%|████████▍ | 91/108 [12:21<02:19,  8.19s/it] 85%|████████▌ | 92/108 [12:29<02:11,  8.20s/it] 86%|████████▌ | 93/108 [12:37<02:02,  8.19s/it] 87%|████████▋ | 94/108 [12:45<01:54,  8.17s/it] 88%|████████▊ | 95/108 [12:54<01:46,  8.19s/it] 89%|████████▉ | 96/108 [13:02<01:38,  8.21s/it] 90%|████████▉ | 97/108 [13:10<01:29,  8.17s/it] 91%|█████████ | 98/108 [13:18<01:20,  8.09s/it] 92%|█████████▏| 99/108 [13:26<01:12,  8.09s/it] 93%|█████████▎| 100/108 [13:34<01:04,  8.11s/it] 94%|█████████▎| 101/108 [13:42<00:56,  8.09s/it] 94%|█████████▍| 102/108 [13:50<00:48,  8.11s/it] 95%|█████████▌| 103/108 [13:59<00:40,  8.12s/it] 96%|█████████▋| 104/108 [14:07<00:32,  8.15s/it] 97%|█████████▋| 105/108 [14:15<00:24,  8.17s/it] 98%|█████████▊| 106/108 [14:23<00:16,  8.19s/it] 99%|█████████▉| 107/108 [14:31<00:08,  8.19s/it]100%|██████████| 108/108 [14:40<00:00,  8.23s/it]100%|██████████| 108/108 [14:40<00:00,  8.15s/it]
+2026-09-22:00:59:28 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+[YUKAI][DEBUG][run_one:77] loaded router bundle routers_e2e/llada_instruct__cm_age.pt: ['attn_last', 'pos_delta', 'mask_density', 'conf_age', 'margin_age'] norm=softmax_attn [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/runner_mlp_common.py
+[YUKAI][DEBUG][generate_until:185] Total unfinished: 0, duration: 0:14:40 [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_llada_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/llada_instruct__cm_age.pt', 'path_report': 'results_bench_confmargin_llada_instruct/llada_instruct__cm_age__bbh__runner.json', 'use_chat_template': True}), gen_kwargs: ({}), limit: 4.0, num_fewshot: 3, batch_size: 1
+|                          Tasks                           |Version|  Filter  |n-shot|  Metric   |   |Value |   |Stderr|
+|----------------------------------------------------------|------:|----------|-----:|-----------|---|-----:|---|-----:|
+|bbh                                                       |      3|get-answer|     3|exact_match|↑  |0.2315|±  |0.0374|
+| - bbh_cot_fewshot_boolean_expressions                    |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_causal_judgement                       |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_date_understanding                     |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_disambiguation_qa                      |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_dyck_languages                         |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_formal_fallacies                       |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_geometric_shapes                       |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_hyperbaton                             |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_logical_deduction_five_objects         |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_logical_deduction_seven_objects        |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_logical_deduction_three_objects        |      4|get-answer|     3|exact_match|↑  |0.7500|±  |0.2500|
+| - bbh_cot_fewshot_movie_recommendation                   |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_multistep_arithmetic_two               |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_navigate                               |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_object_counting                        |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_penguins_in_a_table                    |      4|get-answer|     3|exact_match|↑  |0.7500|±  |0.2500|
+| - bbh_cot_fewshot_reasoning_about_colored_objects        |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_ruin_names                             |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_salient_translation_error_detection    |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_snarks                                 |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_sports_understanding                   |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_temporal_sequences                     |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_tracking_shuffled_objects_five_objects |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_tracking_shuffled_objects_seven_objects|      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_tracking_shuffled_objects_three_objects|      4|get-answer|     3|exact_match|↑  |0.7500|±  |0.2500|
+| - bbh_cot_fewshot_web_of_lies                            |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_word_sorting                           |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+
+|Groups|Version|  Filter  |n-shot|  Metric   |   |Value |   |Stderr|
+|------|------:|----------|-----:|-----------|---|-----:|---|-----:|
+|bbh   |      3|get-answer|     3|exact_match|↑  |0.2315|±  |0.0374|
+
+
+[llada_instruct] conf/margin sweep complete: 8 launched, 0 skipped, 0 failed -> results_bench_confmargin_llada_instruct

@@ -1,0 +1,197 @@
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+2026-09-21:23:11:02 WARNING  [config.evaluate_config:337] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-09-21:23:11:16 INFO     [_cli.run:392] Selected Tasks: ['bbh']
+2026-09-21:23:11:16 WARNING  [evaluator:184] pretrained=None appears to be an instruct or chat variant but chat template is not applied. Recommend setting `apply_chat_template`
+        (optionally `fewshot_as_multiturn`).
+2026-09-21:23:11:16 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-21:23:11:16 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'Dream-org/Dream-v0-Instruct-7B', 'size_batch': 1, 'len_target': 256, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 151666, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_dream_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/dream_instruct__cm_clean.pt', 'path_report': 'results_bench_confmargin_dream_instruct/dream_instruct__cm_clean__bbh__runner.json', 'use_chat_template': True}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'Dream-org/Dream-v0-Instruct-7B', 'size_batch': 1, 'len_target': 256, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 151666, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_dream_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/dream_instruct__cm_clean.pt', 'path_report': 'results_bench_confmargin_dream_instruct/dream_instruct__cm_clean__bbh__runner.json', 'use_chat_template': True, 'device': 'cuda:1'} [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:00<00:00,  6.45it/s]Loading checkpoint shards:  50%|█████     | 2/4 [00:00<00:00,  6.37it/s]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:00<00:00,  6.56it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  7.38it/s]Loading checkpoint shards: 100%|██████████| 4/4 [00:00<00:00,  7.02it/s]
+2026-09-21:23:11:55 INFO     [evaluator_utils:472] Selected tasks:
+2026-09-21:23:11:55 INFO     [evaluator_utils:488] Group: bbh
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_boolean_expressions (bbh/cot_fewshot/boolean_expressions.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_causal_judgement (bbh/cot_fewshot/causal_judgement.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_date_understanding (bbh/cot_fewshot/date_understanding.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_disambiguation_qa (bbh/cot_fewshot/disambiguation_qa.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_dyck_languages (bbh/cot_fewshot/dyck_languages.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_formal_fallacies (bbh/cot_fewshot/formal_fallacies.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_geometric_shapes (bbh/cot_fewshot/geometric_shapes.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_hyperbaton (bbh/cot_fewshot/hyperbaton.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_five_objects (bbh/cot_fewshot/logical_deduction_five_objects.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_seven_objects (bbh/cot_fewshot/logical_deduction_seven_objects.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_logical_deduction_three_objects (bbh/cot_fewshot/logical_deduction_three_objects.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_movie_recommendation (bbh/cot_fewshot/movie_recommendation.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_multistep_arithmetic_two (bbh/cot_fewshot/multistep_arithmetic_two.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_navigate (bbh/cot_fewshot/navigate.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_object_counting (bbh/cot_fewshot/object_counting.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_penguins_in_a_table (bbh/cot_fewshot/penguins_in_a_table.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_reasoning_about_colored_objects (bbh/cot_fewshot/reasoning_about_colored_objects.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_ruin_names (bbh/cot_fewshot/ruin_names.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_salient_translation_error_detection (bbh/cot_fewshot/salient_translation_error_detection.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_snarks (bbh/cot_fewshot/snarks.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_sports_understanding (bbh/cot_fewshot/sports_understanding.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_temporal_sequences (bbh/cot_fewshot/temporal_sequences.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_five_objects (bbh/cot_fewshot/tracking_shuffled_objects_five_objects.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_seven_objects (bbh/cot_fewshot/tracking_shuffled_objects_seven_objects.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_tracking_shuffled_objects_three_objects (bbh/cot_fewshot/tracking_shuffled_objects_three_objects.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_web_of_lies (bbh/cot_fewshot/web_of_lies.yaml)
+2026-09-21:23:11:55 INFO     [evaluator_utils:496]   Task: bbh_cot_fewshot_word_sorting (bbh/cot_fewshot/word_sorting.yaml)
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_boolean_expressions: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_boolean_expressions from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_causal_judgement: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_causal_judgement from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_date_understanding: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_date_understanding from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_disambiguation_qa: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_disambiguation_qa from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_dyck_languages: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_dyck_languages from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_formal_fallacies: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_formal_fallacies from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_geometric_shapes: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_geometric_shapes from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_hyperbaton: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_hyperbaton from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_five_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_five_objects from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_seven_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_seven_objects from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_logical_deduction_three_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_logical_deduction_three_objects from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_movie_recommendation: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_movie_recommendation from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_multistep_arithmetic_two: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_multistep_arithmetic_two from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_navigate: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_navigate from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_object_counting: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_object_counting from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_penguins_in_a_table: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_penguins_in_a_table from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_reasoning_about_colored_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_reasoning_about_colored_objects from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_ruin_names: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_ruin_names from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_salient_translation_error_detection: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_salient_translation_error_detection from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_snarks: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_snarks from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_sports_understanding: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_sports_understanding from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_temporal_sequences: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_temporal_sequences from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_five_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_five_objects from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_seven_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_seven_objects from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_tracking_shuffled_objects_three_objects: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_tracking_shuffled_objects_three_objects from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_web_of_lies: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_web_of_lies from 3 to 3
+2026-09-21:23:11:55 INFO     [evaluator:314] bbh_cot_fewshot_word_sorting: Using gen_kwargs: {'max_gen_toks': 1024, 'until': ['</s>', 'Q', '\n\n'], 'do_sample': False, 'temperature': 0.0}
+2026-09-21:23:11:55 WARNING  [evaluator:335] Overwriting default num_fewshot of bbh_cot_fewshot_word_sorting from 3 to 3
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_boolean_expressions on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 440.98it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_causal_judgement on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 435.91it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_date_understanding on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 442.37it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_disambiguation_qa on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 442.90it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_dyck_languages on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 421.47it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_formal_fallacies on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 449.76it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_geometric_shapes on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 450.12it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_hyperbaton on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 443.69it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_five_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 452.08it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_seven_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 436.00it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_logical_deduction_three_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 441.89it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_movie_recommendation on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 421.70it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_multistep_arithmetic_two on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 437.41it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_navigate on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 454.40it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_object_counting on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 439.40it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_penguins_in_a_table on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 445.99it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_reasoning_about_colored_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 423.14it/s]
+2026-09-21:23:11:55 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_ruin_names on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 444.58it/s]
+2026-09-21:23:11:56 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_salient_translation_error_detection on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 392.05it/s]
+2026-09-21:23:11:56 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_snarks on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 425.50it/s]
+2026-09-21:23:11:56 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_sports_understanding on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 434.23it/s]
+2026-09-21:23:11:56 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_temporal_sequences on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 439.67it/s]
+2026-09-21:23:11:56 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_five_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 427.46it/s]
+2026-09-21:23:11:56 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_seven_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 439.53it/s]
+2026-09-21:23:11:56 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_tracking_shuffled_objects_three_objects on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 436.42it/s]
+2026-09-21:23:11:56 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_web_of_lies on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 397.72it/s]
+2026-09-21:23:11:56 INFO     [api.task:312] Building contexts for bbh_cot_fewshot_word_sorting on rank 0...
+  0%|          | 0/4 [00:00<?, ?it/s]100%|██████████| 4/4 [00:00<00:00, 448.62it/s]
+2026-09-21:23:11:56 INFO     [evaluator:589] Running generate_until requests
+Map:   0%|          | 0/108 [00:00<?, ? examples/s]Map:  25%|██▌       | 27/108 [00:00<00:00, 254.69 examples/s]Map:  61%|██████    | 66/108 [00:00<00:00, 325.41 examples/s]Map:  93%|█████████▎| 100/108 [00:00<00:00, 328.02 examples/s]Map: 100%|██████████| 108/108 [00:00<00:00, 312.45 examples/s]
+  0%|          | 0/108 [00:00<?, ?it/s]  1%|          | 1/108 [00:07<13:36,  7.63s/it]  2%|▏         | 2/108 [00:14<12:46,  7.23s/it]  3%|▎         | 3/108 [00:21<12:18,  7.04s/it]  4%|▎         | 4/108 [00:28<12:09,  7.01s/it]  5%|▍         | 5/108 [00:35<11:54,  6.93s/it]  6%|▌         | 6/108 [00:42<11:46,  6.93s/it]  6%|▋         | 7/108 [00:49<11:40,  6.94s/it]  7%|▋         | 8/108 [00:56<11:37,  6.97s/it]  8%|▊         | 9/108 [01:03<11:29,  6.97s/it]  9%|▉         | 10/108 [01:09<11:21,  6.96s/it] 10%|█         | 11/108 [01:16<11:11,  6.92s/it] 11%|█         | 12/108 [01:23<11:03,  6.91s/it] 12%|█▏        | 13/108 [01:30<10:55,  6.90s/it] 13%|█▎        | 14/108 [01:37<10:43,  6.85s/it] 14%|█▍        | 15/108 [01:43<10:31,  6.79s/it] 15%|█▍        | 16/108 [01:50<10:24,  6.79s/it] 16%|█▌        | 17/108 [01:57<10:19,  6.81s/it] 17%|█▋        | 18/108 [02:04<10:07,  6.75s/it] 18%|█▊        | 19/108 [02:10<10:01,  6.76s/it] 19%|█▊        | 20/108 [02:17<09:58,  6.80s/it] 19%|█▉        | 21/108 [02:24<09:56,  6.86s/it] 20%|██        | 22/108 [02:31<09:45,  6.80s/it] 21%|██▏       | 23/108 [02:38<09:41,  6.85s/it] 22%|██▏       | 24/108 [02:45<09:39,  6.89s/it] 23%|██▎       | 25/108 [02:52<09:35,  6.93s/it] 24%|██▍       | 26/108 [02:59<09:32,  6.98s/it] 25%|██▌       | 27/108 [03:06<09:21,  6.93s/it] 26%|██▌       | 28/108 [03:13<09:19,  6.99s/it] 27%|██▋       | 29/108 [03:20<09:11,  6.98s/it] 28%|██▊       | 30/108 [03:27<09:04,  6.98s/it] 29%|██▊       | 31/108 [03:34<08:53,  6.93s/it] 30%|██▉       | 32/108 [03:41<08:45,  6.92s/it] 31%|███       | 33/108 [03:48<08:36,  6.88s/it] 31%|███▏      | 34/108 [03:54<08:26,  6.85s/it] 32%|███▏      | 35/108 [04:01<08:21,  6.87s/it] 33%|███▎      | 36/108 [04:08<08:15,  6.88s/it] 34%|███▍      | 37/108 [04:15<08:08,  6.88s/it] 35%|███▌      | 38/108 [04:22<08:03,  6.90s/it] 36%|███▌      | 39/108 [04:29<07:57,  6.91s/it] 37%|███▋      | 40/108 [04:35<07:32,  6.65s/it] 38%|███▊      | 41/108 [04:41<07:10,  6.43s/it] 39%|███▉      | 42/108 [04:47<06:53,  6.26s/it] 40%|███▉      | 43/108 [04:53<06:39,  6.14s/it] 41%|████      | 44/108 [04:58<06:28,  6.07s/it] 42%|████▏     | 45/108 [05:05<06:24,  6.10s/it] 43%|████▎     | 46/108 [05:10<06:13,  6.02s/it] 44%|████▎     | 47/108 [05:16<06:03,  5.95s/it] 44%|████▍     | 48/108 [05:22<05:55,  5.92s/it] 45%|████▌     | 49/108 [05:28<05:46,  5.88s/it] 46%|████▋     | 50/108 [05:34<05:38,  5.84s/it] 47%|████▋     | 51/108 [05:39<05:32,  5.83s/it] 48%|████▊     | 52/108 [05:45<05:26,  5.84s/it] 49%|████▉     | 53/108 [05:51<05:19,  5.81s/it] 50%|█████     | 54/108 [05:57<05:12,  5.78s/it] 51%|█████     | 55/108 [06:03<05:06,  5.77s/it] 52%|█████▏    | 56/108 [06:08<05:01,  5.79s/it] 53%|█████▎    | 57/108 [06:15<05:05,  5.98s/it] 54%|█████▎    | 58/108 [06:21<05:05,  6.10s/it] 55%|█████▍    | 59/108 [06:28<05:06,  6.26s/it] 56%|█████▌    | 60/108 [06:34<04:59,  6.24s/it] 56%|█████▋    | 61/108 [06:40<04:47,  6.12s/it] 57%|█████▋    | 62/108 [06:46<04:44,  6.18s/it] 58%|█████▊    | 63/108 [06:52<04:39,  6.21s/it] 59%|█████▉    | 64/108 [06:59<04:37,  6.31s/it] 60%|██████    | 65/108 [07:06<04:36,  6.43s/it] 61%|██████    | 66/108 [07:13<04:35,  6.56s/it] 62%|██████▏   | 67/108 [07:19<04:32,  6.64s/it] 63%|██████▎   | 68/108 [07:26<04:27,  6.70s/it] 64%|██████▍   | 69/108 [07:33<04:22,  6.73s/it] 65%|██████▍   | 70/108 [07:40<04:18,  6.80s/it] 66%|██████▌   | 71/108 [07:47<04:12,  6.83s/it] 67%|██████▋   | 72/108 [07:53<04:03,  6.76s/it] 68%|██████▊   | 73/108 [08:00<03:58,  6.80s/it] 69%|██████▊   | 74/108 [08:07<03:47,  6.71s/it] 69%|██████▉   | 75/108 [08:13<03:38,  6.63s/it] 70%|███████   | 76/108 [08:20<03:31,  6.60s/it] 71%|███████▏  | 77/108 [08:26<03:21,  6.51s/it] 72%|███████▏  | 78/108 [08:32<03:13,  6.43s/it] 73%|███████▎  | 79/108 [08:39<03:06,  6.43s/it] 74%|███████▍  | 80/108 [08:45<02:59,  6.40s/it] 75%|███████▌  | 81/108 [08:52<02:52,  6.40s/it] 76%|███████▌  | 82/108 [08:58<02:46,  6.41s/it] 77%|███████▋  | 83/108 [09:04<02:40,  6.41s/it] 78%|███████▊  | 84/108 [09:11<02:34,  6.44s/it] 79%|███████▊  | 85/108 [09:18<02:29,  6.51s/it] 80%|███████▉  | 86/108 [09:24<02:24,  6.55s/it] 81%|████████  | 87/108 [09:31<02:18,  6.62s/it] 81%|████████▏ | 88/108 [09:37<02:11,  6.57s/it] 82%|████████▏ | 89/108 [09:44<02:05,  6.62s/it] 83%|████████▎ | 90/108 [09:51<01:59,  6.62s/it] 84%|████████▍ | 91/108 [09:58<01:53,  6.66s/it] 85%|████████▌ | 92/108 [10:04<01:46,  6.68s/it] 86%|████████▌ | 93/108 [10:11<01:40,  6.68s/it] 87%|████████▋ | 94/108 [10:18<01:33,  6.68s/it] 88%|████████▊ | 95/108 [10:24<01:26,  6.63s/it] 89%|████████▉ | 96/108 [10:31<01:19,  6.64s/it] 90%|████████▉ | 97/108 [10:38<01:13,  6.67s/it] 91%|█████████ | 98/108 [10:44<01:07,  6.70s/it] 92%|█████████▏| 99/108 [10:51<01:00,  6.72s/it] 93%|█████████▎| 100/108 [10:58<00:53,  6.74s/it] 94%|█████████▎| 101/108 [11:05<00:46,  6.71s/it] 94%|█████████▍| 102/108 [11:11<00:40,  6.73s/it] 95%|█████████▌| 103/108 [11:18<00:33,  6.72s/it] 96%|█████████▋| 104/108 [11:25<00:26,  6.72s/it] 97%|█████████▋| 105/108 [11:31<00:19,  6.66s/it] 98%|█████████▊| 106/108 [11:38<00:13,  6.67s/it] 99%|█████████▉| 107/108 [11:45<00:06,  6.67s/it]100%|██████████| 108/108 [11:51<00:00,  6.69s/it]100%|██████████| 108/108 [11:51<00:00,  6.59s/it]
+2026-09-21:23:23:55 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+[YUKAI][DEBUG][run_one:77] loaded router bundle routers_e2e/dream_instruct__cm_clean.pt: ['attn_last', 'pos_delta', 'mask_density'] norm=softmax_attn [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/runner_mlp_common.py
+[YUKAI][DEBUG][generate_until:185] Total unfinished: 0, duration: 0:11:52 [FILE] /home/yj25b.fsu/Workspace/dllm-meta-remote/dllm-meta-remote/run_benchmark_main.py
+test ({'id_model': 'Dream-org/Dream-v0-Instruct-7B', 'size_batch': 1, 'len_target': 256, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 151666, 'step_refresh_remainder': 16, 'step_refresh_remainder_prompt': 96, 'select_only_in_h': True, 'runner': 'run_dream_instruct_mlp', 'h': 8, 'path_router': 'routers_e2e/dream_instruct__cm_clean.pt', 'path_report': 'results_bench_confmargin_dream_instruct/dream_instruct__cm_clean__bbh__runner.json', 'use_chat_template': True}), gen_kwargs: ({}), limit: 4.0, num_fewshot: 3, batch_size: 1
+|                          Tasks                           |Version|  Filter  |n-shot|  Metric   |   |Value |   |Stderr|
+|----------------------------------------------------------|------:|----------|-----:|-----------|---|-----:|---|-----:|
+|bbh                                                       |      3|get-answer|     3|exact_match|↑  |0.3889|±  |0.0428|
+| - bbh_cot_fewshot_boolean_expressions                    |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_causal_judgement                       |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_date_understanding                     |      4|get-answer|     3|exact_match|↑  |0.7500|±  |0.2500|
+| - bbh_cot_fewshot_disambiguation_qa                      |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_dyck_languages                         |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_formal_fallacies                       |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_geometric_shapes                       |      4|get-answer|     3|exact_match|↑  |0.7500|±  |0.2500|
+| - bbh_cot_fewshot_hyperbaton                             |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_logical_deduction_five_objects         |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_logical_deduction_seven_objects        |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_logical_deduction_three_objects        |      4|get-answer|     3|exact_match|↑  |0.7500|±  |0.2500|
+| - bbh_cot_fewshot_movie_recommendation                   |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_multistep_arithmetic_two               |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_navigate                               |      4|get-answer|     3|exact_match|↑  |1.0000|±  |0.0000|
+| - bbh_cot_fewshot_object_counting                        |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_penguins_in_a_table                    |      4|get-answer|     3|exact_match|↑  |0.7500|±  |0.2500|
+| - bbh_cot_fewshot_reasoning_about_colored_objects        |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_ruin_names                             |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_salient_translation_error_detection    |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_snarks                                 |      4|get-answer|     3|exact_match|↑  |0.7500|±  |0.2500|
+| - bbh_cot_fewshot_sports_understanding                   |      4|get-answer|     3|exact_match|↑  |1.0000|±  |0.0000|
+| - bbh_cot_fewshot_temporal_sequences                     |      4|get-answer|     3|exact_match|↑  |0.5000|±  |0.2887|
+| - bbh_cot_fewshot_tracking_shuffled_objects_five_objects |      4|get-answer|     3|exact_match|↑  |0.0000|±  |0.0000|
+| - bbh_cot_fewshot_tracking_shuffled_objects_seven_objects|      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_tracking_shuffled_objects_three_objects|      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_web_of_lies                            |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+| - bbh_cot_fewshot_word_sorting                           |      4|get-answer|     3|exact_match|↑  |0.2500|±  |0.2500|
+
+|Groups|Version|  Filter  |n-shot|  Metric   |   |Value |   |Stderr|
+|------|------:|----------|-----:|-----------|---|-----:|---|-----:|
+|bbh   |      3|get-answer|     3|exact_match|↑  |0.3889|±  |0.0428|
+
