@@ -56,8 +56,8 @@ H = int(os.environ.get('H', 5))
 MAX_CONF_AGE = int(os.environ.get('MAX_CONF_AGE', 16))
 FOLDER_BUNDLES = os.environ.get('FOLDER_BUNDLES', 'routers_e2e')
 
-TASKS = ['gsm8k', 'minerva_math', 'bbh', 'humaneval', 'truthfulqa_gen']
-GROUP = 'mix_no_ifeval'
+TASKS = os.environ.get('TASKS', 'gsm8k,minerva_math,bbh,humaneval,truthfulqa_gen').split(',')
+GROUP = os.environ.get('GROUP', 'mix_no_ifeval')    # label recorded in the spec
 
 RECIPE = {
     'normalization': 'softmax_attn',
