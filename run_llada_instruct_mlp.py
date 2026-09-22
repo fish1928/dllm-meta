@@ -135,7 +135,8 @@ class RunModel(RunModelMLPBase):
 
                     # canvas-sized rebuild: x/x0/conf are len_full already, so the
                     # rebuild only refreshes the snapshot's unmask bookkeeping
-                    snapshot = SimpleLogitsSnapshot(x, x, id_mask, snapshot.x0, snapshot.conf)
+                    snapshot = SimpleLogitsSnapshot(x, x, id_mask, snapshot.x0, snapshot.conf,
+                                                    snapshot.margin, snapshot.age)
                     snapshot.update_x0_(idx_block.unsqueeze(0), logits_denoising)
                     conf_snapshot = snapshot.transform_logits(collector, logits_denoising, idx_transform=idx_block.unsqueeze(0))
                 else:
@@ -149,10 +150,14 @@ class RunModel(RunModelMLPBase):
                         router, spec_router = router_bundle
                         attn_rows_all = score_attn_layers[:, idx_in_attn, -idx_block.shape[-1]:].mean(dim=1)    # (num_layers, size_block)
                         conf_block = snapshot.conf[0, position_start:position_end]
+                        margin_block = snapshot.margin[0, position_start:position_end]
+                        age_block = snapshot.age[0, position_start:position_end]
                         idx_local = select_topk_candidates(
                             router, spec_router,
                             attn_rows_all.float(), conf_block.float(), mask_still,
                             idx_in_attn[-1], future_idx_selector.h,
+                            margin_block=margin_block.float(),
+                            age_block=age_block.float(),
                         )
                         idx_denoising = idx_local + position_start
                     else:
@@ -188,6 +193,7 @@ class RunModel(RunModelMLPBase):
                 snapshot.materialize_by_idx_(idx_transform_2d, conf_snapshot)
                 snapshot.update_this(1, idx_src=idx_transform_2d, x0=x)
                 idx_refresh = idx_transform_2d.squeeze(0)
+                snapshot.tick_age_()    # conf/margin entries written this step now age from 1
             # end
         # end for
 

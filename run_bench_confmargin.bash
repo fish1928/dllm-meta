@@ -57,7 +57,7 @@ case "$THREAD" in
         RUNNER=${RUNNER:-run_llada_semi_mlp_v2}; MARGIN_WIRED=1 ;;
     llada_instruct)
         ID_MODEL="GSAI-ML/LLaDA-8B-Instruct";    ID_MASK=126336
-        RUNNER=${RUNNER:-run_llada_instruct_mlp}; MARGIN_WIRED=0 ;;
+        RUNNER=${RUNNER:-run_llada_instruct_mlp}; MARGIN_WIRED=1 ;;
     dream_base)
         ID_MODEL="Dream-org/Dream-v0-Base-7B";   ID_MASK=151666
         RUNNER=${RUNNER:-run_dream_semi_mlp};    MARGIN_WIRED=0 ;;
