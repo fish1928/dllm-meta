@@ -29,6 +29,8 @@ METRIC_PREFERENCE = [
     'exact_match,strict-match',
     'exact_match,get-answer',
     'exact_match,flexible-extract',
+    'math_verify,none',        # minerva: sympy equivalence -- the honest check;
+                               # exact_match under-reads chat-style answers
     'exact_match,none',
     'acc,none',
     'acc_norm,none',
@@ -128,7 +130,16 @@ def metrics_for_task(payload, task):
 
 
 def headline_metric(metrics):
-    """(key, value) for the summary matrix cell."""
+    """(key, value) for the summary matrix cell.
+
+    A preferred metric at exactly 0.0 yields to a later preference with a
+    real value: chat-mode gsm8k legitimately scores 0 on strict-match (no
+    '#### N' format) while flexible-extract carries the true number -- the
+    cell shows the metric name, so the substitution is visible."""
+    candidates = [(key, metrics[key]) for key in METRIC_PREFERENCE if key in metrics]
+    for key, value in candidates:
+        if value != 0.0:
+            return key, value
     for key in METRIC_PREFERENCE:
         if key in metrics:
             return key, metrics[key]
