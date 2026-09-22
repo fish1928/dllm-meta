@@ -104,15 +104,12 @@ for spec in "${SPECS[@]}"; do
         if { [ "$THREAD" = "llada_instruct" ] || [ "$THREAD" = "dream_instruct" ]; }; then
             if [ "$task" = "gsm8k" ] && [ "$OFFICIAL_GSM8K" = "1" ]; then
                 flags_extra="--use_official_gsm8k_prompt"
-            elif [ "$task" = "humaneval" ] || [ "$task" = "mbpp" ]; then
-                # code tasks are completion tasks: collect WITHOUT the chat
-                # template (chat-wrapped answers are unscorable by lm_eval)
-                flags_extra="--plain_prompt"
-            elif [ "$THREAD" = "dream_instruct" ] \
-                    && { [ "$task" = "truthfulqa_gen" ] || [ "$task" = "bbh" ]; }; then
-                # Dream-Instruct's chat template harms non-dialogue tasks
-                # (zeroes tqa via early <|im_end|>, taxes bbh ~30% relative);
-                # the deployed protocol is plain, so collect plain
+            elif [ "$THREAD" = "dream_instruct" ] && [ "$task" = "minerva_math" ]; then
+                : # parked: dream_instruct minerva keeps the chat collection
+            else
+                # TEMPLATE-FREE for every other instruct cell: chat templates
+                # zero code/tqa and tax few-shot tasks on BOTH instruct models
+                # (measured per-task); deployed protocol is plain, collect plain
                 flags_extra="--plain_prompt"
             fi
         fi

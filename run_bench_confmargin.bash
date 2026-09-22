@@ -147,15 +147,14 @@ for name in "${ROUTERS[@]}"; do
                     gsm8k)
                         nshot=0
                         args_extra=",use_official_gsm8k_prompt=True" ;;
-                    humaneval|mbpp)
-                        # CODE TASKS RUN TEMPLATE-FREE: lm_eval scores them as
-                        # completion tasks (prompt + generation executed as one
-                        # unit) -- chat-wrapped answers are structurally
-                        # unscorable (near-dense probe: 0.0 with template,
-                        # 0.6 without). Matches the baseline suites' protocol.
-                        args_extra="" ;;
                     *)
-                        args_extra=",use_chat_template=True" ;;
+                        # TEMPLATE-FREE everywhere else: code tasks are
+                        # unscorable chat-wrapped (probe 0.0 vs 0.6), and the
+                        # operating-point probes showed plain beats chat on
+                        # bbh and minerva too (tqa: tie). Both instruct
+                        # threads now share this protocol; matches the
+                        # baseline suites.
+                        args_extra="" ;;
                 esac
                 if [ -n "$KSURFIX" ]; then
                     args_extra="$args_extra,step_refresh_remainder_surfix=$KSURFIX"
