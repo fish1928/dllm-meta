@@ -101,9 +101,14 @@ for spec in "${SPECS[@]}"; do
         fi
 
         flags_extra=""
-        if { [ "$THREAD" = "llada_instruct" ] || [ "$THREAD" = "dream_instruct" ]; } \
-                && [ "$task" = "gsm8k" ] && [ "$OFFICIAL_GSM8K" = "1" ]; then
-            flags_extra="--use_official_gsm8k_prompt"
+        if { [ "$THREAD" = "llada_instruct" ] || [ "$THREAD" = "dream_instruct" ]; }; then
+            if [ "$task" = "gsm8k" ] && [ "$OFFICIAL_GSM8K" = "1" ]; then
+                flags_extra="--use_official_gsm8k_prompt"
+            elif [ "$task" = "humaneval" ] || [ "$task" = "mbpp" ]; then
+                # code tasks are completion tasks: collect WITHOUT the chat
+                # template (chat-wrapped answers are unscorable by lm_eval)
+                flags_extra="--plain_prompt"
+            fi
         fi
 
         echo "[oracle] thread=$THREAD task=$task len_target=$len_target num_blocks=$num_blocks"

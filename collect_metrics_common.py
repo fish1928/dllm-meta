@@ -71,6 +71,11 @@ def build_parser(id_model, id_mask, len_target=256, num_blocks=1):
                              'leave unset for tail mockups (p10), which are already tails.')
     parser.add_argument('--filter_task', type=str, default=None,
                         help='keep only this subtask from a merged mockup CSV (e.g. one bbh subtask)')
+    parser.add_argument('--plain_prompt', action='store_true',
+                        help='force use_chat_template=False even on instruct collectors: '
+                             'code tasks (humaneval/mbpp) are completion tasks -- lm_eval '
+                             'executes prompt+generation as one unit, so chat-wrapped '
+                             'answers are structurally unscorable')
     parser.add_argument('--seed', type=int, default=233)
     return parser
 # end
@@ -237,6 +242,10 @@ class OracleCollectorBase:
 
     def __init__(self, args, klass_model):
         self.args = args
+
+        if getattr(args, 'plain_prompt', False):
+            self.use_chat_template = False    # per-task override (code tasks)
+        # end
 
         assert args.len_target % args.num_blocks == 0
         self.size_block = args.len_target // args.num_blocks

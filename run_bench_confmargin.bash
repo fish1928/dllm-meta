@@ -143,28 +143,38 @@ for name in "${ROUTERS[@]}"; do
         case "$THREAD" in
             llada_instruct)
                 num_blocks=$(( len_target / 32 ))    # block width 32
-                if [ "$task" = "gsm8k" ]; then
-                    nshot=0
-                    args_extra=",use_official_gsm8k_prompt=True"
-                else
-                    args_extra=",use_chat_template=True"
-                fi
+                case "$task" in
+                    gsm8k)
+                        nshot=0
+                        args_extra=",use_official_gsm8k_prompt=True" ;;
+                    humaneval|mbpp)
+                        # CODE TASKS RUN TEMPLATE-FREE: lm_eval scores them as
+                        # completion tasks (prompt + generation executed as one
+                        # unit) -- chat-wrapped answers are structurally
+                        # unscorable (near-dense probe: 0.0 with template,
+                        # 0.6 without). Matches the baseline suites' protocol.
+                        args_extra="" ;;
+                    *)
+                        args_extra=",use_chat_template=True" ;;
+                esac
                 if [ -n "$KSURFIX" ]; then
                     args_extra="$args_extra,step_refresh_remainder_surfix=$KSURFIX"
                 fi
                 ;;
             dream_instruct)
                 num_blocks=1
-                if [ "$task" = "gsm8k" ]; then
-                    nshot=0
-                    # official 4-shot CoT prompt (implies chat template) -- the
-                    # 0-shot bare-chat protocol caps dream_instruct at ~0.37
-                    # while the model is capable of ~0.8; oracle + router are
-                    # collected/trained under this prompt too
-                    args_extra=",use_official_gsm8k_prompt=True"
-                else
-                    args_extra=",use_chat_template=True"
-                fi
+                case "$task" in
+                    gsm8k)
+                        nshot=0
+                        # official 4-shot CoT prompt (implies chat template) --
+                        # bare 0-shot chat caps dream_instruct at ~0.37 while
+                        # the model is capable of ~0.8
+                        args_extra=",use_official_gsm8k_prompt=True" ;;
+                    humaneval|mbpp)
+                        args_extra="" ;;    # template-free code (see llada_instruct note)
+                    *)
+                        args_extra=",use_chat_template=True" ;;
+                esac
                 ;;
             *)
                 num_blocks=1
