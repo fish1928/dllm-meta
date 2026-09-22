@@ -49,6 +49,7 @@ FILTER_TASK=${FILTER_TASK:-}
 KR=${KR:-16}        # step_refresh_remainder        (generation clock)
 KP=${KP:-96}        # step_refresh_remainder_prompt (prompt clock; 0 = never)
 KSURFIX=${KSURFIX:-}    # step_refresh_remainder_surfix (llada_instruct only; empty = off)
+H_BUNDLE=${H_BUNDLE:-}  # override h for every run; empty = read h from each bundle's spec
 NUM_UNMASK=1
 
 case "$THREAD" in
@@ -129,7 +130,11 @@ for name in "${ROUTERS[@]}"; do
         continue
     fi
 
-    H_BUNDLE=$(spec_field "$path_spec" h 5)
+    if [ -n "$H_BUNDLE" ]; then
+        h_run="$H_BUNDLE"
+    else
+        h_run=$(spec_field "$path_spec" h 5)
+    fi
 
     for entry in "${BENCHMARKS[@]}"; do
         IFS=':' read -r task len_target nshot unsafe <<< "$entry"
@@ -216,9 +221,9 @@ for name in "${ROUTERS[@]}"; do
             humaneval)    [ "$LIMIT" -gt 148 ] && limit_task=148 ;;
         esac
 
-        model_args="id_model=$ID_MODEL,size_batch=1,len_target=$len_target,num_blocks=$num_blocks,num_unmask_per_step=$NUM_UNMASK,id_mask=$ID_MASK,step_refresh_remainder=$KR,step_refresh_remainder_prompt=$KP,select_only_in_h=True,runner=$RUNNER,h=$H_BUNDLE,path_router=$path_pt,path_report=$path_runner$args_extra"
+        model_args="id_model=$ID_MODEL,size_batch=1,len_target=$len_target,num_blocks=$num_blocks,num_unmask_per_step=$NUM_UNMASK,id_mask=$ID_MASK,step_refresh_remainder=$KR,step_refresh_remainder_prompt=$KP,select_only_in_h=True,runner=$RUNNER,h=$h_run,path_router=$path_pt,path_report=$path_runner$args_extra"
 
-        echo "=== [$THREAD] $tag (len=$len_target, blocks=$num_blocks, nshot=$nshot, h=$H_BUNDLE, limit=$limit_task/subtask) ==="
+        echo "=== [$THREAD] $tag (len=$len_target, blocks=$num_blocks, nshot=$nshot, h=$h_run, limit=$limit_task/subtask) ==="
 
         if [ -n "$DRY_RUN" ]; then
             echo "  HF_ALLOW_CODE_EVAL=$allow_code_eval accelerate launch --num_processes=1 run_benchmark_main.py --tasks $task --limit $limit_task --model test --batch_size 1 --num_fewshot $nshot --device $DEVICE $flag_unsafe --output_path $FOLDER_RESULTS/$tag --model_args \"$model_args\""
