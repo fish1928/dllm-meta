@@ -113,7 +113,9 @@ class CacheVOPlugin_Enabled(InspectorPlugin):
     @classmethod
     def set_force_mode(cls, mode):
         assert mode in (None, 'response', 'all')
-        cls.FORCE_MODE = mode
+        CacheVOPlugin_Enabled.FORCE_MODE = mode    # base-class slot: covers subclasses
+                                                   # (cls.X = ... via a subclass would
+                                                   # SHADOW, and reads target the base)
         return cls
     # end
 
@@ -272,6 +274,92 @@ class CacheVOPlugin_Enabled(InspectorPlugin):
         self.save_full_length(**{name_hidden: x_final})
 
         return x_final
+    # end
+# end
+
+
+class CacheVOPlugin_Batch_Enabled(CacheVOPlugin_Enabled):
+    '''Batched dLLM-Cache adaptive update (size_batch > 1, left-padded batch).
+
+    Per sample, the budget rows are selected by that sample's own V-cosine
+    similarity; ONE forward then computes the UNION of all samples' rows
+    (shared-index contract of the cache machinery), and the merge scatters
+    each sample's OWN rows only -- union rows another sample requested are
+    computed but discarded for this sample, keeping the method's per-sample
+    semantics (same faithfulness convention as the d2cache batch runner's
+    rollout ROW_MASK). Known deviation, documented: the KV cache does get
+    fresh K/V at all union rows for every sample (per-sample KV masking would
+    need a full cache clone per layer per step); at B=1 union == own rows and
+    behavior is exactly the single-sample plugin.
+
+    _OWN_MASK is set by select_hidden and consumed by the SAME layer's
+    load_merge_and_update_hidden before the next layer overwrites it.'''
+
+    _OWN_MASK = None    # (B, U) bool over the union rows
+
+    def select_hidden(self, idx_current, x_current, x_normed_current, v, name_length='response'):
+        force = CacheVOPlugin_Enabled.FORCE_MODE
+        if force is not None or not self.check_cached():
+            CacheVOPlugin_Batch_Enabled._OWN_MASK = None    # full rows: everyone owns everything
+            return CacheVOPlugin_Enabled.select_hidden(
+                self, idx_current, x_current, x_normed_current, v, name_length)
+        # end
+
+        len_prompt = self.__class__.LEN_PROMPT
+
+        v_response_previous = self.load(name_hidden='v', name_length=name_length)    # (B, Ts, H)
+        v_response = v[:, -v_response_previous.shape[1]:, :]
+        sims = F.cosine_similarity(v_response, v_response_previous, dim=-1).abs().clamp(0.0, 1.0)    # (B, Ts)
+
+        budget_update = self.get_update_budget(v_response)
+        idx_own_local = torch.argsort(sims, dim=-1)[:, :budget_update]    # (B, budget) least similar
+        idx_own = idx_own_local + len_prompt    # global rows, per sample
+
+        idx_union = torch.unique(idx_own.flatten())    # (U,) shared forward rows
+        mask_own = torch.zeros(v.shape[0], idx_union.shape[0], dtype=torch.bool, device=v.device)
+        lut = torch.full((int(idx_union.max()) + 1,), -1, dtype=torch.long, device=v.device)
+        lut[idx_union] = torch.arange(idx_union.shape[0], device=v.device)
+        mask_own.scatter_(1, lut[idx_own], True)
+        CacheVOPlugin_Batch_Enabled._OWN_MASK = mask_own
+
+        idx_3d_x = idx_union.view(1, -1, 1).expand(x_current.shape[0], -1, x_current.shape[-1])
+        idx_3d_v = idx_union.view(1, -1, 1).expand(v.shape[0], -1, v.shape[-1])
+        return (idx_union,
+                torch.gather(x_current, 1, idx_3d_x),
+                torch.gather(x_normed_current, 1, idx_3d_x),
+                torch.gather(v, 1, idx_3d_v))
+    # end
+
+    def load_merge_and_update_hidden(self, x_final, name_hidden='o'):
+        if not self.check_cached(name_hidden=name_hidden):
+            # first forward: nothing to merge, parent just caches full length
+            return CacheVOPlugin_Enabled.load_merge_and_update_hidden(self, x_final, name_hidden)
+        # end
+
+        # the batch runner always passes a SHARED 1-D idx (union rows on
+        # adaptive steps, full response / full window on forced ticks) -- the
+        # parent's (B, L)-viewed idx path is single-sample only
+        idx_current = self.load_vars('idx_current')[0]    # (U,)
+        B_update, L_update, H_update = x_final.shape
+        idx_3d = idx_current.view(1, L_update, 1).expand(B_update, L_update, H_update)
+
+        output_hidden = self.load(name_hidden=name_hidden, name_length='all')
+        mask_own = CacheVOPlugin_Batch_Enabled._OWN_MASK
+        if mask_own is not None:
+            # adaptive step: each sample keeps its cached value at union rows
+            # it did NOT select
+            cached_rows = torch.gather(output_hidden, 1, idx_3d)
+            x_final = torch.where(mask_own.unsqueeze(-1), x_final, cached_rows)
+        # end
+        output_hidden.scatter_(1, idx_3d, x_final)
+
+        self.save_full_length(**{name_hidden: output_hidden})
+        return output_hidden
+    # end
+
+    def clear_layer_past_and_output(self, model):
+        CacheVOPlugin_Batch_Enabled._OWN_MASK = None
+        CacheVOPlugin_Enabled.clear_layer_past_and_output(self, model)
     # end
 # end
 
