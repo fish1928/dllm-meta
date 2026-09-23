@@ -66,11 +66,15 @@ if [ ! -f "$path_pt" ] || [ ! -f "$path_spec" ]; then
     echo "ABORT: bundle $path_pt (+.json) missing"; exit 1
 fi
 
+if [ -n "${H_BUNDLE:-}" ]; then
+    :    # env override wins (e.g. bundle trained at H=8, inference at h=5)
+else
 H_BUNDLE=$(python - "$path_spec" <<'PYEOF'
 import json, sys
 print(json.load(open(sys.argv[1])).get('h', 5))
 PYEOF
 )
+fi
 
 mkdir -p "$FOLDER_RESULTS" "$FOLDER_LOGS"
 echo "[final] thread=$THREAD router=$ROUTER h=$H_BUNDLE Kr=$KR Kp=$KP limit=$LIMIT -> $FOLDER_RESULTS"
