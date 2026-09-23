@@ -71,6 +71,15 @@ class DiffusionConfig_Eval:
     d2c_inflate_w: Optional[int] = None    # gap inflation window (their eval default: 0)
     '''d2cache'''
 
+    '''dllm-cache reimplementation (run_llada_dllm_cache)'''
+    dllmc_v_rate: Optional[float] = None    # adaptive-update budget: fraction of
+                                            # RESPONSE rows recomputed per step by
+                                            # V-cosine-similarity (their
+                                            # transfer_ratio; paper: 0.25).
+                                            # Kp/Kr reuse step_refresh_remainder_prompt
+                                            # / step_refresh_remainder.
+    '''dllm-cache'''
+
     '''with mlp'''
     step_refresh_remainder: Optional[int] = None
     step_refresh_remainder_prompt: Optional[int] = None    # v2 runner: independent PROMPT

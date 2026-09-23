@@ -98,10 +98,22 @@ class CacheVOPlugin_Enabled(InspectorPlugin):
     LEN_PROMPT = 128
     LEN_RESPONSE = 256
     BUDGET_UPDATE_P = 0.25
+    FORCE_MODE = None    # per-step refresh override, set by the dllm-cache
+                         # runner: None = adaptive V-similarity budget update
+                         # (the normal between-refresh step); 'response' = full
+                         # response recompute (Kr tick, prompt stays cached);
+                         # 'all' = full recompute incl. prompt (Kp tick / step 0)
 
     @classmethod
     def set_prompt_length(cls, len_prompt):
         cls.LEN_PROMPT = len_prompt
+        return cls
+    # end
+
+    @classmethod
+    def set_force_mode(cls, mode):
+        assert mode in (None, 'response', 'all')
+        cls.FORCE_MODE = mode
         return cls
     # end
 
@@ -198,8 +210,24 @@ class CacheVOPlugin_Enabled(InspectorPlugin):
     ''' core functions'''
 
     def select_hidden(self, idx_current, x_current, x_normed_current, v, name_length='response'):
-        if not self.check_cached(): # check cached 的主体有问题
+        force = CacheVOPlugin_Enabled.FORCE_MODE
+        if force == 'all' or not self.check_cached(): # check cached 的主体有问题
             return idx_current, x_current, x_normed_current, v
+        # end
+
+        if force == 'response':
+            # Kr tick: recompute the WHOLE response, keep the prompt cached
+            # (assumes the runner passes the full window, positions == rows)
+            len_prompt = self.__class__.LEN_PROMPT
+            len_response = self.__class__.LEN_RESPONSE
+            idx_new = torch.arange(len_prompt, len_prompt + len_response,
+                                   dtype=torch.long, device=v.device)
+            idx_3d_x = idx_new.view(1, -1, 1).expand(x_current.shape[0], -1, x_current.shape[-1])
+            idx_3d_v = idx_new.view(1, -1, 1).expand(v.shape[0], -1, v.shape[-1])
+            return (idx_new,
+                    torch.gather(x_current, 1, idx_3d_x),
+                    torch.gather(x_normed_current, 1, idx_3d_x),
+                    torch.gather(v, 1, idx_3d_v))
         # end
 
         v_response_previous = self.load(name_hidden='v', name_length=name_length)
