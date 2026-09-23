@@ -45,10 +45,21 @@ PORT_BASE=${PORT_BASE:-13000}
 mkdir -p "$FOLDER_RESULTS" "$FOLDER_LOGS" "$FOLDER_CLAIMS"
 
 # thread:task:len:nshot:limit:mode
-#   limit: number = --limit N (per subtask for groups); full = no --limit
+#   limit: number = --limit N, applied PER SUBTASK by lm_eval:
+#          minerva 500 -> 500 x 7 ~ 3,500 docs (counting_and_prob caps at 474)
+#          bbh    125 -> 125 x 27 = 3,375 docs
+#          full = no --limit (gsm8k 1319, mbpp 500, humaneval 164, tqa 817)
 #   mode:  plain | official (gsm8k instruct) | code (plain + fence + unsafe)
 # LARGEST JOBS FIRST so the queue balances across workers.
 JOBS=(
+    "llada_base:minerva_math:512:4:500:plain"
+    "llada_instruct:minerva_math:512:4:500:plain"
+    "dream_base:minerva_math:512:4:500:plain"
+    "dream_instruct:minerva_math:512:4:500:plain"
+    "llada_base:bbh:256:3:125:plain"
+    "llada_instruct:bbh:256:3:125:plain"
+    "dream_base:bbh:256:3:125:plain"
+    "dream_instruct:bbh:256:3:125:plain"
     "llada_base:gsm8k:256:5:full:plain"
     "llada_instruct:gsm8k:256:0:full:official"
     "dream_base:gsm8k:256:5:full:plain"
@@ -61,18 +72,10 @@ JOBS=(
     "llada_instruct:mbpp:512:3:full:code"
     "dream_base:mbpp:512:3:full:code"
     "dream_instruct:mbpp:512:3:full:code"
-    "llada_base:minerva_math:512:4:72:plain"
-    "llada_instruct:minerva_math:512:4:72:plain"
-    "dream_base:minerva_math:512:4:72:plain"
-    "dream_instruct:minerva_math:512:4:72:plain"
     "llada_base:humaneval:512:0:full:code"
     "llada_instruct:humaneval:512:0:full:code"
     "dream_base:humaneval:512:0:full:code"
     "dream_instruct:humaneval:512:0:full:code"
-    "llada_base:bbh:256:3:5:plain"
-    "llada_instruct:bbh:256:3:5:plain"
-    "dream_base:bbh:256:3:5:plain"
-    "dream_instruct:bbh:256:3:5:plain"
 )
 
 thread_params () {    # sets ID_MODEL, ID_MASK, RUNNER for $1
