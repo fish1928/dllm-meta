@@ -28,7 +28,16 @@ set -u
 
 GPU_LIST=${GPU_LIST:-"0 1 2 3 4 5 6 7"}
 DRY_RUN=${DRY_RUN:-}
-FOLDER_RESULTS=${FOLDER_RESULTS:-results_full_denoise}
+SMOKE=${SMOKE:-}    # SMOKE=1: real runs at --limit 1 into results_smoke_env --
+                    # exercises model downloads, tokenizers, runners, lm_eval
+                    # task loading (antlr/math_verify/code-eval gates), and
+                    # GPU pinning; ~30-60 min on 8 GPUs. Validate the
+                    # environment with this BEFORE the real launch.
+if [ -n "$SMOKE" ]; then
+    FOLDER_RESULTS=${FOLDER_RESULTS:-results_smoke_env}
+else
+    FOLDER_RESULTS=${FOLDER_RESULTS:-results_full_denoise}
+fi
 FOLDER_LOGS="$FOLDER_RESULTS/logs"
 FOLDER_CLAIMS="$FOLDER_RESULTS/claims"
 PORT_BASE=${PORT_BASE:-13000}
@@ -103,6 +112,7 @@ run_job () {    # $1 = gpu id, $2 = job index, $3 = job spec
 
     local flag_limit=""
     [ "$limit" != "full" ] && flag_limit="--limit $limit"
+    [ -n "$SMOKE" ] && flag_limit="--limit 1"    # 1 doc (1/subtask for groups)
 
     local path_runner="$FOLDER_RESULTS/${tag}__runner.json"
     local port=$(( PORT_BASE + idx ))
@@ -155,4 +165,30 @@ wait
 echo
 n_done=$(ls "$FOLDER_RESULTS"/*.done 2>/dev/null | wc -l)
 echo "ALL WORKERS DONE: $n_done/${#JOBS[@]} jobs complete -> $FOLDER_RESULTS"
+
+# verdict table: per job, done/failed + the lm_eval metrics actually produced
+# (proves scoring deps work: strict/flexible, math_verify, pass@1, bleu_acc)
+if [ -z "$DRY_RUN" ]; then
+    python - "$FOLDER_RESULTS" <<'PYEOF'
+import glob, json, os, sys
+folder = sys.argv[1]
+print(f'\n===== verdict ({folder}) =====')
+tags = sorted(os.path.basename(p)[:-len('__runner.json')]
+              for p in glob.glob(os.path.join(folder, '*__runner.json')))
+for tag in tags:
+    done = os.path.exists(os.path.join(folder, tag + '.done'))
+    paths = glob.glob(os.path.join(folder, tag, '**', 'results_*.json'), recursive=True)
+    metrics = 'no lm_eval results'
+    if paths:
+        results = json.load(open(max(paths, key=os.path.getmtime))).get('results', {})
+        parts = []
+        for name, entry in results.items():
+            for key, value in entry.items():
+                if isinstance(value, float) and 'stderr' not in key and key != 'alias':
+                    parts.append(f'{key}={value:.3f}')
+            break    # first (group/main) entry is enough for the verdict
+        metrics = ' '.join(parts) or 'no numeric metrics'
+    print(f'  {"OK  " if done else "FAIL"} {tag:42s} {metrics}')
+PYEOF
+fi
 echo "summary: python build_bench_html.py --results $FOLDER_RESULTS"
