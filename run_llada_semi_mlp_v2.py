@@ -79,6 +79,13 @@ class RunModel(RunModelMLPBase):
             idx_block = torch.arange(position_start, position_end, dtype=torch.long, device=x.device)
             shape_target = (x.shape[0], position_end, -1)
 
+            # attention-row anchor fallback: on a PRE-FILLED canvas (experiment-2
+            # continuations) masks < steps, so some steps have quota 0 and the
+            # previous idx_transform_2d comes back EMPTY -- the router branch
+            # then keeps the most recent non-empty anchor instead of crashing.
+            # Benchmark runs (masks == steps, quota >= 1) never trigger this.
+            idx_in_attn_last = torch.zeros(1, dtype=torch.long, device=x.device)
+
             for step in range(step_per_block):
 
                 # PROMPT clock (Kp): independent of the generation clock
@@ -131,6 +138,11 @@ class RunModel(RunModelMLPBase):
                 else:
                     score_attn_layers = plugin_cache_attn.collect_attn_from_all_blocks(model)    # (num_layers, size_block, size_block)
                     idx_in_attn = idx_transform_2d.squeeze(0) - position_start    # block is contiguous: global position -> block-local rows
+                    if idx_in_attn.numel() == 0:    # zero-quota previous step (pre-filled canvas)
+                        idx_in_attn = idx_in_attn_last
+                    else:
+                        idx_in_attn_last = idx_in_attn
+                    # end
                     mask_still = (x[0, position_start:position_end] == id_mask)
 
                     if router_bundle is not None:

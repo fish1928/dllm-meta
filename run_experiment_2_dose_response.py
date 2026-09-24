@@ -63,7 +63,10 @@ ID_MASK = 126336
 LEN_GEN = 256
 N_DOCS = 64
 FOLDER_DEFAULT = 'results_experiment_2_dose'
-GRID_DEFAULT = '0,10,20,30,40,50,60,70,80,90'
+GRID_DEFAULT = ','.join(str(n) for n in range(0, 91, 2))    # 0,2,...,90: 46 points
+                                                            # (supersets the old
+                                                            # 10%-grid, so resume
+                                                            # reuses those rows)
 TOPK_TEACHER = 32    # teacher top-K dump per position, for diagram (b)'s
                      # p(student token); ~1 MB at 64x256x32 float16
 P_FLOOR = 1e-4       # p_teacher when the student token is outside the top-K
