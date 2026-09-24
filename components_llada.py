@@ -6,6 +6,14 @@ from tools_debug import jprint
 
 class SimpleLogitsSnapshot:
 
+    TRACE = None    # opt-in unmask-trajectory capture (experiment 2): set to []
+                    # before a run and every update_this commit appends
+                    # (positions, tokens) as numpy arrays -- one entry per decode
+                    # step, empty entries for zero-quota steps, so the entry
+                    # index IS the step index. All four method runners commit
+                    # through here, so this single hook traces any of them.
+                    # Reset to None afterwards; costs nothing when None.
+
     def __init__(self, x, y, id_mask, x0=None, conf=None, margin=None, age=None):
         self.id_mask = id_mask
 
@@ -133,6 +141,12 @@ class SimpleLogitsSnapshot:
 
         for k, v in kwargs.items(): # k is a local property name, v is the target to scatter
             v.scatter_(dim, idx_transform, torch.gather(getattr(self, k), dim=dim, index=idx_src))
+        # end
+
+        if SimpleLogitsSnapshot.TRACE is not None and 'x0' in kwargs:
+            SimpleLogitsSnapshot.TRACE.append((
+                idx_transform[0].detach().cpu().numpy().copy(),
+                torch.gather(self.x0, dim, idx_src)[0].detach().cpu().numpy().copy()))
         # end
 
         return self

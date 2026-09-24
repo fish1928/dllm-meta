@@ -1,0 +1,60 @@
+# Experiment 2 method settings -- MATCHED-TFLOPs design.
+# Target = OURS, fixed by design decision: Kp=64, Kr=16, h=5
+#   -> 138.9 TF/doc analytic (P~900, gsm8k 5-shot; model:
+#      run_experiment_6_horizontal_equal_quality.flops_doc).
+#
+# Other methods tuned to the closest REACHABLE budget:
+#   d2cache    k=32, rollout OFF -> 149.8 TF/doc (1.08x)  MATCHED.
+#              Rollout-on floor is ~269 TF (the p*T nucleus rows alone
+#              exceed the whole budget), so p=0 is the only matched arm;
+#              their eval default w=0 is kept.
+#   fastdllm   nb=8 (block 32; its cost MINIMUM over nb) -> 268.1 TF (1.93x).
+#              Cannot match: unavoidable excess, documented.
+#   dllmcache  cannot go below ~700 TF/doc at ANY setting (full-window
+#              V-projection + LM-head floor), so matching is impossible;
+#              it runs at its paper-region campaign setting -> 976.8 TF
+#              (7.0x the budget -- a documented compute ADVANTAGE for it).
+#              Absolute-floor alternative (outside the paper's rho=0.25,
+#              Kr<=8 region): dllmc_v_rate=0.05, kr=128, kp=128 -> 696.7 TF.
+#
+# Read by run_experiment_2_dose_response.py (--methods_yaml); the 'args'
+# blocks go into DiffusionConfig_Eval verbatim.
+
+target_tflops_doc: 138.9
+
+methods:
+  ours:
+    runner: run_llada_semi_mlp_v2
+    num_blocks: 1
+    tflops_pred: 138.9
+    args:
+      step_refresh_remainder: 16
+      step_refresh_remainder_prompt: 64
+      select_only_in_h: true
+      h: 5
+      path_router: routers_e2e/llada_base__cm_clean.pt
+
+  d2cache:
+    runner: run_llada_d2cache
+    num_blocks: 1
+    tflops_pred: 149.8
+    args:
+      d2c_k: 32
+      d2c_sigma: 10.0
+      d2c_rollout_p: 0.0
+      d2c_conf_mode: live
+
+  fastdllm:
+    runner: run_llada_fastdllm
+    num_blocks: 8
+    tflops_pred: 268.1
+    args: {}
+
+  dllmcache:
+    runner: run_llada_dllm_cache
+    num_blocks: 1
+    tflops_pred: 976.8
+    args:
+      dllmc_v_rate: 0.25
+      step_refresh_remainder: 8
+      step_refresh_remainder_prompt: 64
