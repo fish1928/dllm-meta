@@ -146,9 +146,13 @@ class CacheVOPlugin_Enabled(InspectorPlugin):
 
     ''' handle hidden extraction'''
 
+    # contiguous regions -> direct row slicing (same rows, same order as the
+    # historical boolean-mask version, which built its mask via torch.arange
+    # on the CPU and indexed the CUDA cache with it: a host-device copy plus
+    # sync per layer per step -- LLaDA GPU util 23-45%, ~5x wall-clock lost)
     _MAP_LENGTH_TYPE_EXTRACT_LAMBDA = {
-        'prompt': lambda x, len_prompt, len_response: x[(torch.arange(len_prompt + len_response) < len_prompt).view(1,-1,1).expand(x.shape[0],-1,x.shape[-1])].reshape(x.shape[0], -1, x.shape[-1]),
-        'response': lambda x, len_prompt, len_response: x[(torch.arange(len_prompt + len_response) >= len_prompt).view(1,-1,1).expand(x.shape[0],-1,x.shape[-1])].reshape(x.shape[0], -1, x.shape[-1]),
+        'prompt': lambda x, len_prompt, len_response: x[:, :len_prompt, :],
+        'response': lambda x, len_prompt, len_response: x[:, len_prompt:len_prompt + len_response, :],
         'all': lambda x, len_prompt, len_response: x
     }
 
@@ -211,6 +215,22 @@ class CacheVOPlugin_Enabled(InspectorPlugin):
 
     ''' core functions'''
 
+    def _refresh_response_v_cache(self, v_response):
+        # official dLLM-Cache semantics (cache_hook_LLaDA: kv_cache_gen["v"]
+        # = v_gen): on EVERY adaptive step the whole response V cache is
+        # replaced with the fresh V -- V is cheap and always fresh, only
+        # Q/K/attention/FFN reuse is selective -- so any forwarded row's
+        # attention consumes fresh V at every response position. K stays
+        # selected-rows-only, exactly like theirs. Called AFTER the cosine
+        # comparison, so the drift signal stays fresh-vs-last-step (theirs).
+        k_past, v_past = self.load_attrs('layer_past')[0]    # v: (B, n_kv, L, hd)
+        B_v, L_v, H_v = v_response.shape
+        n_kv = v_past.shape[1]
+        len_prompt = self.__class__.LEN_PROMPT
+        v_fresh = v_response.view(B_v, L_v, n_kv, H_v // n_kv).transpose(1, 2)
+        v_past[:, :, len_prompt:len_prompt + L_v, :] = v_fresh.to(v_past.dtype)
+    # end
+
     def select_hidden(self, idx_current, x_current, x_normed_current, v, name_length='response'):
         force = CacheVOPlugin_Enabled.FORCE_MODE
         if force == 'all' or not self.check_cached(): # check cached 的主体有问题
@@ -239,6 +259,7 @@ class CacheVOPlugin_Enabled(InspectorPlugin):
 
         if name_length == 'response':
             idx_sim_sorted = idx_sim_sorted + self.__class__.LEN_PROMPT    # turn it into global index
+            self._refresh_response_v_cache(v_response)    # official: ALL gen V fresh, every step
         # end
 
         budget_update = self.get_update_budget(v_response)
@@ -310,6 +331,9 @@ class CacheVOPlugin_Batch_Enabled(CacheVOPlugin_Enabled):
         v_response_previous = self.load(name_hidden='v', name_length=name_length)    # (B, Ts, H)
         v_response = v[:, -v_response_previous.shape[1]:, :]
         sims = F.cosine_similarity(v_response, v_response_previous, dim=-1).abs().clamp(0.0, 1.0)    # (B, Ts)
+        self._refresh_response_v_cache(v_response)    # official: ALL gen V fresh, every step
+                                                      # (per-sample faithful: each sample's own
+                                                      # row values; no _OWN_MASK concern for V)
 
         budget_update = self.get_update_budget(v_response)
         idx_own_local = torch.argsort(sims, dim=-1)[:, :budget_update]    # (B, budget) least similar
