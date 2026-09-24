@@ -40,6 +40,12 @@ from plugins_llada import SaveKVPreviousPlugin_Disabled, CachePastKVPlugin_Enabl
 
 class RunModel:
 
+    DREAM_SHIFT = False    # run_dream_dllm_cache overrides: token at p is predicted
+                           # by output row p-1, so decode reads shifted rows and the
+                           # plugin's prompt/response boundary moves back by one row
+                           # (row len_prompt-1 predicts the FIRST response token and
+                           # must stay adaptively updatable, not prompt-frozen)
+
     def __init__(self):
         self.report = RunnerReport()
         self.ids_stop = None
@@ -106,7 +112,7 @@ class RunModel:
             # end
 
             logits = model(x, idx_current=idx_full, shape_target=shape_target).logits
-            logits_gen = logits[:, idx_gen]
+            logits_gen = logits[:, idx_gen - 1] if self.DREAM_SHIFT else logits[:, idx_gen]
 
             snapshot.update_x0_(idx_gen_2d, logits_gen)
             conf_snapshot = snapshot.transform_logits(collector, logits_gen, idx_transform=idx_gen_2d)
@@ -142,11 +148,14 @@ class RunModel:
     # end
 
     def run_one(self, model, tokenizer, config, *args, **kwargs):
-        # per-sample plugin setup: window geometry + adaptive budget
+        # per-sample plugin setup: window geometry + adaptive budget. Under the
+        # dream shift, the boundary moves back one row so the row PREDICTING the
+        # first response token joins the adaptively-updated response region.
         v_rate = config.dllmc_v_rate if getattr(config, 'dllmc_v_rate', None) is not None else 0.25
+        shift = 1 if self.DREAM_SHIFT else 0
         config.klass_cache_vo\
-            .set_prompt_length(kwargs['len_prompt'])\
-            .set_response_length(config.size_block)\
+            .set_prompt_length(kwargs['len_prompt'] - shift)\
+            .set_response_length(config.size_block + shift)\
             .set_update_budget_p(v_rate)
 
         plugin_cache_vo = config.klass_cache_vo()

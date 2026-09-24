@@ -80,6 +80,11 @@ class DiffusionConfig_Eval:
                                             # / step_refresh_remainder.
     '''dllm-cache'''
 
+    # fast-dllm (run_llada_fastdllm / run_dream_fastdllm) is CACHE-ONLY: the
+    # DualCache with the framework's uniform greedy decode. It has no method
+    # parameters beyond num_blocks (paper block 32 -> num_blocks=len/32); the
+    # paper's confidence-threshold parallel decoding is intentionally not used.
+
     '''with mlp'''
     step_refresh_remainder: Optional[int] = None
     step_refresh_remainder_prompt: Optional[int] = None    # v2 runner: independent PROMPT

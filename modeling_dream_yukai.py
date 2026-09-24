@@ -207,8 +207,12 @@ class DreamDecoderLayerYukai(nn.Module):
         v_current = v_current.view(B, T, n_kv_heads, head_dim).transpose(1, 2)
 
         # RoPE at absolute positions BEFORE the cache merge: the K cache stores rotated
-        # keys, so only the current T rows are rotated each step.
-        pos_cos, pos_sin = position_embeddings
+        # keys, so only the current T rows are rotated each step. The tables arrive
+        # FULL-length and are selected here by idx_current, because plugin_cache_vo
+        # may narrow idx_current per layer (a model-level selection would misalign).
+        pos_cos_full, pos_sin_full = position_embeddings
+        pos_cos = pos_cos_full.index_select(0, idx_current)
+        pos_sin = pos_sin_full.index_select(0, idx_current)
         q_current_rotated, k_current = apply_rotary_pos_emb_indexed(q_current, k_current, pos_cos, pos_sin)
 
         k_final, v_final = self.plugin_cache_past_kv.load()   # merges rotated k_current into the rotated-K cache
@@ -236,9 +240,15 @@ class DreamDecoderLayerYukai(nn.Module):
 
         x_normed_current = self.input_layernorm(x_current)
 
+        # V first, then the VO plugin (dllm-cache adaptive update) may narrow the
+        # rows to its per-layer budget; Q/K are only projected for the kept rows.
+        # Same hook order as LLaDALlamaBlock; CacheVOPlugin_Disabled passes through.
+        v = self.self_attn.v_proj(x_normed_current)
+        idx_current, x_current, x_normed_current, v = \
+            self.plugin_cache_vo.select_hidden(idx_current, x_current, x_normed_current, v)
+
         q_current = self.self_attn.q_proj(x_normed_current)
         k = self.self_attn.k_proj(x_normed_current)
-        v = self.self_attn.v_proj(x_normed_current)
 
         attn_current = self.attention(
             q_current, k, v,
@@ -254,6 +264,7 @@ class DreamDecoderLayerYukai(nn.Module):
         x_final = self.mlp(x_final)
         x_final = og_x_final + x_final
 
+        x_final = self.plugin_cache_vo.load_merge_and_update_hidden(x_final)
         return x_final
     # end
 # end
@@ -369,12 +380,9 @@ class DreamBaseModelYukai(DreamPreTrainedModelYukai):
             shape_target = (batch_size, seq_len, -1)
         # end
 
-        # cos/sin selected once at the absolute positions of this forward, shared by all layers
-        cos_full, sin_full = self._get_rope_table(shape_target[1], input_ids.device)
-        position_embeddings = (
-            cos_full.index_select(0, idx_current),
-            sin_full.index_select(0, idx_current),
-        )
+        # FULL cos/sin tables shared by all layers; each layer's attention selects
+        # its own rows by idx_current (the VO plugin may narrow idx per layer)
+        position_embeddings = self._get_rope_table(shape_target[1], input_ids.device)
 
         for layer in self.layers:
             x = layer(
