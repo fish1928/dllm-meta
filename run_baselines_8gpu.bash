@@ -41,6 +41,8 @@ set -u
 
 GPU_LIST=${GPU_LIST:-"0 1 2 3 4 5 6 7"}
 DRY_RUN=${DRY_RUN:-}
+LIMIT_ALL=${LIMIT_ALL:-}    # probe mode: force --limit N on EVERY job (use a
+                            # fresh FOLDER_RESULTS so probes never mix with reals)
 SMOKE=${SMOKE:-}    # SMOKE=1: real runs at --limit 1 into results_smoke_baselines
 if [ -n "$SMOKE" ]; then
     FOLDER_RESULTS=${FOLDER_RESULTS:-results_smoke_baselines}
@@ -148,6 +150,7 @@ run_job () {    # $1 = gpu id, $2 = job index, $3 = job spec
 
     local flag_limit=""
     [ "$LIMIT" != "full" ] && flag_limit="--limit $LIMIT"
+    [ -n "$LIMIT_ALL" ] && flag_limit="--limit $LIMIT_ALL"    # probe override, every job
     [ -n "$SMOKE" ] && flag_limit="--limit 1"    # 1 doc (1/subtask for groups)
 
     local path_runner="$FOLDER_RESULTS/${tag}__runner.json"
