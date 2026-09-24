@@ -25,9 +25,9 @@
 #
 # Usage:
 #   python run_experiment_horizontal.py sweep --gpus 0,1,2,3,4,5,6,7
-#   python run_experiment_horizontal.py report [--tol 0.03]
+#   python run_experiment_6_horizontal_equal_quality.py report [--tol 0.03]
 #   python run_experiment_horizontal.py batch --gpus 0,1,2,3
-#   python run_experiment_horizontal.py batch_report
+#   python run_experiment_6_horizontal_equal_quality.py batch_report
 #   ... sweep --dry     (print commands only)
 # Resume-safe: a job with a runner report AND lm_eval results is skipped.
 #################################################
@@ -368,6 +368,9 @@ def main():
     parser.add_argument('--gpus', default='0,1,2,3,4,5,6,7')
     parser.add_argument('--tol', type=float, default=0.03,
                         help='equal-quality band: score >= dense - tol')
+    parser.add_argument('--only', default='',
+                        help='run only jobs whose tag contains this substring '
+                             '(e.g. --only ours / --only dense / --only bs16)')
     parser.add_argument('--dry', action='store_true')
     config = parser.parse_args()
 
@@ -376,15 +379,16 @@ def main():
 
     if config.stage == 'sweep':
         jobs = [job + (1,) for job in jobs_sweep()]    # size_batch=1
+        jobs = [job for job in jobs if config.only in job[0]]
         run_jobs(jobs, config.folder, gpus, config.dry)
-        print('\nsweep finished; next: python run_experiment_horizontal.py report')
+        print('\nsweep finished; next: python run_experiment_6_horizontal_equal_quality.py report')
     elif config.stage == 'report':
         stage_report(config.folder, config.tol)
     elif config.stage == 'batch':
         chosen = json.load(open(os.path.join(config.folder, 'chosen.json')))
-        jobs = jobs_batch(chosen)
+        jobs = [job for job in jobs_batch(chosen) if config.only in job[0]]
         run_jobs(jobs, config.folder, gpus, config.dry)
-        print('\nbatch finished; next: python run_experiment_horizontal.py batch_report')
+        print('\nbatch finished; next: python run_experiment_6_horizontal_equal_quality.py batch_report')
     elif config.stage == 'batch_report':
         stage_batch_report(config.folder)
     # end
