@@ -1,0 +1,47 @@
+{
+  "path_router": "routers_e2e/llada_instruct__cm_clean.pt",
+  "num_samples": 5,
+  "duration_total_s": 60.68,
+  "rows": [
+    {
+      "id_sample": 0,
+      "len_prompt": 1062,
+      "has_done": true,
+      "duration_s": 12.7869,
+      "mem_alloc_gib": 16.068,
+      "mem_reserved_gib": 16.195
+    },
+    {
+      "id_sample": 1,
+      "len_prompt": 1065,
+      "has_done": true,
+      "duration_s": 12.0012,
+      "mem_alloc_gib": 16.07,
+      "mem_reserved_gib": 16.195
+    },
+    {
+      "id_sample": 2,
+      "len_prompt": 1079,
+      "has_done": true,
+      "duration_s": 11.9716,
+      "mem_alloc_gib": 16.082,
+      "mem_reserved_gib": 16.5
+    },
+    {
+      "id_sample": 3,
+      "len_prompt": 819,
+      "has_done": true,
+      "duration_s": 11.9566,
+      "mem_alloc_gib": 16.082,
+      "mem_reserved_gib": 16.5
+    },
+    {
+      "id_sample": 4,
+      "len_prompt": 1092,
+      "has_done": true,
+      "duration_s": 11.9591,
+      "mem_alloc_gib": 16.102,
+      "mem_reserved_gib": 16.809
+    }
+  ]
+}

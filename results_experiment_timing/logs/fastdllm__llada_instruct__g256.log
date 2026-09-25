@@ -1,0 +1,31 @@
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+2026-09-25:15:29:50 WARNING  [config.evaluate_config:287] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-09-25:15:29:52 INFO     [_cli.run:388] Selected Tasks: ['gsm8k']
+2026-09-25:15:29:52 WARNING  [evaluator:184] pretrained=None appears to be an instruct or chat variant but chat template is not applied. Recommend setting `apply_chat_template`
+        (optionally `fewshot_as_multiturn`).
+2026-09-25:15:29:52 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-25:15:29:52 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_fastdllm', 'path_report': 'results_experiment_timing/fastdllm__llada_instruct__g256__runner.json'}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_fastdllm', 'path_report': 'results_experiment_timing/fastdllm__llada_instruct__g256__runner.json', 'device': 'cuda'} [FILE] /home/exx/Workspace/dllm-meta-experiment/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:01,  2.95it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:01,  3.37it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  3.72it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:01<00:00,  3.93it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:01<00:00,  3.80it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  3.69it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:01<00:00,  3.66it/s]
+2026-09-25:15:29:57 INFO     [evaluator_utils:446] Selected tasks:
+2026-09-25:15:29:57 INFO     [evaluator_utils:480] Task: gsm8k (gsm8k/gsm8k.yaml)
+2026-09-25:15:29:57 INFO     [evaluator:314] gsm8k: Using gen_kwargs: {'until': ['Question:', '</s>', '<|im_end|>'], 'do_sample': False, 'temperature': 0.0}
+2026-09-25:15:29:57 WARNING  [evaluator:333] Overwriting default num_fewshot of gsm8k from 5 to 5
+2026-09-25:15:29:57 INFO     [api.task:312] Building contexts for gsm8k on rank 0...
+  0%|          | 0/5 [00:00<?, ?it/s]100%|██████████| 5/5 [00:00<00:00, 783.84it/s]
+2026-09-25:15:29:57 INFO     [evaluator:585] Running generate_until requests
+Map:   0%|          | 0/5 [00:00<?, ? examples/s]Map: 100%|██████████| 5/5 [00:00<00:00, 780.80 examples/s]
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:06<00:24,  6.07s/it] 40%|████      | 2/5 [00:11<00:17,  5.78s/it] 60%|██████    | 3/5 [00:17<00:11,  5.69s/it] 80%|████████  | 4/5 [00:22<00:05,  5.57s/it]100%|██████████| 5/5 [00:28<00:00,  5.59s/it]100%|██████████| 5/5 [00:28<00:00,  5.65s/it]
+2026-09-25:15:30:27 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+[YUKAI][DEBUG][generate_until:188] Total unfinished: 5, duration: 0:00:29 [FILE] /home/exx/Workspace/dllm-meta-experiment/run_benchmark_main.py
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Instruct', 'size_batch': 1, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_fastdllm', 'path_report': 'results_experiment_timing/fastdllm__llada_instruct__g256__runner.json'}), gen_kwargs: ({}), limit: 5.0, num_fewshot: 5, batch_size: 1
+|Tasks|Version|     Filter     |n-shot|  Metric   |   |Value|   |Stderr|
+|-----|------:|----------------|-----:|-----------|---|----:|---|-----:|
+|gsm8k|      3|flexible-extract|     5|exact_match|↑  |  0.8|±  |0.2000|
+|     |       |strict-match    |     5|exact_match|↑  |  0.6|±  |0.2449|
+

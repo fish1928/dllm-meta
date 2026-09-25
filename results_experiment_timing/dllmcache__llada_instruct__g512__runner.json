@@ -1,0 +1,47 @@
+{
+  "path_router": null,
+  "num_samples": 5,
+  "duration_total_s": 138.48,
+  "rows": [
+    {
+      "id_sample": 0,
+      "len_prompt": 1062,
+      "has_done": false,
+      "duration_s": 27.9992,
+      "mem_alloc_gib": 17.072,
+      "mem_reserved_gib": 17.73
+    },
+    {
+      "id_sample": 1,
+      "len_prompt": 1065,
+      "has_done": false,
+      "duration_s": 27.7869,
+      "mem_alloc_gib": 17.074,
+      "mem_reserved_gib": 18.477
+    },
+    {
+      "id_sample": 2,
+      "len_prompt": 1079,
+      "has_done": false,
+      "duration_s": 27.8882,
+      "mem_alloc_gib": 17.109,
+      "mem_reserved_gib": 19.227
+    },
+    {
+      "id_sample": 3,
+      "len_prompt": 819,
+      "has_done": false,
+      "duration_s": 26.7999,
+      "mem_alloc_gib": 17.109,
+      "mem_reserved_gib": 19.227
+    },
+    {
+      "id_sample": 4,
+      "len_prompt": 1092,
+      "has_done": false,
+      "duration_s": 28.0067,
+      "mem_alloc_gib": 17.114,
+      "mem_reserved_gib": 19.984
+    }
+  ]
+}

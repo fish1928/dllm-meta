@@ -1,0 +1,47 @@
+{
+  "path_router": "routers_e2e/dream_instruct__cm_clean.pt",
+  "num_samples": 5,
+  "duration_total_s": 31.97,
+  "rows": [
+    {
+      "id_sample": 0,
+      "len_prompt": 1041,
+      "has_done": true,
+      "duration_s": 6.7205,
+      "mem_alloc_gib": 14.696,
+      "mem_reserved_gib": 15.109
+    },
+    {
+      "id_sample": 1,
+      "len_prompt": 1039,
+      "has_done": true,
+      "duration_s": 6.3358,
+      "mem_alloc_gib": 14.696,
+      "mem_reserved_gib": 15.109
+    },
+    {
+      "id_sample": 2,
+      "len_prompt": 1069,
+      "has_done": true,
+      "duration_s": 6.3485,
+      "mem_alloc_gib": 14.696,
+      "mem_reserved_gib": 15.109
+    },
+    {
+      "id_sample": 3,
+      "len_prompt": 813,
+      "has_done": true,
+      "duration_s": 6.1921,
+      "mem_alloc_gib": 14.696,
+      "mem_reserved_gib": 15.158
+    },
+    {
+      "id_sample": 4,
+      "len_prompt": 1081,
+      "has_done": true,
+      "duration_s": 6.373,
+      "mem_alloc_gib": 14.696,
+      "mem_reserved_gib": 15.158
+    }
+  ]
+}

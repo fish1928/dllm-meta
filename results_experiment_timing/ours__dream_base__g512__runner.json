@@ -1,0 +1,47 @@
+{
+  "path_router": "routers_e2e/dream_base__cm_age.pt",
+  "num_samples": 5,
+  "duration_total_s": 70.18,
+  "rows": [
+    {
+      "id_sample": 0,
+      "len_prompt": 1041,
+      "has_done": false,
+      "duration_s": 14.2214,
+      "mem_alloc_gib": 15.1,
+      "mem_reserved_gib": 15.627
+    },
+    {
+      "id_sample": 1,
+      "len_prompt": 1039,
+      "has_done": false,
+      "duration_s": 13.9626,
+      "mem_alloc_gib": 15.1,
+      "mem_reserved_gib": 15.627
+    },
+    {
+      "id_sample": 2,
+      "len_prompt": 1069,
+      "has_done": false,
+      "duration_s": 14.0537,
+      "mem_alloc_gib": 15.104,
+      "mem_reserved_gib": 15.627
+    },
+    {
+      "id_sample": 3,
+      "len_prompt": 813,
+      "has_done": false,
+      "duration_s": 13.7627,
+      "mem_alloc_gib": 15.104,
+      "mem_reserved_gib": 15.666
+    },
+    {
+      "id_sample": 4,
+      "len_prompt": 1081,
+      "has_done": false,
+      "duration_s": 14.1757,
+      "mem_alloc_gib": 15.104,
+      "mem_reserved_gib": 15.666
+    }
+  ]
+}
