@@ -353,11 +353,27 @@ class RunnerReport:
             return
         # end
 
+        # peak GPU memory (GiB) since process start: allocated = tensors held
+        # (weights + activations + caches), reserved = allocator footprint
+        # (closer to nvidia-smi). None on CPU; never fails the report.
+        mem_alloc_gib = mem_reserved_gib = None
+        try:
+            import torch
+            if torch.cuda.is_available():
+                mem_alloc_gib = round(torch.cuda.max_memory_allocated() / 2**30, 3)
+                mem_reserved_gib = round(torch.cuda.max_memory_reserved() / 2**30, 3)
+            # end
+        except Exception:
+            pass
+        # end
+
         self.rows.append({
             'id_sample': len(self.rows),
             'len_prompt': len_prompt,
             'has_done': has_done,
             'duration_s': round(duration_s, 4),
+            'mem_alloc_gib': mem_alloc_gib,
+            'mem_reserved_gib': mem_reserved_gib,
         })
 
         import json
