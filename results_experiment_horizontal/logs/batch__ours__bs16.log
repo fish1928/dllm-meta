@@ -1,0 +1,50 @@
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+2026-09-24:16:26:24 WARNING  [config.evaluate_config:337] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-09-24:16:26:43 INFO     [_cli.run:392] Selected Tasks: ['gsm8k']
+2026-09-24:16:26:43 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-24:16:26:43 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Base', 'size_batch': 16, 'len_target': 256, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_semi_mlp_v2_batch', 'path_report': 'results_experiment_horizontal/batch__ours__bs16__runner.json', 'step_refresh_remainder': 8, 'select_only_in_h': True, 'h': 8, 'path_router': 'routers_e2e/llada_base__cm_clean.pt', 'step_refresh_remainder_prompt': 64}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Base', 'size_batch': 16, 'len_target': 256, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_semi_mlp_v2_batch', 'path_report': 'results_experiment_horizontal/batch__ours__bs16__runner.json', 'step_refresh_remainder': 8, 'select_only_in_h': True, 'h': 8, 'path_router': 'routers_e2e/llada_base__cm_clean.pt', 'step_refresh_remainder_prompt': 64, 'device': 'cuda'} [FILE] /home/yj25b.fsu/Workspace/dllm-meta-experiment/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:00,  8.20it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  9.08it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  9.32it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  9.52it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:00<00:00,  9.68it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  9.53it/s]
+2026-09-24:16:26:54 INFO     [evaluator_utils:472] Selected tasks:
+2026-09-24:16:26:54 INFO     [evaluator_utils:506] Task: gsm8k (gsm8k/gsm8k.yaml)
+2026-09-24:16:26:54 INFO     [evaluator:314] gsm8k: Using gen_kwargs: {'until': ['Question:', '</s>', '<|im_end|>'], 'do_sample': False, 'temperature': 0.0}
+2026-09-24:16:26:54 WARNING  [evaluator:335] Overwriting default num_fewshot of gsm8k from 5 to 5
+2026-09-24:16:26:54 INFO     [api.task:312] Building contexts for gsm8k on rank 0...
+  0%|          | 0/64 [00:00<?, ?it/s] 69%|██████▉   | 44/64 [00:00<00:00, 439.61it/s]100%|██████████| 64/64 [00:00<00:00, 440.79it/s]
+2026-09-24:16:26:54 INFO     [evaluator:589] Running generate_until requests
+Map:   0%|          | 0/64 [00:00<?, ? examples/s]Map: 100%|██████████| 64/64 [00:00<00:00, 860.66 examples/s]
+  0%|          | 0/4 [00:00<?, ?it/s]/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/torch/_inductor/compile_fx.py:321: UserWarning: TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance.
+  warnings.warn(
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/torch/_inductor/lowering.py:7627: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+ 25%|██▌       | 1/4 [00:38<01:56, 38.75s/it]/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/torch/_inductor/lowering.py:7627: UserWarning: 
+Online softmax is disabled on the fly since Inductor decides to
+split the reduction. Cut an issue to PyTorch if this is an
+important use case and you want to speed it up with online
+softmax.
+
+  warnings.warn(
+ 50%|█████     | 2/4 [01:11<01:10, 35.18s/it] 75%|███████▌  | 3/4 [01:42<00:33, 33.45s/it]100%|██████████| 4/4 [02:17<00:00, 33.90s/it]100%|██████████| 4/4 [02:17<00:00, 34.35s/it]
+2026-09-24:16:29:15 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+[YUKAI][DEBUG][run_one:246] loaded router bundle routers_e2e/llada_base__cm_clean.pt: ['attn_last', 'pos_delta', 'mask_density'] norm=softmax_attn [FILE] /home/yj25b.fsu/Workspace/dllm-meta-experiment/run_llada_semi_mlp_v2_batch.py
+[YUKAI][DEBUG][generate_until:188] Total unfinished: 1, duration: 0:02:17 [FILE] /home/yj25b.fsu/Workspace/dllm-meta-experiment/run_benchmark_main.py
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Base', 'size_batch': 16, 'len_target': 256, 'num_blocks': 1, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_semi_mlp_v2_batch', 'path_report': 'results_experiment_horizontal/batch__ours__bs16__runner.json', 'step_refresh_remainder': 8, 'select_only_in_h': True, 'h': 8, 'path_router': 'routers_e2e/llada_base__cm_clean.pt', 'step_refresh_remainder_prompt': 64}), gen_kwargs: ({}), limit: 64.0, num_fewshot: 5, batch_size: 16
+|Tasks|Version|     Filter     |n-shot|  Metric   |   |Value |   |Stderr|
+|-----|------:|----------------|-----:|-----------|---|-----:|---|-----:|
+|gsm8k|      3|flexible-extract|     5|exact_match|↑  |0.6719|±  |0.0592|
+|     |       |strict-match    |     5|exact_match|↑  |0.6719|±  |0.0592|
+

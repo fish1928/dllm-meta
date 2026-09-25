@@ -1,0 +1,33 @@
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+The following values were not passed to `accelerate launch` and had defaults used instead:
+	`--num_machines` was set to a value of `1`
+	`--mixed_precision` was set to a value of `'no'`
+	`--dynamo_backend` was set to a value of `'no'`
+To avoid this warning pass in values for each of the problematic parameters or run `accelerate config`.
+/home/yj25b.fsu/miniconda3/lib/python3.13/site-packages/requests/__init__.py:113: RequestsDependencyWarning: urllib3 (2.6.1) or chardet (6.0.0.post1)/charset_normalizer (3.4.4) doesn't match a supported version!
+  warnings.warn(
+2026-09-24:17:14:04 WARNING  [config.evaluate_config:337] --limit SHOULD ONLY BE USED FOR TESTING. REAL METRICS SHOULD NOT BE COMPUTED USING LIMIT.
+2026-09-24:17:14:20 INFO     [_cli.run:392] Selected Tasks: ['gsm8k']
+2026-09-24:17:14:20 INFO     [evaluator:214] Setting random seed to 0 | Setting numpy seed to 1234 | Setting torch manual seed to 1234 | Setting fewshot manual seed to 1234
+2026-09-24:17:14:20 INFO     [evaluator:239] Initializing test model, with arguments: {'id_model': 'GSAI-ML/LLaDA-8B-Base', 'size_batch': 8, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_fastdllm_batch', 'path_report': 'results_experiment_horizontal/batch__fastdllm__bs8__runner.json'}
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+[YUKAI][DEBUG][__init__:46] {'id_model': 'GSAI-ML/LLaDA-8B-Base', 'size_batch': 8, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_fastdllm_batch', 'path_report': 'results_experiment_horizontal/batch__fastdllm__bs8__runner.json', 'device': 'cuda'} [FILE] /home/yj25b.fsu/Workspace/dllm-meta-experiment/run_benchmark_main.py
+Loading checkpoint shards:   0%|          | 0/6 [00:00<?, ?it/s]Loading checkpoint shards:  17%|█▋        | 1/6 [00:00<00:00,  6.24it/s]Loading checkpoint shards:  33%|███▎      | 2/6 [00:00<00:00,  7.73it/s]Loading checkpoint shards:  50%|█████     | 3/6 [00:00<00:00,  8.28it/s]Loading checkpoint shards:  67%|██████▋   | 4/6 [00:00<00:00,  8.64it/s]Loading checkpoint shards:  83%|████████▎ | 5/6 [00:00<00:00,  8.89it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  9.04it/s]Loading checkpoint shards: 100%|██████████| 6/6 [00:00<00:00,  8.57it/s]
+2026-09-24:17:14:31 INFO     [evaluator_utils:472] Selected tasks:
+2026-09-24:17:14:31 INFO     [evaluator_utils:506] Task: gsm8k (gsm8k/gsm8k.yaml)
+2026-09-24:17:14:31 INFO     [evaluator:314] gsm8k: Using gen_kwargs: {'until': ['Question:', '</s>', '<|im_end|>'], 'do_sample': False, 'temperature': 0.0}
+2026-09-24:17:14:31 WARNING  [evaluator:335] Overwriting default num_fewshot of gsm8k from 5 to 5
+2026-09-24:17:14:31 INFO     [api.task:312] Building contexts for gsm8k on rank 0...
+  0%|          | 0/64 [00:00<?, ?it/s] 69%|██████▉   | 44/64 [00:00<00:00, 434.95it/s]100%|██████████| 64/64 [00:00<00:00, 436.93it/s]
+2026-09-24:17:14:31 INFO     [evaluator:589] Running generate_until requests
+Map:   0%|          | 0/64 [00:00<?, ? examples/s]Map: 100%|██████████| 64/64 [00:00<00:00, 850.22 examples/s]
+  0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [00:11<01:17, 11.06s/it] 25%|██▌       | 2/8 [00:21<01:05, 10.83s/it] 38%|███▊      | 3/8 [00:31<00:50, 10.19s/it] 50%|█████     | 4/8 [00:40<00:38,  9.69s/it] 62%|██████▎   | 5/8 [00:49<00:28,  9.57s/it] 75%|███████▌  | 6/8 [00:58<00:19,  9.50s/it] 88%|████████▊ | 7/8 [01:09<00:09,  9.78s/it]100%|██████████| 8/8 [01:18<00:00,  9.68s/it]100%|██████████| 8/8 [01:18<00:00,  9.83s/it]
+2026-09-24:17:15:53 INFO     [loggers.evaluation_tracker:247] Saving results aggregated
+[YUKAI][DEBUG][generate_until:188] Total unfinished: 3, duration: 0:01:19 [FILE] /home/yj25b.fsu/Workspace/dllm-meta-experiment/run_benchmark_main.py
+test ({'id_model': 'GSAI-ML/LLaDA-8B-Base', 'size_batch': 8, 'len_target': 256, 'num_blocks': 8, 'num_unmask_per_step': 1, 'id_mask': 126336, 'runner': 'run_llada_fastdllm_batch', 'path_report': 'results_experiment_horizontal/batch__fastdllm__bs8__runner.json'}), gen_kwargs: ({}), limit: 64.0, num_fewshot: 5, batch_size: 8
+|Tasks|Version|     Filter     |n-shot|  Metric   |   |Value |   |Stderr|
+|-----|------:|----------------|-----:|-----------|---|-----:|---|-----:|
+|gsm8k|      3|flexible-extract|     5|exact_match|↑  |0.6406|±  |0.0605|
+|     |       |strict-match    |     5|exact_match|↑  |0.6562|±  |0.0598|
+

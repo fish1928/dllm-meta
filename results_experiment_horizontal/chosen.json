@@ -1,0 +1,67 @@
+{
+  "dense": {
+    "tag": "dense__full",
+    "method": "dense",
+    "num_blocks": 1,
+    "args": {},
+    "score": 0.65625,
+    "tflops_doc": 5120.7,
+    "s_doc": 7.67,
+    "len_prompt_avg": 1021.0
+  },
+  "ours": {
+    "tag": "ours__kr8_kp64",
+    "method": "ours",
+    "num_blocks": 1,
+    "args": {
+      "step_refresh_remainder": 8,
+      "select_only_in_h": true,
+      "h": 8,
+      "path_router": "routers_e2e/llada_base__cm_clean.pt",
+      "step_refresh_remainder_prompt": 64
+    },
+    "score": 0.671875,
+    "tflops_doc": 220.0,
+    "s_doc": 7.58,
+    "len_prompt_avg": 1021.0
+  },
+  "dllmcache": {
+    "tag": "dllmcache__v0.25_kr16_kp64",
+    "method": "dllmcache",
+    "num_blocks": 1,
+    "args": {
+      "dllmc_v_rate": 0.25,
+      "step_refresh_remainder": 16,
+      "step_refresh_remainder_prompt": 64
+    },
+    "score": 0.65625,
+    "tflops_doc": 1008.7,
+    "s_doc": 6.54,
+    "len_prompt_avg": 1021.0
+  },
+  "fastdllm": {
+    "tag": "fastdllm__nb8",
+    "method": "fastdllm",
+    "num_blocks": 8,
+    "args": {},
+    "score": 0.640625,
+    "tflops_doc": 284.3,
+    "s_doc": 4.41,
+    "len_prompt_avg": 1021.0
+  },
+  "d2cache": {
+    "tag": "d2cache__k16_p0.05",
+    "method": "d2cache",
+    "num_blocks": 1,
+    "args": {
+      "d2c_k": 16,
+      "d2c_sigma": 10.0,
+      "d2c_rollout_p": 0.05,
+      "d2c_conf_mode": "live"
+    },
+    "score": 0.671875,
+    "tflops_doc": 344.2,
+    "s_doc": 6.44,
+    "len_prompt_avg": 1021.0
+  }
+}

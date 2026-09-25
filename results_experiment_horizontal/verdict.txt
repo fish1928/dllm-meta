@@ -1,0 +1,47 @@
+===== sweep (results_experiment_horizontal) -- dense anchor 0.6562, quality floor 0.6262 =====
+
+--- dense ---
+  [ ] dense__full                      score=0.6562 TFLOPs/doc=  5120.7 s/doc=   7.67 <== CHOSEN (min TFLOPs at equal quality)
+
+--- ours ---
+  [x] ours__kr48_kp0                   score=0.3906 TFLOPs/doc=    74.2 s/doc=   7.58
+  [x] ours__kr32_kp0                   score=0.4375 TFLOPs/doc=    82.0 s/doc=   7.33
+  [x] ours__kr48_kp96                  score=0.4219 TFLOPs/doc=   104.1 s/doc=   7.60
+  [x] ours__kr32_kp96                  score=0.5000 TFLOPs/doc=   111.8 s/doc=   7.58
+  [x] ours__kr16_kp0                   score=0.4688 TFLOPs/doc=   113.0 s/doc=   7.32
+  [x] ours__kr48_kp64                  score=0.5000 TFLOPs/doc=   119.0 s/doc=   7.59
+  [x] ours__kr32_kp64                  score=0.4844 TFLOPs/doc=   126.8 s/doc=   7.52
+  [x] ours__kr16_kp96                  score=0.5156 TFLOPs/doc=   142.9 s/doc=   7.38
+  [x] ours__kr16_kp64                  score=0.5312 TFLOPs/doc=   157.8 s/doc=   7.42
+  [x] ours__kr8_kp0                    score=0.5000 TFLOPs/doc=   175.2 s/doc=   7.40
+  [x] ours__kr8_kp96                   score=0.6094 TFLOPs/doc=   205.1 s/doc=   7.41
+  [ ] ours__kr8_kp64                   score=0.6719 TFLOPs/doc=   220.0 s/doc=   7.58 <== CHOSEN (min TFLOPs at equal quality)
+
+--- dllmcache ---
+  [x] dllmcache__v0.25_kr32_kp100      score=0.6250 TFLOPs/doc=   974.1 s/doc=   6.51
+  [x] dllmcache__v0.25_kr32_kp64       score=0.6094 TFLOPs/doc=   987.9 s/doc=   6.53
+  [x] dllmcache__v0.25_kr16_kp100      score=0.6094 TFLOPs/doc=   994.9 s/doc=   6.50
+  [ ] dllmcache__v0.25_kr16_kp64       score=0.6562 TFLOPs/doc=  1008.7 s/doc=   6.54 <== CHOSEN (min TFLOPs at equal quality)
+  [x] dllmcache__v0.25_kr8_kp100       score=0.6094 TFLOPs/doc=  1036.6 s/doc=   6.59
+  [x] dllmcache__v0.25_kr8_kp64        score=0.6250 TFLOPs/doc=  1050.4 s/doc=   6.38
+  [ ] dllmcache__v0.5_kr32_kp100       score=0.6406 TFLOPs/doc=  1189.2 s/doc=   6.57
+  [ ] dllmcache__v0.5_kr16_kp100       score=0.6406 TFLOPs/doc=  1203.1 s/doc=   6.46
+  [ ] dllmcache__v0.5_kr32_kp64        score=0.6562 TFLOPs/doc=  1203.1 s/doc=   6.68
+  [ ] dllmcache__v0.5_kr16_kp64        score=0.6719 TFLOPs/doc=  1216.9 s/doc=   6.50
+  [x] dllmcache__v0.5_kr8_kp100        score=0.6250 TFLOPs/doc=  1230.9 s/doc=   6.34
+  [ ] dllmcache__v0.5_kr8_kp64         score=0.6719 TFLOPs/doc=  1244.7 s/doc=   6.35
+
+--- fastdllm ---
+  [ ] fastdllm__nb8                    score=0.6406 TFLOPs/doc=   284.3 s/doc=   4.41 <== CHOSEN (min TFLOPs at equal quality)
+  [ ] fastdllm__nb4                    score=0.7188 TFLOPs/doc=   332.6 s/doc=   4.22
+  [x] fastdllm__nb16                   score=0.6250 TFLOPs/doc=   380.2 s/doc=   4.30
+  [x] fastdllm__nb2                    score=0.5000 TFLOPs/doc=   549.3 s/doc=   4.42
+  [ ] fastdllm__nb32                   score=0.6719 TFLOPs/doc=   668.2 s/doc=   4.59
+
+--- d2cache ---
+  [ ] d2cache__k16_p0.05               score=0.6719 TFLOPs/doc=   344.2 s/doc=   6.44 <== CHOSEN (min TFLOPs at equal quality)
+  [x] d2cache__k32_p0.05               score=0.5625 TFLOPs/doc=   408.4 s/doc=   6.20
+  [x] d2cache__k64_p0.05               score=0.5938 TFLOPs/doc=   536.7 s/doc=   6.33
+  [ ] d2cache__k16_p0.1                score=0.6406 TFLOPs/doc=   600.2 s/doc=   6.51
+  [x] d2cache__k32_p0.1                score=0.5781 TFLOPs/doc=   664.4 s/doc=   6.34
+  [x] d2cache__k64_p0.1                score=0.6094 TFLOPs/doc=   792.7 s/doc=   6.38
