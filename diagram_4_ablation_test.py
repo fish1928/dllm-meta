@@ -295,15 +295,15 @@ def make_figure(
         }
     )
 
-    figure = plt.figure(figsize=(7.16, 2.06), facecolor="white")
+    figure = plt.figure(figsize=(7.16, 2.27), facecolor="white")
     outer = figure.add_gridspec(
         1,
         2,
         width_ratios=(2.35, 1.0),
         left=0.075,
         right=0.982,
-        bottom=0.215,
-        top=0.82,
+        bottom=0.29,
+        top=0.84,
         wspace=0.30,
     )
 
@@ -448,7 +448,7 @@ def make_figure(
         borderaxespad=0.25,
     )
 
-    title_y = 0.895
+    title_y = 0.905
     for panel, title in enumerate(
         ("(a) Stage I: Router design (offline recall@5)",
          "(b) Stage II: Feature aging (e2e)")

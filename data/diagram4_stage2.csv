@@ -1,0 +1,5 @@
+option,option_order,is_adopted,delta,ci_low,ci_high,benchmark_deltas,annotation
+clean,0,1,,,,,
+conf/margin + age,1,0,-3.80,-9.45,1.84,-2.78;1.00;-11.00;-10.00;0.95;-1.00,
+"conf/margin, random-aged",2,0,-5.20,-9.36,-1.04,-4.63;-1.00;-9.00;-8.00;-8.57;0.00,
+"conf/margin, policy-aged",3,0,-7.84,-12.04,-3.65,-4.63;-7.00;-12.00;-10.00;-11.43;-2.00,conf/margin never beats clean
