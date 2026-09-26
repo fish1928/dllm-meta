@@ -1,0 +1,585 @@
+from __future__ import annotations
+
+import argparse
+import csv
+import html
+import math
+import random
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Iterable, Sequence
+
+
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_DATA_PATH = ROOT / "data" / "model_resource_metrics_demo.csv"
+
+FIGURE_DIR = ROOT / "figures"
+PDF_DIR = ROOT / "output" / "pdf"
+
+PERFORMANCE_SVG = FIGURE_DIR / "scheme-c-combined-resource.svg"
+BATCH_SVG = FIGURE_DIR / "scheme-d-combined-batch.svg"
+PAIR_SVG = FIGURE_DIR / "model-resource-two-panel.svg"
+
+PERFORMANCE_PDF = PDF_DIR / "scheme-c-combined-resource.pdf"
+BATCH_PDF = PDF_DIR / "scheme-d-combined-batch.pdf"
+PAIR_PDF = PDF_DIR / "model-resource-two-panel.pdf"
+
+# Native size is the intended paper inclusion size. Two panels plus a 12 pt
+# gutter make a 7.17 in wide, double-column figure.
+PANEL_W = 252.0
+PANEL_H = 188.0
+PANEL_GAP = 12.0
+PAIR_W = PANEL_W * 2 + PANEL_GAP
+
+COLORS = {
+    "our model": "#287C78",
+    "other model": "#D96C4F",
+    "grid": "#DDD8CE",
+    "axis": "#6F6A61",
+    "text": "#242424",
+    "muted": "#625E56",
+    "paper": "#FFFFFF",
+}
+
+MODEL_ORDER = ("our model", "other model")
+REQUIRED_COLUMNS = {
+    "model",
+    "setting",
+    "budget_index",
+    "compute_tflops",
+    "wall_clock_sec",
+    "performance_avg",
+    "batch_samples",
+}
+
+
+@dataclass(frozen=True)
+class ChartSpec:
+    y_key: str
+    y_label: str
+    aria_label: str
+
+
+PERFORMANCE_SPEC = ChartSpec(
+    y_key="performance_avg",
+    y_label="Performance (Average score)",
+    aria_label="TFLOPs and wall clock versus average performance",
+)
+
+BATCH_SPEC = ChartSpec(
+    y_key="batch_samples",
+    y_label="Batch (samples per batch)",
+    aria_label="TFLOPs and wall clock versus samples per batch",
+)
+
+
+def make_demo_data(seed: int = 23) -> list[dict[str, object]]:
+    """Create deterministic placeholders only; replace them with measured data."""
+    rng = random.Random(seed)
+    budgets = [12, 18, 24, 32, 42, 54, 68, 84, 102, 122, 146, 174, 206, 242]
+    batch_sizes = [8, 16, 24, 32, 48, 64, 80, 96, 128, 160, 192, 224, 256, 320]
+    rows: list[dict[str, object]] = []
+    for model in ["other model", "our model"]:
+        for index, (budget, batch) in enumerate(zip(budgets, batch_sizes), start=1):
+            if model == "our model":
+                compute = budget * rng.uniform(0.91, 1.01)
+                seconds = budget * rng.uniform(0.99, 1.10) + rng.uniform(-1.2, 1.2)
+                score = 58 + 30 * (1 - math.exp(-budget / 58)) + rng.uniform(-0.8, 0.8)
+            else:
+                compute = budget * rng.uniform(1.00, 1.13)
+                seconds = budget * rng.uniform(1.16, 1.31) + rng.uniform(-1.5, 1.5)
+                score = 55 + 24 * (1 - math.exp(-budget / 68)) + rng.uniform(-0.9, 0.9)
+            rows.append(
+                {
+                    "model": model,
+                    "setting": f"S{index}",
+                    "budget_index": index,
+                    "compute_tflops": round(compute, 2),
+                    "wall_clock_sec": round(seconds, 2),
+                    "performance_avg": round(score, 2),
+                    "batch_samples": batch,
+                }
+            )
+    return rows
+
+
+def write_csv(path: Path, rows: Sequence[dict[str, object]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def read_csv(path: Path) -> list[dict[str, object]]:
+    with path.open(newline="", encoding="utf-8") as stream:
+        reader = csv.DictReader(stream)
+        columns = set(reader.fieldnames or [])
+        missing = REQUIRED_COLUMNS - columns
+        if missing:
+            raise ValueError(f"{path} is missing columns: {', '.join(sorted(missing))}")
+        rows: list[dict[str, object]] = list(reader)
+
+    if not rows:
+        raise ValueError(f"{path} has no data rows")
+
+    for line_number, row in enumerate(rows, start=2):
+        if row["model"] not in MODEL_ORDER:
+            raise ValueError(
+                f"{path}:{line_number}: model must be 'our model' or 'other model'"
+            )
+        for key in [
+            "budget_index",
+            "compute_tflops",
+            "wall_clock_sec",
+            "performance_avg",
+            "batch_samples",
+        ]:
+            try:
+                float(row[key])
+            except (TypeError, ValueError) as exc:
+                raise ValueError(f"{path}:{line_number}: {key} must be numeric") from exc
+
+    present_models = {str(row["model"]) for row in rows}
+    if present_models != set(MODEL_ORDER):
+        raise ValueError(f"{path} must contain both models: {', '.join(MODEL_ORDER)}")
+    return rows
+
+
+def grouped_rows(rows: Sequence[dict[str, object]]) -> dict[str, list[dict[str, object]]]:
+    groups = {model: [] for model in MODEL_ORDER}
+    for row in rows:
+        groups[str(row["model"])].append(row)
+    for group in groups.values():
+        group.sort(key=lambda row: float(row["budget_index"]))
+    return groups
+
+
+def scale(value: float, domain: tuple[float, float], range_: tuple[float, float]) -> float:
+    lo, hi = domain
+    start, end = range_
+    if hi == lo:
+        return (start + end) / 2
+    return start + (value - lo) / (hi - lo) * (end - start)
+
+
+def nice_step(raw_step: float, multipliers: Sequence[float]) -> float:
+    if raw_step <= 0:
+        return 1.0
+    exponent = 10 ** math.floor(math.log10(raw_step))
+    fraction = raw_step / exponent
+    for multiplier in multipliers:
+        if fraction <= multiplier:
+            return multiplier * exponent
+    return 10 * exponent
+
+
+def zero_axis(max_value: float, target_intervals: int = 4) -> tuple[tuple[float, float], list[float]]:
+    step = nice_step(max_value / target_intervals, (1, 2, 5, 10))
+    upper = max(step, math.ceil(max_value / step) * step)
+    count = int(round(upper / step))
+    return (0.0, upper), [index * step for index in range(count + 1)]
+
+
+def y_axis(rows: Sequence[dict[str, object]], key: str) -> tuple[tuple[float, float], list[float]]:
+    values = [float(row[key]) for row in rows]
+    lo, hi = min(values), max(values)
+    if key == "batch_samples":
+        step = nice_step(hi / 4, (1, 2, 2.5, 4, 5, 8, 10))
+        upper = max(step, math.ceil(hi / step) * step)
+        count = int(round(upper / step))
+        return (0.0, upper), [index * step for index in range(count + 1)]
+
+    span = hi - lo or 1.0
+    padded_lo = lo - span * 0.04
+    padded_hi = hi + span * 0.04
+    step = 5.0 if span <= 40 else nice_step(span / 5, (1, 2, 5, 10))
+    domain_lo = math.floor(padded_lo / step) * step
+    domain_hi = math.ceil(padded_hi / step) * step
+    label_step = step * 2 if (domain_hi - domain_lo) / step > 5 else step
+    ticks: list[float] = []
+    value = domain_lo
+    while value <= domain_hi + label_step * 0.01:
+        ticks.append(value)
+        value += label_step
+    if not math.isclose(ticks[-1], domain_hi):
+        ticks.append(domain_hi)
+    return (domain_lo, domain_hi), ticks
+
+
+def number_label(value: float) -> str:
+    if math.isclose(value, round(value), abs_tol=1e-8):
+        return str(int(round(value)))
+    if abs(value) >= 10:
+        return f"{value:.1f}".rstrip("0").rstrip(".")
+    return f"{value:.2f}".rstrip("0").rstrip(".")
+
+
+def chart_axes(rows: Sequence[dict[str, object]], spec: ChartSpec) -> dict[str, object]:
+    compute_max = max(float(row["compute_tflops"]) for row in rows)
+    wall_max = max(float(row["wall_clock_sec"]) for row in rows)
+    compute_domain, compute_ticks = zero_axis(compute_max)
+    wall_domain, wall_ticks = zero_axis(wall_max)
+    y_domain, y_ticks = y_axis(rows, spec.y_key)
+    return {
+        "compute_domain": compute_domain,
+        "compute_ticks": compute_ticks,
+        "wall_domain": wall_domain,
+        "wall_ticks": wall_ticks,
+        "y_domain": y_domain,
+        "y_ticks": y_ticks,
+    }
+
+
+def svg_text(
+    x: float,
+    y: float,
+    label: str,
+    size: float,
+    anchor: str = "start",
+    weight: int = 400,
+) -> str:
+    return (
+        f'<text x="{x:.2f}" y="{y:.2f}" font-family="Helvetica, Arial, sans-serif" '
+        f'font-size="{size:.2f}" font-weight="{weight}" text-anchor="{anchor}" '
+        f'fill="{COLORS["text"]}">{html.escape(label)}</text>'
+    )
+
+
+def svg_chart_body(
+    rows: Sequence[dict[str, object]],
+    spec: ChartSpec,
+    x_offset: float = 0.0,
+    panel_label: str | None = None,
+) -> str:
+    axes = chart_axes(rows, spec)
+    groups = grouped_rows(rows)
+    left, top, width, height = x_offset + 42.0, 31.0, 204.0, 122.0
+    x_range = (left, left + width)
+    y_range = (top + height, top)
+    parts: list[str] = []
+
+    if panel_label:
+        parts.append(svg_text(x_offset + 3, 10, panel_label, 8.5, weight=700))
+
+    parts.append(
+        f'<rect x="{left:.2f}" y="{top:.2f}" width="{width:.2f}" height="{height:.2f}" '
+        f'fill="white" stroke="{COLORS["axis"]}" stroke-width="0.75"/>'
+    )
+
+    for tick in axes["y_ticks"]:
+        y = scale(float(tick), axes["y_domain"], y_range)
+        parts.append(
+            f'<line x1="{left:.2f}" x2="{left + width:.2f}" y1="{y:.2f}" y2="{y:.2f}" '
+            f'stroke="{COLORS["grid"]}" stroke-width="0.55"/>'
+        )
+        parts.append(svg_text(left - 5, y + 2.4, number_label(float(tick)), 7.2, "end"))
+
+    for tick in axes["compute_ticks"]:
+        x = scale(float(tick), axes["compute_domain"], x_range)
+        parts.append(
+            f'<line x1="{x:.2f}" x2="{x:.2f}" y1="{top:.2f}" y2="{top + height:.2f}" '
+            f'stroke="{COLORS["grid"]}" stroke-width="0.50"/>'
+        )
+        parts.append(svg_text(x, top + height + 11.5, number_label(float(tick)), 7.2, "middle"))
+
+    for tick in axes["wall_ticks"]:
+        x = scale(float(tick), axes["wall_domain"], x_range)
+        parts.append(
+            f'<line x1="{x:.2f}" x2="{x:.2f}" y1="{top:.2f}" y2="{top - 3.2:.2f}" '
+            f'stroke="{COLORS["axis"]}" stroke-width="0.65"/>'
+        )
+        parts.append(svg_text(x, top - 7.2, number_label(float(tick)), 7.2, "middle"))
+
+    metrics = [
+        ("compute_tflops", axes["compute_domain"], "", True),
+        ("wall_clock_sec", axes["wall_domain"], ' stroke-dasharray="4.5 3"', False),
+    ]
+    for model in reversed(MODEL_ORDER):
+        for metric_key, x_domain, dash, filled in metrics:
+            points = [
+                (
+                    scale(float(row[metric_key]), x_domain, x_range),
+                    scale(float(row[spec.y_key]), axes["y_domain"], y_range),
+                    row,
+                )
+                for row in groups[model]
+            ]
+            path = " ".join(
+                ("M" if index == 0 else "L") + f"{x:.2f},{y:.2f}"
+                for index, (x, y, _row) in enumerate(points)
+            )
+            parts.append(
+                f'<path d="{path}" fill="none" stroke="{COLORS[model]}" '
+                f'stroke-width="1.35" stroke-linejoin="round" stroke-linecap="round"{dash}/>'
+            )
+            for x, y, row in points:
+                fill = COLORS[model] if filled else "white"
+                parts.append(
+                    f'<circle cx="{x:.2f}" cy="{y:.2f}" r="2.55" fill="{fill}" '
+                    f'stroke="{COLORS[model]}" stroke-width="0.85">'
+                    f'<title>{html.escape(model)} {html.escape(str(row["setting"]))}: '
+                    f'{metric_key}={float(row[metric_key]):.2f}, {spec.y_key}={float(row[spec.y_key]):.2f}</title>'
+                    "</circle>"
+                )
+
+    legend_x, legend_y, legend_w, legend_h = x_offset + 148.0, 113.0, 96.0, 37.0
+    parts.append(
+        f'<rect x="{legend_x:.2f}" y="{legend_y:.2f}" width="{legend_w:.2f}" height="{legend_h:.2f}" '
+        f'fill="white" stroke="{COLORS["grid"]}" stroke-width="0.55"/>'
+    )
+    parts.extend(
+        [
+            f'<circle cx="{x_offset + 155:.2f}" cy="124" r="2.45" fill="{COLORS["our model"]}"/>',
+            svg_text(x_offset + 161, 126.3, "our model", 6.6),
+            f'<circle cx="{x_offset + 201:.2f}" cy="124" r="2.45" fill="{COLORS["other model"]}"/>',
+            svg_text(x_offset + 207, 126.3, "other model", 6.6),
+            f'<line x1="{x_offset + 154:.2f}" x2="{x_offset + 166:.2f}" y1="141" y2="141" stroke="{COLORS["text"]}" stroke-width="1.2"/>',
+            svg_text(x_offset + 170, 143.3, "TFLOPs", 6.6),
+            f'<line x1="{x_offset + 197:.2f}" x2="{x_offset + 209:.2f}" y1="141" y2="141" stroke="{COLORS["text"]}" stroke-width="1.2" stroke-dasharray="4 2.5"/>',
+            svg_text(x_offset + 213, 143.3, "Wall clock", 6.0),
+        ]
+    )
+
+    parts.extend(
+        [
+            svg_text(left + width / 2, 184, "TFLOPs", 9.0, "middle", 700),
+            svg_text(left + width / 2, 9, "Wall clock (sec)", 9.0, "middle", 700),
+            (
+                f'<text x="{x_offset + 10:.2f}" y="{top + height / 2:.2f}" '
+                f'font-family="Helvetica, Arial, sans-serif" font-size="9.0" font-weight="700" '
+                f'text-anchor="middle" fill="{COLORS["text"]}" '
+                f'transform="rotate(-90 {x_offset + 10:.2f} {top + height / 2:.2f})">'
+                f'{html.escape(spec.y_label)}</text>'
+            ),
+        ]
+    )
+    return "\n".join(parts)
+
+
+def write_svgs(rows: Sequence[dict[str, object]]) -> None:
+    FIGURE_DIR.mkdir(parents=True, exist_ok=True)
+    for path, spec in [(PERFORMANCE_SVG, PERFORMANCE_SPEC), (BATCH_SVG, BATCH_SPEC)]:
+        svg = (
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="{PANEL_W:.0f}" height="{PANEL_H:.0f}" '
+            f'viewBox="0 0 {PANEL_W:.0f} {PANEL_H:.0f}" role="img" '
+            f'aria-label="{html.escape(spec.aria_label)}">\n'
+            f'<rect width="{PANEL_W:.0f}" height="{PANEL_H:.0f}" fill="white"/>\n'
+            f'{svg_chart_body(rows, spec)}\n</svg>\n'
+        )
+        path.write_text(svg, encoding="utf-8")
+
+    pair = (
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{PAIR_W:.0f}" height="{PANEL_H:.0f}" '
+        f'viewBox="0 0 {PAIR_W:.0f} {PANEL_H:.0f}" role="img" '
+        f'aria-label="Two-panel model resource comparison">\n'
+        f'<rect width="{PAIR_W:.0f}" height="{PANEL_H:.0f}" fill="white"/>\n'
+        f'{svg_chart_body(rows, PERFORMANCE_SPEC, panel_label="(a)")}\n'
+        f'{svg_chart_body(rows, BATCH_SPEC, PANEL_W + PANEL_GAP, "(b)")}\n'
+        "</svg>\n"
+    )
+    PAIR_SVG.write_text(pair, encoding="utf-8")
+
+
+def draw_pdf_text(
+    canvas,
+    page_height: float,
+    x: float,
+    y: float,
+    label: str,
+    size: float,
+    anchor: str = "start",
+    bold: bool = False,
+) -> None:
+    from reportlab.lib.colors import HexColor
+
+    font = "Helvetica-Bold" if bold else "Helvetica"
+    canvas.setFont(font, size)
+    canvas.setFillColor(HexColor(COLORS["text"]))
+    draw_y = page_height - y
+    if anchor == "middle":
+        canvas.drawCentredString(x, draw_y, label)
+    elif anchor == "end":
+        canvas.drawRightString(x, draw_y, label)
+    else:
+        canvas.drawString(x, draw_y, label)
+
+
+def draw_pdf_chart(
+    canvas,
+    rows: Sequence[dict[str, object]],
+    spec: ChartSpec,
+    x_offset: float = 0.0,
+    panel_label: str | None = None,
+) -> None:
+    from reportlab.lib.colors import HexColor, white
+
+    axes = chart_axes(rows, spec)
+    groups = grouped_rows(rows)
+    left, top, width, height = x_offset + 42.0, 31.0, 204.0, 122.0
+    x_range = (left, left + width)
+    y_range = (top + height, top)
+    py = lambda y: PANEL_H - y
+
+    if panel_label:
+        draw_pdf_text(canvas, PANEL_H, x_offset + 3, 10, panel_label, 8.5, bold=True)
+
+    canvas.setStrokeColor(HexColor(COLORS["axis"]))
+    canvas.setLineWidth(0.75)
+    canvas.rect(left, py(top + height), width, height, stroke=1, fill=0)
+
+    for tick in axes["y_ticks"]:
+        y = scale(float(tick), axes["y_domain"], y_range)
+        canvas.setStrokeColor(HexColor(COLORS["grid"]))
+        canvas.setLineWidth(0.55)
+        canvas.line(left, py(y), left + width, py(y))
+        draw_pdf_text(canvas, PANEL_H, left - 5, y + 2.4, number_label(float(tick)), 7.2, "end")
+
+    for tick in axes["compute_ticks"]:
+        x = scale(float(tick), axes["compute_domain"], x_range)
+        canvas.setStrokeColor(HexColor(COLORS["grid"]))
+        canvas.setLineWidth(0.50)
+        canvas.line(x, py(top), x, py(top + height))
+        draw_pdf_text(canvas, PANEL_H, x, top + height + 11.5, number_label(float(tick)), 7.2, "middle")
+
+    for tick in axes["wall_ticks"]:
+        x = scale(float(tick), axes["wall_domain"], x_range)
+        canvas.setStrokeColor(HexColor(COLORS["axis"]))
+        canvas.setLineWidth(0.65)
+        canvas.line(x, py(top), x, py(top - 3.2))
+        draw_pdf_text(canvas, PANEL_H, x, top - 7.2, number_label(float(tick)), 7.2, "middle")
+
+    metrics = [
+        ("compute_tflops", axes["compute_domain"], False, True),
+        ("wall_clock_sec", axes["wall_domain"], True, False),
+    ]
+    for model in reversed(MODEL_ORDER):
+        for metric_key, x_domain, dashed, filled in metrics:
+            points = [
+                (
+                    scale(float(row[metric_key]), x_domain, x_range),
+                    scale(float(row[spec.y_key]), axes["y_domain"], y_range),
+                )
+                for row in groups[model]
+            ]
+            canvas.setStrokeColor(HexColor(COLORS[model]))
+            canvas.setLineWidth(1.35)
+            canvas.setDash(4.5, 3) if dashed else canvas.setDash()
+            path = canvas.beginPath()
+            for index, (x, y) in enumerate(points):
+                if index == 0:
+                    path.moveTo(x, py(y))
+                else:
+                    path.lineTo(x, py(y))
+            canvas.drawPath(path, stroke=1, fill=0)
+            canvas.setDash()
+            for x, y in points:
+                canvas.setFillColor(HexColor(COLORS[model]) if filled else white)
+                canvas.setStrokeColor(HexColor(COLORS[model]))
+                canvas.setLineWidth(0.85)
+                canvas.circle(x, py(y), 2.55, stroke=1, fill=1)
+
+    legend_x, legend_y, legend_w, legend_h = x_offset + 148.0, 113.0, 96.0, 37.0
+    canvas.setFillColor(white)
+    canvas.setStrokeColor(HexColor(COLORS["grid"]))
+    canvas.setLineWidth(0.55)
+    canvas.rect(legend_x, py(legend_y + legend_h), legend_w, legend_h, stroke=1, fill=1)
+
+    for x, model in [(x_offset + 155, "our model"), (x_offset + 201, "other model")]:
+        canvas.setFillColor(HexColor(COLORS[model]))
+        canvas.setStrokeColor(HexColor(COLORS[model]))
+        canvas.circle(x, py(124), 2.45, stroke=1, fill=1)
+    draw_pdf_text(canvas, PANEL_H, x_offset + 161, 126.3, "our model", 6.6)
+    draw_pdf_text(canvas, PANEL_H, x_offset + 207, 126.3, "other model", 6.6)
+
+    canvas.setStrokeColor(HexColor(COLORS["text"]))
+    canvas.setLineWidth(1.2)
+    canvas.line(x_offset + 154, py(141), x_offset + 166, py(141))
+    draw_pdf_text(canvas, PANEL_H, x_offset + 170, 143.3, "TFLOPs", 6.6)
+    canvas.setDash(4, 2.5)
+    canvas.line(x_offset + 197, py(141), x_offset + 209, py(141))
+    canvas.setDash()
+    draw_pdf_text(canvas, PANEL_H, x_offset + 213, 143.3, "Wall clock", 6.0)
+
+    draw_pdf_text(canvas, PANEL_H, left + width / 2, 184, "TFLOPs", 9.0, "middle", True)
+    draw_pdf_text(canvas, PANEL_H, left + width / 2, 9, "Wall clock (sec)", 9.0, "middle", True)
+
+    canvas.saveState()
+    canvas.translate(x_offset + 10, py(top + height / 2))
+    canvas.rotate(90)
+    canvas.setFillColor(HexColor(COLORS["text"]))
+    canvas.setFont("Helvetica-Bold", 9.0)
+    canvas.drawCentredString(0, 0, spec.y_label)
+    canvas.restoreState()
+
+
+def write_pdf(path: Path, rows: Sequence[dict[str, object]], spec: ChartSpec) -> None:
+    from reportlab.lib.colors import white
+    from reportlab.pdfgen import canvas
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pdf = canvas.Canvas(str(path), pagesize=(PANEL_W, PANEL_H))
+    pdf.setFillColor(white)
+    pdf.rect(0, 0, PANEL_W, PANEL_H, stroke=0, fill=1)
+    draw_pdf_chart(pdf, rows, spec)
+    pdf.showPage()
+    pdf.save()
+
+
+def write_pair_pdf(path: Path, rows: Sequence[dict[str, object]]) -> None:
+    from reportlab.lib.colors import white
+    from reportlab.pdfgen import canvas
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pdf = canvas.Canvas(str(path), pagesize=(PAIR_W, PANEL_H))
+    pdf.setFillColor(white)
+    pdf.rect(0, 0, PAIR_W, PANEL_H, stroke=0, fill=1)
+    draw_pdf_chart(pdf, rows, PERFORMANCE_SPEC, panel_label="(a)")
+    draw_pdf_chart(pdf, rows, BATCH_SPEC, PANEL_W + PANEL_GAP, "(b)")
+    pdf.showPage()
+    pdf.save()
+
+
+def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Generate compact dual-X-axis paper figures from one CSV file."
+    )
+    parser.add_argument(
+        "--data",
+        type=Path,
+        help=f"CSV input path (default: {DEFAULT_DATA_PATH.relative_to(ROOT)})",
+    )
+    parser.add_argument(
+        "--refresh-demo",
+        action="store_true",
+        help="Regenerate the deterministic placeholder CSV before plotting.",
+    )
+    return parser.parse_args(list(argv) if argv is not None else None)
+
+
+def main(argv: Iterable[str] | None = None) -> None:
+    args = parse_args(argv)
+    if args.data is not None and args.refresh_demo:
+        raise ValueError("--refresh-demo cannot be combined with --data")
+
+    if args.data is None:
+        data_path = DEFAULT_DATA_PATH
+        if args.refresh_demo or not data_path.exists():
+            write_csv(data_path, make_demo_data())
+    else:
+        data_path = args.data.expanduser().resolve()
+
+    rows = read_csv(data_path)
+    write_svgs(rows)
+    write_pdf(PERFORMANCE_PDF, rows, PERFORMANCE_SPEC)
+    write_pdf(BATCH_PDF, rows, BATCH_SPEC)
+    write_pair_pdf(PAIR_PDF, rows)
+
+    print(f"Input data: {data_path}")
+    print(f"Performance PDF: {PERFORMANCE_PDF}")
+    print(f"Batch PDF: {BATCH_PDF}")
+    print(f"Two-panel PDF: {PAIR_PDF}")
+
+
+if __name__ == "__main__":
+    main()
